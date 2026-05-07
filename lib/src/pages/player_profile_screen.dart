@@ -94,28 +94,8 @@ class PlayerProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: 20),
 
-                    // Botón para cambiar avatar (Alternativo al lápiz)
-                    TextButton.icon(
-                      onPressed: () => AvatarPickerSheet.show(context),
-                      icon: const Icon(Icons.cached_rounded, color: AppColors.cyan, size: 18),
-                      label: const Text(
-                        'CAMBIAR AVATAR',
-                        style: TextStyle(
-                          color: AppColors.cyan,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: AppColors.cyan.withValues(alpha: 0.1),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(color: AppColors.cyan.withValues(alpha: 0.3)),
-                        ),
-                      ),
-                    ),
+                    // Recuadro de selección de avatares
+                    _AvatarSelectionBox(controller: controller),
 
                     const SizedBox(height: 20),
 
@@ -141,6 +121,112 @@ class PlayerProfileScreen extends StatelessWidget {
             }),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _AvatarSelectionBox extends StatelessWidget {
+  final PlayerProfileController controller;
+
+  const _AvatarSelectionBox({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 4),
+            child: Text(
+              'ELIJE TU AVATAR',
+              style: TextStyle(
+                color: AppColors.textMuted,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.availableAvatars.isEmpty) {
+                return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.cyan));
+              }
+
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                itemCount: controller.availableAvatars.length,
+                itemBuilder: (context, index) {
+                  final url = controller.availableAvatars[index];
+                  final isSelected = controller.player.value?.avatarUrl == url;
+                  
+                  return _SmallAvatarOption(
+                    url: url,
+                    isSelected: isSelected,
+                    onTap: () => controller.updateAvatar(url),
+                  );
+                },
+              );
+            }),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
+class _SmallAvatarOption extends StatelessWidget {
+  final String url;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _SmallAvatarOption({
+    required this.url,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isSelected ? AppColors.cyan : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: AppColors.cyan.withValues(alpha: 0.3),
+              blurRadius: 8,
+              spreadRadius: 1,
+            )
+          ] : [],
+        ),
+        child: ClipOval(
+          child: Image.network(
+            url,
+            width: 45,
+            height: 45,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, size: 20, color: Colors.white24),
+          ),
+        ),
       ),
     );
   }

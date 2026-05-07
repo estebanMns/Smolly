@@ -42,17 +42,22 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     isLoading.value = true;
     
     try {
-      // Intentamos cargar datos con un tiempo límite de 3 segundos
       final profileData = await _supabaseService.getUserProfile().timeout(
-        const Duration(seconds: 3),
-        onTimeout: () => throw 'Timeout',
+        const Duration(seconds: 5),
+        onTimeout: () => null,
       );
       
       if (profileData != null) {
+        String rawAvatar = profileData['avatar_url'] ?? '';
+        // Si el avatar guardado no es una URL real, usamos kobu por defecto
+        String finalAvatar = rawAvatar.startsWith('http') 
+            ? rawAvatar 
+            : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg';
+
         player.value = PlayerModel(
           uid: profileData['id'] ?? 'u001',
           username: profileData['username'] ?? 'Usuario',
-          avatarUrl: profileData['avatar_url'] ?? 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg', 
+          avatarUrl: finalAvatar, 
           coins: profileData['coins'] ?? 0,
           level: profileData['level'] ?? 0,
           xp: profileData['xp'] ?? 0,
@@ -63,10 +68,11 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
           dogsCollected: profileData['dogs_collected'] ?? 0,
         );
       } else {
+        print("Aviso: No se encontró perfil para este usuario. Usando datos por defecto.");
         _setFallbackPlayerData();
       }
     } catch (e) {
-      print("Error cargando perfil: $e");
+      print("Error cargando perfil (posiblemente usuario nuevo): $e");
       _setFallbackPlayerData();
     } finally {
       isLoading.value = false;

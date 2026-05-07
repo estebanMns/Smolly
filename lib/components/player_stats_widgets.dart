@@ -49,9 +49,9 @@ class PlayerAvatar extends StatelessWidget {
               ],
             ),
             child: CircleAvatar(
-              backgroundImage: avatarUrl.startsWith('http')
-                  ? NetworkImage(avatarUrl)
-                  : AssetImage(avatarUrl.startsWith('assets/') ? avatarUrl : 'assets/$avatarUrl') as ImageProvider,
+              backgroundImage: NetworkImage(avatarUrl.startsWith('http') 
+                  ? avatarUrl 
+                  : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg'),
               backgroundColor: Colors.white10,
             ),
           ),

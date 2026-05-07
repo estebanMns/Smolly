@@ -88,11 +88,13 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           child: Column(children: [
             Obx(() {
               final avatarUrl = controller.player.value?.avatarUrl ?? '';
-              return ClipOval(
-                child: avatarUrl.startsWith('http')
-                    ? Image.network(avatarUrl, width: 130, height: 130, fit: BoxFit.cover)
-                    : Image.asset(avatarUrl.isEmpty ? 'assets/images/kovuIcon.png' : avatarUrl, width: 130, height: 130, fit: BoxFit.cover),
-              );
+                return ClipOval(
+                  child: Image.network(
+                    avatarUrl.startsWith('http') ? avatarUrl : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg', 
+                    width: 130, height: 130, fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.network('https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg', width: 130, height: 130, fit: BoxFit.cover),
+                  ),
+                );
             }),
             const SizedBox(height: 10),
             const Text('El Robo De Molly', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 5)),

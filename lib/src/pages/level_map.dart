@@ -259,19 +259,12 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
             child: ClipOval(
               child: Obx(() {
                 final avatarUrl = controller.player.value?.avatarUrl ?? '';
-                return avatarUrl.startsWith('http')
-                    ? Image.network(
-                        avatarUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.person, size: 30),
-                      )
-                    : Image.asset(
-                        avatarUrl.isEmpty ? 'assets/images/yoongi.jpg' : avatarUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.person, size: 30),
-                      );
+                return Image.network(
+                  avatarUrl.startsWith('http') ? avatarUrl : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.person, size: 30),
+                );
               }),
             ),
           ),

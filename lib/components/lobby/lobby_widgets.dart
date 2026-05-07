@@ -59,9 +59,9 @@ class _AvatarDisplay extends StatelessWidget {
             ),
             child: CircleAvatar(
               radius: 26,
-              backgroundImage: avatarUrl.startsWith('http')
-                  ? NetworkImage(avatarUrl)
-                  : AssetImage(avatarUrl.isEmpty ? 'assets/images/kovuIcon.png' : avatarUrl) as ImageProvider,
+              backgroundImage: NetworkImage(
+                avatarUrl.startsWith('http') ? avatarUrl : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+              ),
             ),
           ),
           Positioned(
