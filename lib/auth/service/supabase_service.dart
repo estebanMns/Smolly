@@ -88,12 +88,22 @@ class SupabaseService {
   }
 
   // 2. Método para seleccionar un avatar que ya existe
-Future<void> updateSelectedAvatar(String url) async {
-  final userId = _supabase.auth.currentUser?.id;
-  if (userId != null) {
-    await _supabase.from('perfiles').update({
-      'avatar_url': url, // Guardamos la URL de la imagen elegida
-    }).eq('id', userId);
+  Future<void> updateSelectedAvatar(String url) async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId != null) {
+      await _supabase.from('perfiles').update({
+        'avatar_url': url, // Guardamos la URL de la imagen elegida
+      }).eq('id', userId);
+    }
   }
-}
+
+  // Método para actualizar el nombre de usuario
+  Future<void> updateUsername(String newName) async {
+    final user = _supabase.auth.currentUser;
+    if (user != null) {
+      await _supabase.from('perfiles').update({
+        'username': newName,
+      }).eq('id', user.id);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'pages/home_screen.dart';
 import 'pages/lobby_screen.dart';
 import 'pages/level_map.dart';
@@ -10,7 +11,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'El Robo de Molly',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

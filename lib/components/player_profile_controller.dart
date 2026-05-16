@@ -6,10 +6,12 @@ import 'package:get/get.dart';
 // Importaciones optimizadas
 import 'package:juego_movil/models/player_model.dart';
 import 'package:juego_movil/auth/service/supabase_service.dart';
+import 'package:juego_movil/auth/service/auth_services.dart';
 
 class PlayerProfileController extends GetxController with GetSingleTickerProviderStateMixin {
   
   final SupabaseService _supabaseService = SupabaseService();
+  final AuthServices _authServices = AuthServices();
 
   // --- ESTADO DEL JUGADOR ---
   final player = Rxn<PlayerModel>();
@@ -147,12 +149,55 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
         colorText: Colors.white,
       );
     } catch (e) {
-      print("Error en updateAvatar: $e");
-      Get.snackbar('Error', 'No se pudo actualizar el avatar: $e',
+      print("Error al actualizar avatar: $e");
+    }
+  }
+
+  Future<void> updateUsername(String newName) async {
+    if (newName.isEmpty || player.value == null) return;
+
+    try {
+      // 1. Actualizar en Supabase
+      await _supabaseService.updateUsername(newName);
+      
+      // 2. Actualizar estado local
+      final p = player.value!;
+      player.value = PlayerModel(
+        uid: p.uid,
+        username: newName,
+        avatarUrl: p.avatarUrl,
+        coins: p.coins,
+        level: p.level,
+        xp: p.xp,
+        xpToNextLevel: p.xpToNextLevel,
+        rank: p.rank,
+        scanAccuracy: p.scanAccuracy,
+        totalScans: p.totalScans,
+        dogsCollected: p.dogsCollected,
+      );
+
+      Get.snackbar('Éxito', '¡Nombre de usuario actualizado!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      print("Error en updateUsername: $e");
+      Get.snackbar('Error', 'No se pudo actualizar el nombre: $e',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.withValues(alpha: 0.8),
         colorText: Colors.white,
       );
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      await _authServices.signOut();
+      Get.offAllNamed('/home');
+    } catch (e) {
+      print("Error al cerrar sesión: $e");
+      Get.snackbar('Error', 'No se pudo cerrar sesión');
     }
   }
 
