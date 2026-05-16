@@ -16,12 +16,14 @@ class PlayerAvatar extends StatelessWidget {
   final String avatarUrl;
   final int level;
   final VoidCallback? onTap;
+  final VoidCallback? onPencilTap;
 
   const PlayerAvatar({
     super.key,
     required this.avatarUrl,
     required this.level,
     this.onTap,
+    this.onPencilTap,
   });
 
   @override
@@ -68,12 +70,12 @@ class PlayerAvatar extends StatelessWidget {
               ),
             ),
           ),
-          if (onTap != null)
+          if (onTap != null || onPencilTap != null)
             Positioned(
               right: 5,
               bottom: 30,
               child: GestureDetector(
-                onTap: onTap,
+                onTap: onPencilTap ?? onTap,
                 child: Container(
                   padding: const EdgeInsets.all(6), // Un poco más de padding
                   decoration: const BoxDecoration(

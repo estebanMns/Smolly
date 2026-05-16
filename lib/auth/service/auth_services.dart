@@ -31,7 +31,13 @@ class AuthServices {
 
   //metodo para cerrar sesion
   Future<void> signOut() async {
-    await _client.auth.signOut();
+    try {
+      await _client.auth.signOut();
+      print("Sesion cerrada correctamente en Supabase");
+    } catch (e) {
+      print("Error al intentar cerrar la sesion: $e");
+      rethrow; // Propagamos el error para que el controlador lo maneje si es necesario
+    }
   }
 
   //getter para el estado de la autenticacion
