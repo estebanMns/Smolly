@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:get/get.dart';
 
 class SettingsScreen extends StatefulWidget {
   // Se agregó el parámetro key para corregir 'use_key_in_widget_constructors'
@@ -11,7 +12,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _soundEnabled = true;
-  String _selectedLanguage = 'Español';
+  String _selectedLanguage = Get.locale?.languageCode == 'en' ? 'Inglés' : 'Español';
   bool _cameraAccess = false;
 
   Future<void> _checkCameraPermission() async {
@@ -49,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       _buildSettingItem(
                         icon: Icons.volume_up_rounded,
-                        title: "SONIDO",
+                        title: 'sound'.tr,
                         trailing: Switch(
                           value: _soundEnabled,
                           // Corregido: activeThumbColor en lugar de activeColor
@@ -60,24 +61,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       _buildSettingItem(
                         icon: Icons.language_rounded,
-                        title: "IDIOMA",
+                        title: 'language'.tr,
                         trailing: DropdownButton<String>(
                           dropdownColor: const Color(0xFF1A1F2B),
                           value: _selectedLanguage,
                           underline: const SizedBox(),
                           style: const TextStyle(color: Colors.cyanAccent, fontWeight: FontWeight.bold),
-                          onChanged: (val) => setState(() => _selectedLanguage = val!),
+                          onChanged: (val) {
+                            if (val == null) return;
+                            setState(() {
+                              _selectedLanguage = val;
+                              if (val == 'Inglés') {
+                                Get.updateLocale(const Locale('en', 'US'));
+                              } else {
+                                Get.updateLocale(const Locale('es', 'ES'));
+                              }
+                            });
+                          },
                           items: ['Inglés', 'Español'].map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              // El texto del item también se podría traducir si se desea, por ahora mantenemos las opciones fijas para no romper el match de value
+                              child: Text(value == 'Inglés' ? 'english'.tr : 'spanish'.tr),
                             );
-                          }).toList(), // Corregido: .toList() en lugar de .onChanged
+                          }).toList(),
                         ),
                       ),
                       _buildSettingItem(
                         icon: Icons.camera_alt_rounded,
-                        title: "CÁMARA",
+                        title: 'camera'.tr,
                         trailing: IconButton(
                           icon: Icon(
                             _cameraAccess ? Icons.check_circle : Icons.error_outline,
@@ -89,14 +101,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       _buildSettingItem(
                         icon: Icons.help_outline_rounded,
-                        title: "AYUDAS",
+                        title: 'helps'.tr,
                         onTap: () {
                           // Acción para ayudas
                         },
                       ),
                       _buildSettingItem(
                         icon: Icons.person_pin_rounded,
-                        title: "CUENTA",
+                        title: 'account'.tr,
                         onTap: () {
                           // Navegación corregida para evitar bucles infinitos si es necesario
                           Navigator.pushReplacement(
@@ -134,11 +146,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.cyanAccent),
             ),
           ),
-          const Expanded(
+          Expanded(
             child: Center(
               child: Text(
-                "CONFIGURACIÓN",
-                style: TextStyle(
+                'settings_title'.tr,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   // Corregido: FontWeight.w900 en lugar de .black para evitar errores de constante

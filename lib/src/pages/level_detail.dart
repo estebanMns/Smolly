@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 // ============================================================
 // LEVEL DETAIL MODEL
@@ -16,7 +17,7 @@ class LevelDetailInfo {
     required this.itemsToCollect,
     required this.coinsReward,
     required this.unlocksStory,
-    this.cameraNotice = "Note: Your camera will be activated for this level.",
+    this.cameraNotice = "",
   });
 }
 
@@ -123,11 +124,11 @@ class LevelDetailScreen extends StatelessWidget {
           const Divider(color: Colors.white24, height: 30),
 
           // Level Info Rows
-          _buildInfoRow(Icons.category_rounded, "Items to collect: ${detail.itemsToCollect}"),
-          _buildInfoRow(Icons.monetization_on_rounded, "Reward: ${detail.coinsReward} coins"),
+          _buildInfoRow(Icons.category_rounded, "${'items_to_collect'.tr}: ${detail.itemsToCollect}"),
+          _buildInfoRow(Icons.monetization_on_rounded, "${'reward'.tr}: ${detail.coinsReward} ${'coins'.tr}"),
           
           if (detail.unlocksStory)
-            _buildInfoRow(Icons.auto_stories_rounded, "Story fragment included!", isHighlight: true),
+            _buildInfoRow(Icons.auto_stories_rounded, 'story_fragment'.tr, isHighlight: true),
 
           const SizedBox(height: 15),
           
@@ -144,7 +145,7 @@ class LevelDetailScreen extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    detail.cameraNotice,
+                    detail.cameraNotice.isNotEmpty ? detail.cameraNotice : 'camera_notice'.tr,
                     style: const TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                 ),
@@ -171,8 +172,8 @@ class LevelDetailScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               elevation: 10,
             ),
-            child: const Text(
-              'START',
+            child: Text(
+              'start_caps'.tr,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),

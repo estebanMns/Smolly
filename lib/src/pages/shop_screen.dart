@@ -3,6 +3,7 @@ import 'package:juego_movil/config/app_colors.dart';
 import 'package:juego_movil/models/shop_item_model.dart';
 import 'package:juego_movil/components/shop/shop_card.dart';
 import 'package:juego_movil/src/pages/time_shop.dart';
+import 'package:get/get.dart';
 
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
@@ -11,19 +12,19 @@ class ShopScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ShopItem> menuItems = [
       ShopItem(
-        title: "POTENCIADORES DE TIEMPO",
-        subtitle: "¡No dejes que el reloj te detenga!",
+        title: 'time_boosters'.tr,
+        subtitle: 'time_boosters_desc'.tr,
         icon: Icons.access_time_filled,
         gradientColors: [AppColors.shopPurple1, AppColors.shopPurple2],
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TimeShop())),
       ),
       ShopItem(
-        title: "MEJORAS",
-        subtitle: "Aumenta tu radio de recolección",
+        title: 'upgrades'.tr,
+        subtitle: 'upgrades_desc'.tr,
         icon: Icons.auto_fix_high,
         gradientColors: [AppColors.shopBlue1, AppColors.shopBlue2],
         onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Próximamente disponibles'), backgroundColor: Colors.white70),
+          SnackBar(content: Text('coming_soon'.tr), backgroundColor: Colors.white70),
         ),
       ),
     ];
@@ -96,8 +97,8 @@ class ShopScreen extends StatelessWidget {
   }
 
   Widget _buildTitle() {
-    return const Text(
-      "TIENDA ESTELAR",
+    return Text(
+      'stellar_shop'.tr,
       style: TextStyle(
         color: Colors.white,
         fontSize: 30,

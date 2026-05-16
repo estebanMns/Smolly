@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:juego_movil/auth/service/auth_services.dart';
 import 'login_screen.dart';
 
@@ -61,27 +62,27 @@ class _RegisterState extends State<Register> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 20),
-                    const Column(
+                    Column(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.rocket_launch,
                           size: 80,
                           color: Colors.white,
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
-                          'El robo de Molly',
-                          style: TextStyle(
+                          'title_login'.tr,
+                          style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                             letterSpacing: 2,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'Crea tu cuenta',
-                          style: TextStyle(
+                          'create_account'.tr,
+                          style: const TextStyle(
                             fontSize: 16,
                             color: Colors.white70,
                           ),
@@ -110,27 +111,27 @@ class _RegisterState extends State<Register> {
                         children: [
                           _buildTextField(
                             controller: nameController,
-                            hint: 'Nombre completo',
+                            hint: 'full_name'.tr,
                             icon: Icons.person_outline,
                           ),
                           const SizedBox(height: 16),
                           _buildTextField(
                             controller: emailController,
-                            hint: 'Correo electrónico',
+                            hint: 'email'.tr,
                             icon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                           ),
                           const SizedBox(height: 16),
                           _buildTextField(
                             controller: passwordController,
-                            hint: 'Contraseña',
+                            hint: 'password'.tr,
                             icon: Icons.lock_outline,
                             obscureText: true,
                           ),
                           const SizedBox(height: 16),
                           _buildTextField(
                             controller: confirmPasswordController,
-                            hint: 'Confirmar contraseña',
+                            hint: 'confirm_password'.tr,
                             icon: Icons.lock_outline,
                             obscureText: true,
                           ),
@@ -158,8 +159,8 @@ class _RegisterState extends State<Register> {
                                 elevation: 8,
                                 shadowColor: const Color(0xFF9C27B0).withValues(alpha: 0.5),
                               ),
-                              child: const Text(
-                                'REGISTRARSE',
+                              child: Text(
+                                'register_btn_caps'.tr,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -175,8 +176,8 @@ class _RegisterState extends State<Register> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          '¿Ya tienes cuenta?',
+                        Text(
+                          'already_have_account'.tr,
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -189,8 +190,8 @@ class _RegisterState extends State<Register> {
                               MaterialPageRoute(builder: (_) => const Login()),
                             );
                           },
-                          child: const Text(
-                            'Inicia sesión',
+                          child: Text(
+                            'login_text'.tr,
                             style: TextStyle(
                               color: Colors.purpleAccent,
                               fontSize: 14,
@@ -256,17 +257,17 @@ class _RegisterState extends State<Register> {
     
     // Validaciones básicas
     if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      _showSnackBar(context, 'Por favor completa todos los campos', Colors.red);
+      _showSnackBar(context, 'fill_fields'.tr, Colors.red);
       return;
     }
 
     if (password != confirmPassword) {
-      _showSnackBar(context, 'Las contraseñas no coinciden', Colors.red);
+      _showSnackBar(context, 'passwords_not_match'.tr, Colors.red);
       return;
     }
 
     if (password.length < 6) {
-      _showSnackBar(context, 'La contraseña debe tener al menos 6 caracteres', Colors.red);
+      _showSnackBar(context, 'password_length'.tr, Colors.red);
       return;
     }
 
@@ -278,7 +279,7 @@ class _RegisterState extends State<Register> {
 
     // Si todo sale bien:
     if (!context.mounted) return;
-    _showSnackBar(context, '¡Registro exitoso! Inicia sesion por favor', Colors.green);
+    _showSnackBar(context, 'register_success'.tr, Colors.green);
     
     // Regresar al login o dejar que AuthGate te mande al Home
     Navigator.pushReplacement(
@@ -289,7 +290,7 @@ class _RegisterState extends State<Register> {
   } catch (e) {
     // Si hay error (ej: el email ya está registrado)
     if (!context.mounted) return;
-    _showSnackBar(context, 'Error al registrar: ${e.toString()}', Colors.red);
+    _showSnackBar(context, '${'register_error'.tr} ${e.toString()}', Colors.red);
   }
 
     // Regresar al login después de 2 segundos

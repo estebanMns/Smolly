@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Fail extends StatelessWidget {
   const Fail({super.key});
@@ -7,10 +8,10 @@ class Fail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: Text('fail'.tr),
       ),
-      body: const Center(
-        child: Text('Register Screen'),
+      body: Center(
+        child: Text('fail'.tr),
       ),
     );
   }

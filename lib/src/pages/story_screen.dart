@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:get/get.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
@@ -33,11 +34,11 @@ class StoryScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       _buildCircularButton(context, Icons.arrow_back_ios_new, () => Navigator.pop(context)),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'BITÁCORA ESTELAR',
+                          'stellar_log'.tr,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white, 
                             fontSize: 22, 
                             fontWeight: FontWeight.bold, 
@@ -50,9 +51,9 @@ class StoryScreen extends StatelessWidget {
                   ),
                 ),
 
-                const Text(
-                  "REGISTRO DE LA MISIÓN MOLLY",
-                  style: TextStyle(color: Color(0xFFCE93D8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                Text(
+                  'molly_mission_log'.tr,
+                  style: const TextStyle(color: Color(0xFFCE93D8), fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                 ),
 
                 const SizedBox(height: 20),
@@ -63,34 +64,34 @@ class StoryScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     children: [
                       _buildStoryChapter(
-                        "CAPÍTULO 1", "El Descubrimiento", 
-                        "Algo no anda bien en el sector orbital. Las señales de Molly han desaparecido.", 
-                        "2 Imágenes", Icons.blur_on, const Color(0xFF40C4FF)
+                        'chapter_1'.tr, 'chapter_1_title'.tr, 
+                        'chapter_1_desc'.tr, 
+                        'two_images'.tr, Icons.blur_on, const Color(0xFF40C4FF)
                       ),
                       _buildStoryChapter(
-                        "CAPÍTULO 2", "Exploración Inicial", 
-                        "Rastros de energía desconocida nos guían hacia el cinturón de asteroides.", 
-                        "2 Imágenes", Icons.explore_rounded, const Color(0xFF69F0AE)
+                        'chapter_2'.tr, 'chapter_2_title'.tr, 
+                        'chapter_2_desc'.tr, 
+                        'two_images'.tr, Icons.explore_rounded, const Color(0xFF69F0AE)
                       ),
                       _buildStoryChapter(
-                        "CAPÍTULO 3", "Objetos de Poder", 
-                        "La tensión aumenta. Hemos encontrado artefactos que alteran la gravedad.", 
-                        "3 Imágenes", Icons.thunderstorm_rounded, const Color(0xFFFFD740) // CORREGIDO: t minúscula
+                        'chapter_3'.tr, 'chapter_3_title'.tr, 
+                        'chapter_3_desc'.tr, 
+                        'three_images'.tr, Icons.thunderstorm_rounded, const Color(0xFFFFD740)
                       ),
                       _buildStoryChapter(
-                        "CAPÍTULO 4", "El Encuentro", 
-                        "Cara a cara con Molly. La traición tiene un rostro conocido.", 
-                        "3 Imágenes", Icons.visibility_rounded, const Color(0xFFFF5252)
+                        'chapter_4'.tr, 'chapter_4_title'.tr, 
+                        'chapter_4_desc'.tr, 
+                        'three_images'.tr, Icons.visibility_rounded, const Color(0xFFFF5252)
                       ),
                       _buildStoryChapter(
-                        "CAPÍTULO 5", "Duda Emocional", 
-                        "¿Es Molly realmente el enemigo? Un momento de calma antes de la tormenta.", 
-                        "2 Imágenes", Icons.favorite_rounded, const Color(0xFFEA80FC) // CORREGIDO: f minúscula
+                        'chapter_5'.tr, 'chapter_5_title'.tr, 
+                        'chapter_5_desc'.tr, 
+                        'two_images'.tr, Icons.favorite_rounded, const Color(0xFFEA80FC)
                       ),
                       _buildStoryChapter(
-                        "CAPÍTULO 6", "El Destino Final", 
-                        "Caos global. Es hora de tomar la decisión que cambiará el universo.", 
-                        "3 Imágenes", Icons.auto_awesome_rounded, Colors.white
+                        'chapter_6'.tr, 'chapter_6_title'.tr, 
+                        'chapter_6_desc'.tr, 
+                        'three_images'.tr, Icons.auto_awesome_rounded, Colors.white
                       ),
                     ],
                   ),

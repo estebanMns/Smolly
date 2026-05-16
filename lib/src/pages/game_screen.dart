@@ -28,31 +28,31 @@ class LevelGameData {
 final Map<int, LevelGameData> gameLevelConfigs = {
   0: LevelGameData(
     targetObject: "dog", 
-    displayName: "Molly (Tutorial)",
+    displayName: 'molly_tutorial'.tr,
     timeLimit: 120, 
     backgroundImage: 'assets/images/fondomolly.png',
   ),
   1: LevelGameData(
     targetObject: "sports ball", 
-    displayName: "Pelota de Juego",
+    displayName: 'game_ball'.tr,
     timeLimit: 60, 
     backgroundImage: 'assets/images/fondogame_level1.png',
   ),
   2: LevelGameData(
     targetObject: "bowl", 
-    displayName: "Tazón de Comida",
+    displayName: 'food_bowl'.tr,
     timeLimit: 55, 
     backgroundImage: 'assets/images/fondogame_level2.png',
   ),
   3: LevelGameData(
     targetObject: "bottle", 
-    displayName: "Botella de Agua",
+    displayName: 'water_bottle'.tr,
     timeLimit: 50, 
     backgroundImage: 'assets/images/fondogame_story.png',
   ), 
   4: LevelGameData(
     targetObject: "cup", 
-    displayName: "Taza de Café",
+    displayName: 'coffee_cup'.tr,
     timeLimit: 45, 
     backgroundImage: 'assets/images/fondogame_level1.png',
   ),
@@ -61,7 +61,7 @@ final Map<int, LevelGameData> gameLevelConfigs = {
 LevelGameData getLevelConfig(int id) {
   return gameLevelConfigs[id] ?? LevelGameData(
     targetObject: "person", 
-    displayName: "Humano",
+    displayName: 'human'.tr,
     timeLimit: (60 - id).clamp(20, 60).toDouble(),
     isHard: id % 5 == 0,
     backgroundImage: 'assets/images/fondogame_generic.png', 
@@ -179,7 +179,7 @@ class GameScreen extends StatelessWidget {
                 ],
               ),
               child: Text(
-                isFound ? "¡OBJETO CORRECTO!" : config.displayName.toUpperCase(),
+                isFound ? 'correct_object'.tr : config.displayName.toUpperCase(),
                 style: TextStyle(
                   color: isFound ? Colors.greenAccent : Colors.white,
                   fontWeight: FontWeight.bold,
@@ -188,11 +188,11 @@ class GameScreen extends StatelessWidget {
               ),
             ),
             if (isFound)
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  "Toca la cámara para capturar",
-                  style: TextStyle(color: Colors.white70, fontSize: 10),
+                  'tap_to_capture'.tr,
+                  style: const TextStyle(color: Colors.white70, fontSize: 10),
                 ),
               ),
           ],
@@ -274,12 +274,12 @@ class GameScreen extends StatelessWidget {
               onTap: () {
                 if (isFound) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("¡Éxito! Objeto capturado correctamente.")),
+                    SnackBar(content: Text('capture_success'.tr)),
                   );
                   Navigator.pop(context);
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Aún no detecto el objeto correcto...")),
+                    SnackBar(content: Text('not_detected_yet'.tr)),
                   );
                 }
               },

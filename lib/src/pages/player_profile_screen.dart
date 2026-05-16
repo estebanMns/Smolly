@@ -43,8 +43,8 @@ class PlayerProfileScreen extends StatelessWidget {
               }
 
               if (controller.player.value == null) {
-                return const Center(
-                  child: Text('Error al cargar datos del jugador', style: TextStyle(color: Colors.white)),
+                return Center(
+                  child: Text('error_loading_player'.tr, style: const TextStyle(color: Colors.white)),
                 );
               }
 
@@ -143,11 +143,11 @@ class _AvatarSelectionBox extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 8, bottom: 4),
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 4),
             child: Text(
-              'ELIJE TU AVATAR',
-              style: TextStyle(
+              'choose_avatar'.tr,
+              style: const TextStyle(
                 color: AppColors.textMuted,
                 fontSize: 9,
                 fontWeight: FontWeight.bold,

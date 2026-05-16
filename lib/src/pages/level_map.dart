@@ -115,7 +115,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
       
       return LevelData(
         id: index,
-        name: index == 0 ? 'Tutorial' : 'Nivel $index',
+        name: index == 0 ? 'tutorial'.tr : '${'level'.tr} $index',
         status: status,
         isBossLevel: index > 0 && index % 5 == 0,
         row: row,
@@ -281,8 +281,8 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            child: const Text(
-              'Tú',
+            child: Text(
+              'you'.tr,
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 13,
@@ -333,8 +333,8 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            child: const Text(
-              'Mapa de Niveles',
+            child: Text(
+              'level_map_title'.tr,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -385,11 +385,11 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
     if (level.status == LevelStatus.locked) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.lock_outline, color: Colors.white),
-              SizedBox(width: 10),
-              Text('Completa el nivel anterior para desbloquear'),
+              const Icon(Icons.lock_outline, color: Colors.white),
+              const SizedBox(width: 10),
+              Text('level_locked_msg'.tr),
             ],
           ),
           backgroundColor: Colors.purple[900],

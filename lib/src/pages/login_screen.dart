@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../auth/service/auth_services.dart';
 import 'register_screen.dart'; 
 import 'lobby_screen.dart';
@@ -65,23 +66,23 @@ class _LoginState extends State<Login>{
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 40),
-                    const Column(
+                    Column(
                       children: [
-                        Icon(Icons.rocket_launch, size: 80, color: Colors.white),
-                        SizedBox(height: 16),
+                        const Icon(Icons.rocket_launch, size: 80, color: Colors.white),
+                        const SizedBox(height: 16),
                         Text(
-                          'El robo de Molly',
-                          style: TextStyle(
+                          'title_login'.tr,
+                          style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                             letterSpacing: 2,
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          'Bienvenido de vuelta',
-                          style: TextStyle(fontSize: 16, color: Colors.white70),
+                          'welcome_back'.tr,
+                          style: const TextStyle(fontSize: 16, color: Colors.white70),
                         ),
                       ],
                     ),
@@ -106,22 +107,22 @@ class _LoginState extends State<Login>{
                           TextField(
                             controller: emailController,
                             style: const TextStyle(color: Colors.white),
-                            decoration: _inputStyle('Correo electrónico', Icons.email_outlined),
+                            decoration: _inputStyle('email'.tr, Icons.email_outlined),
                           ),
                           const SizedBox(height: 16),
                           TextField(
                             controller: passwordController,
                             obscureText: true,
                             style: const TextStyle(color: Colors.white),
-                            decoration: _inputStyle('Contraseña', Icons.lock_outline),
+                            decoration: _inputStyle('password'.tr, Icons.lock_outline),
                           ),
                           const SizedBox(height: 8),
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: () {},
-                              child: const Text(
-                                '¿Olvidaste tu contraseña?',
+                              child: Text(
+                                'forgot_password'.tr,
                                 style: TextStyle(color: Colors.white70, fontSize: 12),
                               ),
                             ),
@@ -139,8 +140,8 @@ class _LoginState extends State<Login>{
                                 elevation: 8,
                                 shadowColor: const Color(0xFF9C27B0).withValues(alpha: 0.5),
                               ),
-                              child: const Text(
-                                'INICIAR SESIÓN',
+                              child: Text(
+                                'login_btn'.tr,
                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                               ),
                             ),
@@ -153,8 +154,8 @@ class _LoginState extends State<Login>{
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          '¿No tienes cuenta?',
+                        Text(
+                          'no_account'.tr,
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         TextButton(
@@ -165,8 +166,8 @@ class _LoginState extends State<Login>{
                               MaterialPageRoute(builder: (_) => const Register()),
                             );
                           },
-                          child: const Text(
-                            'Regístrate',
+                          child: Text(
+                            'register_btn'.tr,
                             style: TextStyle(
                               color: Colors.purpleAccent,
                               fontSize: 14,
@@ -215,7 +216,7 @@ class _LoginState extends State<Login>{
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor completa todos los campos'), backgroundColor: Colors.red),
+        SnackBar(content: Text('fill_fields'.tr), backgroundColor: Colors.red),
       );
       return;
     }
@@ -231,7 +232,7 @@ class _LoginState extends State<Login>{
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+        SnackBar(content: Text('${'error_prefix'.tr} ${e.toString()}'), backgroundColor: Colors.red),
       );
 
     }

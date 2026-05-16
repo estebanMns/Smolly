@@ -3,6 +3,7 @@ import '../../models/character_model.dart';
 import '../../components/characters/character_card.dart';
 import '../../components/characters/galactic_background.dart';
 import '../../config/app_colors.dart';
+import 'package:get/get.dart';
 
 class CharactersScreen extends StatefulWidget {
   const CharactersScreen({super.key});
@@ -17,11 +18,11 @@ class _CharactersScreenState extends State<CharactersScreen> with SingleTickerPr
   late Animation<double> _glowAnimation;
 
   final List<Character> characters = [
-    Character(name: 'Iker', image: 'assets/images/iker.jpeg', role: 'Main Character', description: 'Iker is searching for all the objects that Molly stole from his home'),
-    Character(name: 'Kovu', image: 'assets/images/kovu.jpeg', role: 'Space Warrior', description: 'Domina las artes del combate galáctico'),
-    Character(name: 'Horus', image: 'assets/images/horus.jpeg', role: 'Quantum Master', description: 'Master of quantum combat'),
-    Character(name: 'Matias', image: 'assets/images/perroblanco.png', role: 'Neural Navigator', description: 'Expert in neural hacking'),
-    Character(name: 'Molly', image: 'assets/images/molly.jpeg', role: 'Dark Renegade', description: 'Master of dark energy manipulation'),
+    Character(name: 'Iker', image: 'assets/images/iker.jpeg', role: 'main_character'.tr, description: 'iker_desc'.tr),
+    Character(name: 'Kovu', image: 'assets/images/kovu.jpeg', role: 'space_warrior'.tr, description: 'kovu_desc'.tr),
+    Character(name: 'Horus', image: 'assets/images/horus.jpeg', role: 'quantum_master'.tr, description: 'horus_desc'.tr),
+    Character(name: 'Matias', image: 'assets/images/perroblanco.png', role: 'neural_navigator'.tr, description: 'matias_desc'.tr),
+    Character(name: 'Molly', image: 'assets/images/molly.jpeg', role: 'dark_renegade'.tr, description: 'molly_desc'.tr),
   ];
 
   @override
@@ -93,7 +94,7 @@ class _CharactersScreenState extends State<CharactersScreen> with SingleTickerPr
         border: Border.all(color: AppColors.charTitleBorder.withValues(alpha: 0.7), width: 1.5),
         gradient: const LinearGradient(colors: [AppColors.charTitleBg1, AppColors.charTitleBg2]),
       ),
-      child: const Text('CHARACTERS', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 5, color: Colors.white)),
+      child: Text('characters_caps'.tr, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, letterSpacing: 5, color: Colors.white)),
     );
   }
 

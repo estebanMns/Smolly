@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // Cambia 'juego_movil' por el nombre de tu proyecto
 import 'package:juego_movil/models/time_option_model.dart';
 import 'package:juego_movil/components/shop/time_option_card.dart';
+import 'package:get/get.dart';
 
 class TimeShop extends StatelessWidget {
   const TimeShop({super.key});
@@ -10,9 +11,9 @@ class TimeShop extends StatelessWidget {
   Widget build(BuildContext context) {
     // Lista de opciones de tiempo
     final List<TimeOption> options = [
-      TimeOption(label: "+30 Segundos", price: "200 Monedas"),
-      TimeOption(label: "+1 Minuto", price: "350 Monedas"),
-      TimeOption(label: "+2 Minutos", price: "600 Monedas"),
+      TimeOption(label: 'plus_30_sec'.tr, price: '200_coins'.tr),
+      TimeOption(label: 'plus_1_min'.tr, price: '350_coins'.tr),
+      TimeOption(label: 'plus_2_min'.tr, price: '600_coins'.tr),
     ];
 
     return Scaffold(
@@ -69,8 +70,8 @@ class TimeShop extends StatelessWidget {
   }
 
   Widget _buildTitle() {
-    return const Text(
-      "MÁS TIEMPO",
+    return Text(
+      'more_time'.tr,
       style: TextStyle(
         color: Colors.white,
         fontSize: 32,
@@ -90,8 +91,8 @@ class TimeShop extends StatelessWidget {
         color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Text(
-        "¿Necesitas unos segundos extra?",
+      child: Text(
+        'need_extra_seconds'.tr,
         style: TextStyle(color: Colors.white, fontSize: 16),
       ),
     );

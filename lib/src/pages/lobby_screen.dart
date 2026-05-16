@@ -97,7 +97,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
                 );
             }),
             const SizedBox(height: 10),
-            const Text('El Robo De Molly', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 5)),
+            Text('title_login'.tr, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 5)),
           ]),
         ),
       ),

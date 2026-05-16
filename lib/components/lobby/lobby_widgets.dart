@@ -95,8 +95,8 @@ class _PlayerInfoDisplay extends StatelessWidget {
     final controller = Get.find<PlayerProfileController>();
 
     return Obx(() {
-      final username = controller.player.value?.username ?? 'PILOTO';
-      final rank = controller.player.value?.rank ?? 'EXPLORADOR';
+      final username = controller.player.value?.username ?? 'pilot'.tr;
+      final rank = controller.player.value?.rank ?? 'explorer'.tr;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,7 +169,7 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
             gradient: const LinearGradient(colors: [Color(0xFFE040FB), Color(0xFF7C4DFF)]),
             boxShadow: [BoxShadow(color: const Color(0xFFE040FB).withValues(alpha: 0.65), blurRadius: widget.glowRadius, spreadRadius: 2)],
           ),
-          child: const Row(mainAxisAlignment: MainAxisAlignment.center, children: [Icon(Icons.rocket_launch, color: Colors.white, size: 24), SizedBox(width: 10), Text('PLAY', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 4))]),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [const Icon(Icons.rocket_launch, color: Colors.white, size: 24), const SizedBox(width: 10), Text('play'.tr, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 4))]),
         ),
       ),
     );
@@ -188,8 +188,8 @@ class BottomNavigationCustom extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _BottomNavItem(icon: Icons.settings_rounded, label: 'Settings', color: const Color(0xFF69F0AE), onTap: onSettingsTap),
-          _BottomNavItem(icon: Icons.help_outline_rounded, label: 'Help', color: const Color(0xFF40C4FF), onTap: () {}),
+          _BottomNavItem(icon: Icons.settings_rounded, label: 'settings_nav'.tr, color: const Color(0xFF69F0AE), onTap: onSettingsTap),
+          _BottomNavItem(icon: Icons.help_outline_rounded, label: 'help_nav'.tr, color: const Color(0xFF40C4FF), onTap: () {}),
         ],
       ),
     );

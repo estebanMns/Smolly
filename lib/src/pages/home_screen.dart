@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'login_screen.dart';
 
 class Home extends StatelessWidget {
@@ -62,7 +63,7 @@ class Home extends StatelessWidget {
                 SizedBox(height: screenHeight * 0.008),
 
                 Text(
-                  '— Una aventura de Iker —',
+                  'subtitle_home'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: screenWidth * 0.032,
@@ -84,7 +85,7 @@ class Home extends StatelessWidget {
                     children: [
                       
                       Text(
-                        'El Robo\nde Molly',
+                        'title_home'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: screenWidth * 0.115,
@@ -99,7 +100,7 @@ class Home extends StatelessWidget {
                       ),
 
                       Text(
-                        'El Robo\nde Molly',
+                        'title_home'.tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: screenWidth * 0.115,
@@ -126,7 +127,7 @@ class Home extends StatelessWidget {
                           end: Alignment.bottomCenter,
                         ).createShader(bounds),
                         child: Text(
-                          'El Robo\nde Molly',
+                          'title_home'.tr,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: screenWidth * 0.115,
@@ -215,7 +216,7 @@ class Home extends StatelessWidget {
                           ),
                           SizedBox(width: screenWidth * 0.03),
                           Text(
-                            'Iniciar',
+                            'start'.tr,
                             style: TextStyle(
                               fontSize: screenWidth * 0.075,
                               fontWeight: FontWeight.w900,

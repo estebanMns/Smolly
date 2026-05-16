@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:juego_movil/models/achievement_model.dart';
 import 'package:juego_movil/components/achievements/achievement_medal.dart';
+import 'package:get/get.dart';
 
 class AchievementsScreen extends StatelessWidget {
   const AchievementsScreen({super.key});
@@ -9,12 +10,12 @@ class AchievementsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Lista de datos (esto podría venir de un controlador después)
     final List<Achievement> achievementsList = [
-      Achievement(title: 'Primer Vuelo', icon: Icons.rocket_launch, color: const Color(0xFFFF6B6B), isUnlocked: true),
-      Achievement(title: 'Cazador de Estrellas', icon: Icons.star, color: const Color(0xFFFFD93D), isUnlocked: true),
-      Achievement(title: 'Viajero Temporal', icon: Icons.timer, color: const Color(0xFFFF8E53)),
-      Achievement(title: 'Maestro Molly', icon: Icons.pets, color: const Color(0xFF69F0AE)),
-      Achievement(title: 'Guerrero Galáctico', icon: Icons.shield, color: const Color(0xFF7C4DFF)),
-      Achievement(title: 'Leyenda Viviente', icon: Icons.emoji_events, color: const Color(0xFFFF4081)),
+      Achievement(title: 'first_flight'.tr, icon: Icons.rocket_launch, color: const Color(0xFFFF6B6B), isUnlocked: true),
+      Achievement(title: 'star_hunter'.tr, icon: Icons.star, color: const Color(0xFFFFD93D), isUnlocked: true),
+      Achievement(title: 'time_traveler'.tr, icon: Icons.timer, color: const Color(0xFFFF8E53)),
+      Achievement(title: 'molly_master'.tr, icon: Icons.pets, color: const Color(0xFF69F0AE)),
+      Achievement(title: 'galactic_warrior'.tr, icon: Icons.shield, color: const Color(0xFF7C4DFF)),
+      Achievement(title: 'living_legend'.tr, icon: Icons.emoji_events, color: const Color(0xFFFF4081)),
     ];
 
     return Scaffold(
@@ -84,11 +85,11 @@ class AchievementsScreen extends StatelessWidget {
       child: Row(
         children: [
           _buildCircularButton(Icons.arrow_back_ios_new, () => Navigator.pop(context)),
-          const Expanded(
+          Expanded(
             child: Text(
-              'LOGROS',
+              'achievements_caps'.tr,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 3.5),
+              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold, letterSpacing: 3.5),
             ),
           ),
           const SizedBox(width: 45),

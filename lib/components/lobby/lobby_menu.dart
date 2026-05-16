@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class MenuItemData {
   final String label;
@@ -22,12 +23,12 @@ class CenterMenuIcons extends StatelessWidget {
     final buttonWidth = (screenWidth - 48) / 3;
 
     final menuItems = [
-      MenuItemData(label: 'Story', icon: Icons.auto_stories_rounded, color: const Color(0xFF40C4FF), onTap: onStoryTap),
-      MenuItemData(label: 'Characters', icon: Icons.people_rounded, color: const Color(0xFFE040FB), onTap: onCharacterTap),
-      MenuItemData(label: 'Achievements', icon: Icons.emoji_events_rounded, color: const Color(0xFFFFD740), onTap: onAchievementsTap),
-      MenuItemData(label: 'Rewards', icon: Icons.card_giftcard_rounded, color: const Color(0xFF69F0AE), onTap: onRewardsTap),
-      MenuItemData(label: 'Shop', icon: Icons.storefront_rounded, color: const Color(0xFFFF6D00), onTap: onShopTap),
-      MenuItemData(label: 'Collection', icon: Icons.collections_bookmark_rounded, color: const Color(0xFFEA80FC), onTap: () {}),
+      MenuItemData(label: 'story'.tr, icon: Icons.auto_stories_rounded, color: const Color(0xFF40C4FF), onTap: onStoryTap),
+      MenuItemData(label: 'characters'.tr, icon: Icons.people_rounded, color: const Color(0xFFE040FB), onTap: onCharacterTap),
+      MenuItemData(label: 'achievements'.tr, icon: Icons.emoji_events_rounded, color: const Color(0xFFFFD740), onTap: onAchievementsTap),
+      MenuItemData(label: 'rewards'.tr, icon: Icons.card_giftcard_rounded, color: const Color(0xFF69F0AE), onTap: onRewardsTap),
+      MenuItemData(label: 'shop'.tr, icon: Icons.storefront_rounded, color: const Color(0xFFFF6D00), onTap: onShopTap),
+      MenuItemData(label: 'collection'.tr, icon: Icons.collections_bookmark_rounded, color: const Color(0xFFEA80FC), onTap: () {}),
     ];
 
     return Padding(

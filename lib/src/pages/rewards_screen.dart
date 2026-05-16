@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'achievements.dart';
+import 'package:get/get.dart';
 
 class RewardsScreen extends StatelessWidget {
   const RewardsScreen({super.key});
@@ -62,8 +63,8 @@ class RewardsScreen extends StatelessWidget {
                             Color(0xFF6B1B9A),
                           ],
                         ).createShader(bounds),
-                        child: const Text(
-                          'RECOMPENSAS',
+                        child: Text(
+                          'rewards'.tr.toUpperCase(),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 22,
@@ -142,8 +143,8 @@ class RewardsScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'monedas',
+                        Text(
+                          'coins'.tr,
                           style: TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
@@ -178,8 +179,8 @@ class RewardsScreen extends StatelessWidget {
                     children: [
                       const Icon(Icons.check_circle, color: Color(0xFF69F0AE), size: 16),
                       const SizedBox(width: 8),
-                      const Text(
-                        "MISIONES COMPLETADAS",
+                      Text(
+                        'completed_missions'.tr,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 13,
@@ -200,29 +201,29 @@ class RewardsScreen extends StatelessWidget {
                     physics: const BouncingScrollPhysics(),
                     children: [
                       _buildClaimableRewardTile(
-                        'RECOLECTOR NIVEL 5',
-                        '+500 Monedas',
+                        'collector_level_5'.tr,
+                        'plus_500_coins'.tr,
                         Icons.stars_rounded,
                         const Color(0xFF69F0AE),
                       ),
                       const SizedBox(height: 12),
                       _buildClaimableRewardTile(
-                        'SUPER ESTRELLA',
-                        '+1,000 EXP',
+                        'super_star'.tr,
+                        'plus_1000_exp'.tr,
                         Icons.workspace_premium_rounded,
                         const Color(0xFFFFD93D),
                       ),
                       const SizedBox(height: 12),
                       _buildClaimableRewardTile(
-                        'MAESTRO DEL TIEMPO',
-                        '+30 Segundos',
+                        'time_master'.tr,
+                        'plus_30_sec'.tr,
                         Icons.timer_rounded,
                         const Color(0xFFFF6B6B),
                       ),
                       const SizedBox(height: 12),
                       _buildClaimableRewardTile(
-                        'GUERRERO MÍSTICO',
-                        '+1 Poción de Poder',
+                        'mystic_warrior'.tr,
+                        'plus_1_power_potion'.tr,
                         Icons.auto_awesome,
                         const Color(0xFF9C27B0),
                       ),
@@ -410,11 +411,11 @@ class RewardsScreen extends StatelessWidget {
                       // Lógica para reclamar
                     },
                     borderRadius: BorderRadius.circular(12),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       child: Text(
-                        "RECLAMAR",
-                        style: TextStyle(
+                        'claim'.tr,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,
                           fontWeight: FontWeight.bold,

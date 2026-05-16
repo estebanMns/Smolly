@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class ResultScreen extends StatelessWidget {
   const ResultScreen({super.key});
@@ -41,7 +42,7 @@ class ResultScreen extends StatelessWidget {
 
                   // Texto de Estado
                   Text(
-                    isVictory ? 'MISSION COMPLETE' : 'MISSION FAILED',
+                    isVictory ? 'mission_complete'.tr : 'mission_failed'.tr,
                     style: TextStyle(
                       color: isVictory ? Colors.cyanAccent : Colors.redAccent,
                       fontSize: 32,
@@ -103,9 +104,9 @@ class ResultScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildStatRow('SCORE', score.toString(), Colors.white),
+          _buildStatRow('score'.tr, score.toString(), Colors.white),
           const Divider(color: Colors.white24, height: 30),
-          _buildStatRow('COINS', '+$coins', Colors.amberAccent),
+          _buildStatRow('coins_caps'.tr, '+$coins', Colors.amberAccent),
         ],
       ),
     );
@@ -140,7 +141,7 @@ class ResultScreen extends StatelessWidget {
           '/level-detail',
           arguments: {
             'levelId': levelId,
-            'levelName': 'LEVEL $levelId',
+            'levelName': '${'level'.tr.toUpperCase()} $levelId',
           },
         );
       },
@@ -151,14 +152,14 @@ class ResultScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
         elevation: 10,
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          SizedBox(width: 10),
+          const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+          const SizedBox(width: 10),
           Text(
-            'BACK TO DETAILS',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            'back_to_details'.tr,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ],
       ),
