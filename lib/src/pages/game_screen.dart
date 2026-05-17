@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:juego_movil/components/yolo/game_scan_controller.dart';
 import 'package:juego_movil/components/yolo/smart_yolo_camera.dart';
 import 'package:juego_movil/config/app_colors.dart';
@@ -71,23 +72,57 @@ LevelGameData getLevelConfig(int id) {
 // ============================================================
 // PANTALLA DE JUEGO PRINCIPAL CON YOLO INTELIGENTE
 // ============================================================
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  late final AudioPlayer _audioPlayer;
+  late final GameScanController _scanController;
+  late final LevelDetailInfo _detail;
+  late final LevelGameData _config;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer = AudioPlayer();
+    // El audio se inicia en didChangeDependencies (cuando ya tenemos contexto+args)
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     final int levelId = args['levelId'];
-    
-    final detail = levelDetailsList.firstWhere((l) => l.id == levelId);
-    final config = getLevelConfig(levelId);
 
-    // Inicializamos el controlador de escaneo para este nivel
-    final scanController = Get.put(
-      GameScanController(targetObject: config.targetObject),
+    _detail = levelDetailsList.firstWhere((l) => l.id == levelId);
+    _config = getLevelConfig(levelId);
+
+    _scanController = Get.put(
+      GameScanController(targetObject: _config.targetObject),
       tag: 'level_$levelId',
     );
 
+    _playLevelMusic();
+  }
+
+  Future<void> _playLevelMusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audio/Niveles.mp3'));
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -96,28 +131,28 @@ class GameScreen extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(config.backgroundImage),
+                image: AssetImage(_config.backgroundImage),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          
+
           Container(color: Colors.black.withValues(alpha: 0.3)),
 
           // 2. CONTENIDO DEL JUEGO
           SafeArea(
             child: Column(
               children: [
-                _buildTopBar(detail, config),
+                _buildTopBar(_detail, _config),
 
-                // ÁREA DE CÁMARA (SmartYoloCamera detecta soporte)
+                // ÁREA DE CÁMARA
                 Expanded(
                   flex: 7,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      _buildDetectionCamera(scanController),
-                      _buildStatusOverlay(scanController, config),
+                      _buildDetectionCamera(_scanController),
+                      _buildStatusOverlay(_scanController, _config),
                     ],
                   ),
                 ),
@@ -125,7 +160,7 @@ class GameScreen extends StatelessWidget {
                 // BOTONES INFERIORES
                 Expanded(
                   flex: 2,
-                  child: _buildBottomControls(scanController, context),
+                  child: _buildBottomControls(_scanController, context),
                 ),
               ],
             ),

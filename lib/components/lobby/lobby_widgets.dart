@@ -24,8 +24,7 @@ class TopHud extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 10),
-        const _PlayerInfoDisplay(),
-        const Spacer(),
+        const Expanded(child: _PlayerInfoDisplay()),
         const _HudBadge(icon: Icons.stars_rounded, value: '120', color: Color(0xFFFFD740)),
         const SizedBox(width: 10),
         const _HudBadge(icon: Icons.rocket_launch_rounded, value: 'Lv.3', color: Color(0xFF69F0AE)),
@@ -102,12 +101,16 @@ class _PlayerInfoDisplay extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(username.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 2)),
           Text(rank.toUpperCase(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   color: Color(0xFFCE93D8), fontSize: 10, letterSpacing: 1.5)),
         ],

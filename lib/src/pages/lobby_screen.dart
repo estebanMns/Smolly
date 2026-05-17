@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import '../../components/player_profile_controller.dart';
 import '../../utils/navigation_service.dart';
 import '../../components/lobby/lobby_menu.dart';
@@ -17,22 +18,44 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
   late final AnimationController _glowController;
   late final Animation<double> _glowAnimation;
   late final NavigationService _navigationService;
+  late final AudioPlayer _audioPlayer;
 
   @override
   void initState() {
     super.initState();
     _navigationService = NavigationService(context: context);
     Get.put(PlayerProfileController());
-    
+
     _floatController = AnimationController(vsync: this, duration: const Duration(seconds: 3))..repeat(reverse: true);
     _floatAnimation = Tween<double>(begin: -8, end: 8).animate(CurvedAnimation(parent: _floatController, curve: Curves.easeInOut));
 
     _glowController = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
     _glowAnimation = Tween<double>(begin: 6, end: 22).animate(CurvedAnimation(parent: _glowController, curve: Curves.easeInOut));
+
+    _audioPlayer = AudioPlayer();
+    _playLobbySong();
+  }
+
+  Future<void> _playLobbySong() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audio/LobbySong.mp3'));
+  }
+
+  Future<void> _navigateWithAudio(Future<void> Function() navigateAction) async {
+    await _audioPlayer.pause();
+    await navigateAction();
+    // Resume when coming back to lobby
+    await _audioPlayer.resume();
   }
 
   @override
-  void dispose() { _floatController.dispose(); _glowController.dispose(); super.dispose(); }
+  void dispose() {
+    _floatController.dispose();
+    _glowController.dispose();
+    _audioPlayer.stop();
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +72,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
           // HUD Superior
           Positioned(top: MediaQuery.of(context).padding.top + 12, left: 16, right: 16, 
-            child: TopHud(floatAnimation: _floatAnimation, onAvatarTap: _navigationService.navigateToPlayerProfile)),
+            child: TopHud(floatAnimation: _floatAnimation, onAvatarTap: () => _navigateWithAudio(_navigationService.navigateToPlayerProfile))),
 
           // Hero Section
           _buildHero(screenSize),
@@ -57,21 +80,21 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           // Menu Central
           Positioned(top: screenSize.height * 0.45, left: 0, right: 0,
             child: CenterMenuIcons(
-              onCharacterTap: _navigationService.navigateToCharacters,
-              onShopTap: _navigationService.navigateToShop,
-              onRewardsTap: _navigationService.navigateToRewards,
-              onAchievementsTap: _navigationService.navigateToAchievements,
-              onStoryTap: _navigationService.navigateToStory,
+              onCharacterTap: () => _navigateWithAudio(_navigationService.navigateToCharacters),
+              onShopTap: () => _navigateWithAudio(_navigationService.navigateToShop),
+              onRewardsTap: () => _navigateWithAudio(_navigationService.navigateToRewards),
+              onAchievementsTap: () => _navigateWithAudio(_navigationService.navigateToAchievements),
+              onStoryTap: () => _navigateWithAudio(_navigationService.navigateToStory),
             )),
 
           // Botón Play
           Positioned(bottom: screenSize.height * 0.18, left: 0, right: 0,
             child: Center(child: AnimatedBuilder(animation: _glowAnimation, 
-              builder: (_, _) => PlayButton(glowRadius: _glowAnimation.value, onTap: _navigationService.navigateToLevelMap)))),
+              builder: (_, _) => PlayButton(glowRadius: _glowAnimation.value, onTap: () => _navigateWithAudio(_navigationService.navigateToLevelMap))))),
 
           // Bottom Nav
           Positioned(bottom: 0, left: 0, right: 0, 
-            child: BottomNavigationCustom(onSettingsTap: _navigationService.navigateToSettings)),
+            child: BottomNavigationCustom(onSettingsTap: () => _navigateWithAudio(_navigationService.navigateToSettings))),
         ],
       ),
     );

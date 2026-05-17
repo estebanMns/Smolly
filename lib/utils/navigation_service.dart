@@ -12,16 +12,16 @@ class NavigationService {
   final BuildContext context;
   NavigationService({required this.context});
 
-  void navigateToPlayerProfile() => _push(const PlayerProfileScreen());
-  void navigateToLevelMap() => _push(const Levelmap());
-  void navigateToCharacters() => _push(const CharactersScreen());
-  void navigateToSettings() => _push(const SettingsScreen());
-  void navigateToShop() => _push(const ShopScreen());
-  void navigateToRewards() => _push(const RewardsScreen());
-  void navigateToAchievements() => _push(const AchievementsScreen());
-  void navigateToStory() => _push(const StoryScreen());
+  Future<void> navigateToPlayerProfile() => _push(const PlayerProfileScreen());
+  Future<void> navigateToLevelMap() => _push(const Levelmap());
+  Future<void> navigateToCharacters() => _push(const CharactersScreen());
+  Future<void> navigateToSettings() => _push(const SettingsScreen());
+  Future<void> navigateToShop() => _push(const ShopScreen());
+  Future<void> navigateToRewards() => _push(const RewardsScreen());
+  Future<void> navigateToAchievements() => _push(const AchievementsScreen());
+  Future<void> navigateToStory() => _push(const StoryScreen());
 
-  void _push(Widget page) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  Future<void> _push(Widget page) {
+    return Navigator.push(context, MaterialPageRoute(builder: (_) => page));
   }
 }

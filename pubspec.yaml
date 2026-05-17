@@ -47,6 +47,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   ultralytics_yolo: ^0.3.0
   image_picker: ^1.2.1
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -77,8 +78,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/audio/
+    - assets/models/
     - .env
-    - assets/yolov8n_float16.tflite
     - assets/labels.txt
 
   # To add assets to your application, add an assets section, like this:
