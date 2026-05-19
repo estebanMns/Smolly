@@ -151,7 +151,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondolevels.png'),
+                image: AssetImage('assets/images/fondolevels.jpg'),
                 fit: BoxFit.cover,
               ),
             ),

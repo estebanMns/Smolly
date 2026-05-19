@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -9,63 +10,81 @@ import 'level_detail.dart';
 // ============================================================
 // LÓGICA DE NIVELES (DIFERENCIACIÓN Y FONDO)
 // ============================================================
+class TargetItem {
+  final String targetObject;
+  final String displayName;
+
+  TargetItem({required this.targetObject, required this.displayName});
+}
+
 class LevelGameData {
-  final String targetObject; // Debe coincidir con labels.txt (COCO)
-  final String displayName;  // Nombre amigable para el usuario
+  final String levelName;
+  final List<TargetItem> targets;
   final double timeLimit;
   final bool isHard;
-  final String backgroundImage;
 
   LevelGameData({
-    required this.targetObject,
-    required this.displayName,
+    required this.levelName,
+    required this.targets,
     required this.timeLimit,
     this.isHard = false,
-    required this.backgroundImage,
   });
 }
 
-// Mapa de configuración para los niveles (Mapeado a etiquetas COCO reales)
 final Map<int, LevelGameData> gameLevelConfigs = {
   0: LevelGameData(
-    targetObject: "dog", 
-    displayName: 'molly_tutorial'.tr,
+    levelName: 'molly_tutorial'.tr,
+    targets: [TargetItem(targetObject: "dog", displayName: 'molly_tutorial'.tr)],
     timeLimit: 120, 
-    backgroundImage: 'assets/images/fondomolly.png',
   ),
   1: LevelGameData(
-    targetObject: "sports ball", 
-    displayName: 'game_ball'.tr,
+    levelName: 'game_ball'.tr,
+    targets: [
+      TargetItem(targetObject: "sports ball", displayName: 'game_ball'.tr),
+      TargetItem(targetObject: "bottle", displayName: 'water_bottle'.tr),
+      TargetItem(targetObject: "cup", displayName: 'coffee_cup'.tr),
+    ],
     timeLimit: 60, 
-    backgroundImage: 'assets/images/fondogame_level1.png',
   ),
   2: LevelGameData(
-    targetObject: "bowl", 
-    displayName: 'food_bowl'.tr,
+    levelName: 'food_bowl'.tr,
+    targets: [
+      TargetItem(targetObject: "bowl", displayName: 'food_bowl'.tr),
+      TargetItem(targetObject: "book", displayName: 'book'.tr),
+      TargetItem(targetObject: "keyboard", displayName: 'keyboard'.tr),
+    ],
     timeLimit: 55, 
-    backgroundImage: 'assets/images/fondogame_level2.png',
   ),
   3: LevelGameData(
-    targetObject: "bottle", 
-    displayName: 'water_bottle'.tr,
-    timeLimit: 50, 
-    backgroundImage: 'assets/images/fondogame_story.png',
+    levelName: 'water_bottle'.tr,
+    targets: [
+      TargetItem(targetObject: "bottle", displayName: 'water_bottle'.tr),
+      TargetItem(targetObject: "cell phone", displayName: 'cell_phone'.tr),
+      TargetItem(targetObject: "mouse", displayName: 'mouse'.tr),
+    ],
+    timeLimit: 50,
   ), 
   4: LevelGameData(
-    targetObject: "cup", 
-    displayName: 'coffee_cup'.tr,
+    levelName: 'coffee_cup'.tr,
+    targets: [
+      TargetItem(targetObject: "cup", displayName: 'coffee_cup'.tr),
+      TargetItem(targetObject: "laptop", displayName: 'laptop'.tr),
+      TargetItem(targetObject: "chair", displayName: 'chair'.tr),
+    ],
     timeLimit: 45, 
-    backgroundImage: 'assets/images/fondogame_level1.png',
   ),
 };
 
 LevelGameData getLevelConfig(int id) {
   return gameLevelConfigs[id] ?? LevelGameData(
-    targetObject: "person", 
-    displayName: 'human'.tr,
+    levelName: 'human'.tr,
+    targets: [
+      TargetItem(targetObject: "person", displayName: 'human'.tr),
+      TargetItem(targetObject: "tv", displayName: 'tv'.tr),
+      TargetItem(targetObject: "backpack", displayName: 'backpack'.tr),
+    ],
     timeLimit: (60 - id).clamp(20, 60).toDouble(),
     isHard: id % 5 == 0,
-    backgroundImage: 'assets/images/fondogame_generic.png', 
   );
 }
 
@@ -79,34 +98,177 @@ class GameScreen extends StatefulWidget {
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
+class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   late final AudioPlayer _audioPlayer;
   late final GameScanController _scanController;
   late final LevelDetailInfo _detail;
   late final LevelGameData _config;
+  late final int _currentLevelId;
+
+  // Variables para el temporizador dinámico
+  Timer? _timer;
+  late double _timeLeft;
+  late double _maxTime;
+  int _objectsScanned = 0;
+  int _score = 0;
+  int _currentTargetIndex = 0;
+  bool _isPaused = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _audioPlayer = AudioPlayer();
-    // El audio se inicia en didChangeDependencies (cuando ya tenemos contexto+args)
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached || state == AppLifecycleState.inactive) {
+      _audioPlayer.pause();
+    } else if (state == AppLifecycleState.resumed) {
+      if (!_isPaused) {
+        _audioPlayer.resume();
+      }
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final int levelId = args['levelId'];
+    _currentLevelId = args['levelId'];
 
-    _detail = levelDetailsList.firstWhere((l) => l.id == levelId);
-    _config = getLevelConfig(levelId);
+    _detail = levelDetailsList.firstWhere((l) => l.id == _currentLevelId);
+    _config = getLevelConfig(_currentLevelId);
 
     _scanController = Get.put(
-      GameScanController(targetObject: _config.targetObject),
-      tag: 'level_$levelId',
+      GameScanController(targetObject: _config.targets.first.targetObject),
+      tag: 'level_$_currentLevelId',
     );
+    _scanController.updateTargetObject(_config.targets.first.targetObject);
+
+    // Inicialización del tiempo según el nivel actual
+    _maxTime = _config.timeLimit;
+    _timeLeft = _maxTime;
+    _startTimer();
 
     _playLevelMusic();
+    
+    // Verificación inicial por si los objetos ya están en 0
+    _checkWinCondition();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (!mounted || _isPaused) return;
+      setState(() {
+        if (_timeLeft > 0) {
+          _timeLeft -= 0.1;
+        } else {
+          _timer?.cancel();
+          _handleTimeOut();
+        }
+      });
+    });
+  }
+
+  void _togglePause() {
+    setState(() {
+      _isPaused = !_isPaused;
+      if (_isPaused) {
+        _audioPlayer.pause();
+      } else {
+        _audioPlayer.resume();
+      }
+    });
+  }
+
+  void _checkWinCondition() {
+    // Si alcanza la cantidad máxima de objetos del nivel, puede ganar de una vez.
+    if (_objectsScanned >= _detail.itemsToCollect) {
+      _timer?.cancel();
+      Get.offNamed('/result_screen');
+    }
+  }
+
+  void _handleTimeOut() {
+    // Cuando el tiempo llega a 00:00 verificamos si alcanzó el mínimo de 3 objetos
+    if (_objectsScanned >= 3) {
+      Get.offNamed('/result_screen');
+    } else {
+      _showGameOverDialog();
+    }
+  }
+
+  void _showGameOverDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xff1f4475),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: const Text(
+            '¡Tiempo Agotado!', 
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          content: const Text(
+            'Perdiste. Necesitas haber escaneado al menos 3 objetos para pasar este nivel.',
+            style: TextStyle(color: Colors.white70),
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xffFBC741),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el modal
+                setState(() {
+                  _objectsScanned = 0;
+                  _score = 0;
+                  _timeLeft = _maxTime;
+                  _isPaused = false;
+                  _currentTargetIndex = 0;
+                  _startTimer();
+                });
+                _scanController.updateTargetObject(_config.targets[0].targetObject);
+              },
+              child: const Text(
+                'Volver a intentar',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Regresa de forma segura a LevelDetailScreen
+              },
+              child: const Text(
+                'Salir',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Formateador para mostrar el tiempo tipo MM:SS
+  String _formatTime(double timeInSeconds) {
+    if (timeInSeconds < 0) timeInSeconds = 0;
+    int minutes = timeInSeconds ~/ 60;
+    int seconds = (timeInSeconds % 60).toInt();
+    return '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
   Future<void> _playLevelMusic() async {
@@ -116,6 +278,8 @@ class _GameScreenState extends State<GameScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _timer?.cancel();
     _audioPlayer.stop();
     _audioPlayer.dispose();
     super.dispose();
@@ -127,17 +291,15 @@ class _GameScreenState extends State<GameScreen> {
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // 1. FONDO ASSET
+          // 1. FONDO ASSET DE LOS NIVELES FIJO (DISEÑO FIGMA)
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(_config.backgroundImage),
+                image: AssetImage('assets/images/fondoniveles.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-
-          Container(color: Colors.black.withValues(alpha: 0.3)),
 
           // 2. CONTENIDO DEL JUEGO
           SafeArea(
@@ -145,19 +307,35 @@ class _GameScreenState extends State<GameScreen> {
               children: [
                 _buildTopBar(_detail, _config),
 
-                // ÁREA DE CÁMARA
+                // ÁREA DE CÁMARA (CUADRO GRIS CON BORDES REDONDEADOS DE 20)
                 Expanded(
                   flex: 7,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      _buildDetectionCamera(_scanController),
-                      _buildStatusOverlay(_scanController, _config),
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          _buildDetectionCamera(_scanController),
+                          _buildStatusOverlay(_scanController, _config),
+                          if (_isPaused)
+                            Container(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              child: const Center(
+                                child: Text(
+                                  "JUEGO PAUSADO",
+                                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
 
-                // BOTONES INFERIORES
+                // BOTONES INFERIORES ESTILO FIGMA
                 Expanded(
                   flex: 2,
                   child: _buildBottomControls(_scanController, context),
@@ -171,54 +349,38 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildDetectionCamera(GameScanController controller) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.5),
-            blurRadius: 15,
-            spreadRadius: -5,
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      // USAMOS SmartYoloCamera en lugar de YOLOView directamente
-      child: SmartYoloCamera(
-        onResult: (results) {
+    if (_isPaused) return Container(color: Colors.black);
+    return SmartYoloCamera(
+      onResult: (results) {
+        if (!_isPaused) {
           controller.onDetectionResults(results);
-        },
-      ),
+        }
+      },
     );
   }
 
   Widget _buildStatusOverlay(GameScanController controller, LevelGameData config) {
     return Obx(() {
       final isFound = controller.isTargetFound.value;
-      final color = isFound ? Colors.greenAccent : (config.isHard ? Colors.redAccent : Colors.cyanAccent);
+      final currentTarget = config.targets[_currentTargetIndex % config.targets.length];
       
       return Positioned(
-        top: 30,
+        top: 20,
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
+                color: const Color(0xff1f4475), // Color azul oscuro del contenedor de Figma
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withValues(alpha: 0.8), width: 2),
-                boxShadow: [
-                  if (isFound) BoxShadow(color: Colors.greenAccent.withValues(alpha: 0.4), blurRadius: 20)
-                ],
               ),
               child: Text(
-                isFound ? 'correct_object'.tr : config.displayName.toUpperCase(),
-                style: TextStyle(
-                  color: isFound ? Colors.greenAccent : Colors.white,
+                isFound ? 'correct_object'.tr : currentTarget.displayName.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 2,
+                  fontSize: 18,
+                  letterSpacing: 1.5,
                 ),
               ),
             ),
@@ -237,81 +399,129 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTopBar(LevelDetailInfo detail, LevelGameData config) {
+    double progressFactor = (_timeLeft / _maxTime).clamp(0.0, 1.0);
+    // Cambiar a color rojo si el tiempo es menor o igual a 10 segundos
+    Color timerColor = (_timeLeft <= 10.0) ? Colors.redAccent : const Color(0xffFBC741);
+
     return Container(
-      margin: const EdgeInsets.all(16.0),
-      padding: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: Colors.black.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
+          // Icono de Pausa Integrado al inicio
+          GestureDetector(
+            onTap: _togglePause,
+            child: Icon(
+              _isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+              color: const Color(0xffF8F9B0),
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          // Icono del Reloj (Contenedor de 30x30 con tamaño corregido de 24 para evitar desbordes)
+          SizedBox(
+            width: 30,
+            height: 30,
+            child: Icon(
+              Icons.access_time_filled_rounded, 
+              color: const Color(0xffF8F9B0), 
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 6),
+          
+          // Texto del temporizador (Cambia a rojo en los últimos 10 segundos)
+          Text(
+            _formatTime(_timeLeft),
+            style: TextStyle(
+              color: (_timeLeft <= 10.0) ? Colors.redAccent : Colors.white, 
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Línea del temporizador que va disminuyendo
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 8,
+            child: Container(
+              height: 8,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progressFactor,
+                child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white10,
+                    color: timerColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: 0.8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: config.isHard ? Colors.redAccent : Colors.cyanAccent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
                 ),
-              ],
+              ),
             ),
           ),
           const SizedBox(width: 15),
-          _buildTopIcon(Icons.category_rounded, "${detail.itemsToCollect}", Colors.amber),
-          const SizedBox(width: 10),
-          _buildTopIcon(Icons.monetization_on_rounded, "${detail.coinsReward}", AppColors.gold),
+          
+          // Iconos informativos superiores (Color F8F9B0)
+          _buildTopIcon(Icons.sports_basketball_rounded, "$_objectsScanned"),
+          const SizedBox(width: 12),
+          _buildTopIcon(Icons.pets_rounded, "$_score"),
         ],
       ),
     );
   }
 
-  Widget _buildTopIcon(IconData icon, String label, Color color) {
+  Widget _buildTopIcon(IconData icon, String label) {
     return Row(
       children: [
-        Icon(icon, color: color, size: 20),
+        Icon(icon, color: const Color(0xffF8F9B0), size: 22),
         const SizedBox(width: 4),
-        Text(label, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(
+          label, 
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+        ),
       ],
     );
   }
 
   Widget _buildBottomControls(GameScanController controller, BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildCircleButton(Icons.help_outline_rounded, () {}),
+          // Configuración -> Redirige correctamente a settings_screen.dart sin colgar el árbol de estados
+          IconButton(
+            onPressed: () {
+              if (!_isPaused) _togglePause(); // Pausa automáticamente al entrar a ajustes
+              Get.toNamed('/settings_screen');
+            },
+            icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 44),
+          ),
           
+          // Botón central de Captura (Amarillo según Figma)
           Obx(() {
             final isFound = controller.isTargetFound.value;
             return GestureDetector(
               onTap: () {
+                if (_isPaused) return; // Desactiva captura en pausa
                 if (isFound) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('capture_success'.tr)),
                   );
-                  Navigator.pop(context);
+                  setState(() {
+                    _objectsScanned++;
+                    _score += 10;
+                    _currentTargetIndex++;
+                  });
+                  _scanController.updateTargetObject(_config.targets[_currentTargetIndex % _config.targets.length].targetObject);
+                  _checkWinCondition();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('not_detected_yet'.tr)),
@@ -319,23 +529,14 @@ class _GameScreenState extends State<GameScreen> {
                 }
               },
               child: Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
+                width: 75,
+                height: 75,
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isFound ? Colors.greenAccent.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.1),
-                  border: Border.all(
-                    color: isFound ? Colors.greenAccent : Colors.cyanAccent, 
-                    width: 3
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isFound ? Colors.greenAccent : Colors.cyanAccent).withValues(alpha: 0.3), 
-                      blurRadius: 15
-                    ),
-                  ],
+                  color: Color(0xffFBC741),
                 ),
-                child: Icon(
-                  isFound ? Icons.check_circle_outline : Icons.camera_alt_rounded, 
+                child: const Icon(
+                  Icons.camera_alt_outlined, 
                   color: Colors.white, 
                   size: 38
                 ),
@@ -343,16 +544,16 @@ class _GameScreenState extends State<GameScreen> {
             );
           }),
 
-          _buildCircleButton(Icons.location_on_rounded, () {}),
+          // Salida -> Redirige de vuelta de forma segura a la pantalla level_detail.dart
+          IconButton(
+            onPressed: () {
+              _timer?.cancel();
+              Navigator.of(context).pop(); // Regresa de forma segura a LevelDetailScreen
+            },
+            icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 44),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCircleButton(IconData icon, VoidCallback onTap) {
-    return IconButton(
-      onPressed: onTap,
-      icon: Icon(icon, color: Colors.white70, size: 32),
     );
   }
 }

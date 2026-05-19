@@ -8,7 +8,7 @@ import 'package:ultralytics_yolo/ultralytics_yolo.dart';
 import 'detection_validator.dart';
 
 class GameScanController extends GetxController {
-  final String targetObject;
+  String targetObject;
   final DetectionValidator _validator = DetectionValidator();
 
   // Estados observables
@@ -19,6 +19,11 @@ class GameScanController extends GetxController {
   final isScanningLocked = false.obs;
 
   GameScanController({required this.targetObject});
+
+  void updateTargetObject(String newTarget) {
+    targetObject = newTarget;
+    resetScan();
+  }
 
   /// Procesa los resultados obtenidos de YOLOView.
   void onDetectionResults(List<YOLOResult> detections) {

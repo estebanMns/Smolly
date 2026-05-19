@@ -10,7 +10,7 @@ class YoloService {
   final YOLOTask task = YOLOTask.detect;
 
   // Umbral de confianza por defecto
-  final double defaultConfidence = 0.45;
+  final double defaultConfidence = 0.25;
 
   Future<void> logConfiguration() async {
     print("YoloService: Modelo configurado en $modelPath");

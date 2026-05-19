@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'login_screen.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
+   // Cambiamos a Future<void> para poder esperar a que el audio inicie
+  Future<void> _playHomeSound() async {
+    final player = AudioPlayer();
+    // Usamos await para asegurar que el comando de play se envíe correctamente
+    await player.play(AssetSource('audio/Home.mp3'));
+  }
 
   @override
   Widget build(BuildContext context) {

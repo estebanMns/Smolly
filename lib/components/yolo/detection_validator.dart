@@ -8,16 +8,21 @@ class DetectionValidator {
   /// Umbral mínimo de confianza para aceptar una detección (0.0 a 1.0)
   final double confidenceThreshold;
 
-  DetectionValidator({this.confidenceThreshold = 0.45});
+  DetectionValidator({this.confidenceThreshold = 0.25});
+
+  /// Normaliza los nombres para evitar problemas con espacios o guiones bajos
+  String _normalize(String name) {
+    return name.toLowerCase().replaceAll(' ', '').replaceAll('_', '').replaceAll('-', '');
+  }
 
   /// Comprueba si el [target] está presente en la lista de [detecciones].
   /// [target] debe coincidir con el 'className' devuelto por el modelo.
   bool isTargetDetected(List<YOLOResult> detections, String target) {
     if (detections.isEmpty) return false;
 
-    // Buscamos si alguna detección coincide con el nombre y supera el umbral
+    // Buscamos si alguna detección coincide con el nombre (normalizado) y supera el umbral
     return detections.any((d) =>
-        d.className.toLowerCase() == target.toLowerCase() &&
+        _normalize(d.className) == _normalize(target) &&
         d.confidence >= confidenceThreshold);
   }
 
@@ -28,9 +33,9 @@ class DetectionValidator {
 
     for (final d in detections) {
       final conf = d.confidence;
-      final name = d.className.toLowerCase();
+      final name = _normalize(d.className);
       
-      if (name == target.toLowerCase() &&
+      if (name == _normalize(target) &&
           conf >= confidenceThreshold &&
           conf > maxConf) {
         maxConf = conf;
