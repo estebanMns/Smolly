@@ -7,6 +7,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:juego_movil/components/yolo/game_scan_controller.dart';
 import 'package:juego_movil/components/yolo/smart_yolo_camera.dart';
 import 'package:juego_movil/config/app_colors.dart';
+import 'package:juego_movil/utils/item_translations.dart';
 import 'level_detail.dart';
 
 // ============================================================
@@ -182,10 +183,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       final List<String> shuffled = List.from(_allLabels)..shuffle(random);
       
       final int count = _detail.itemsToCollect > 0 ? _detail.itemsToCollect : 3;
-      _randomTargets = shuffled.take(count).map((label) => TargetItem(
-        targetObject: label,
-        displayName: label.toUpperCase(),
-      )).toList();
+      _randomTargets = shuffled.take(count).map((label) {
+        // Obtenemos la traducción del mapa o usamos el label original si no se encuentra
+        final String displayName = itemTranslations[label] ?? label;
+        return TargetItem(
+          targetObject: label,
+          displayName: displayName.toUpperCase(),
+        );
+      }).toList();
     } else {
       _randomTargets = _config.targets;
     }

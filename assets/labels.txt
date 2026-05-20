@@ -1,80 +1,80 @@
-B.F. Sword
-Recurve Bow
-Needlessly Large Rod
-Tear of the Goddess
-Chain Vest
-Negatron Cloak
-Giant's Belt
-Sparring Gloves
-Spatula
-Deathblade
-Giant Slayer
-Hextech Gunblade
-Spear of Shojin
-Edge of Night
-Bloodthirster
-Zeke's Herald
-Infinity Edge
-Rapid Firecannon
-Guinsoo's Rageblade
-Statikk Shiv
-Titan's Resolve
-Runaan's Hurricane
-Zz'Rot Portal
-Last Whisper
-Rabadon's Deathcap
-Archangel's Staff
-Morellonomicon
-Ionic Spark
-Sunfire Cape
-Jeweled Gauntlet
-Blue Buff
-Protector's Vow
-Chalice of Power
-Redemption
-Hand of Justice
-Bramble Vest
-Gargoyle Stoneplate
-Shroud of Stillness
-Dragon's Claw
-Zephyr
-Quicksilver
-Warmog's Armor
-Guardbreaker
-Thief's Gloves
-Tactician's Crown
-Anima Visage
-The Collector
-Death's Dance
-Eternal Winter
-Infinity Force
-Manazane
-Obsidian Cleaver
-Randuin's Sanctum
-Zhask's Rocketbelt
-Zhonya's Paradox
-Diamond Hands
-Mogul's Mail
-Gambler's Blade
-Gold Collector
-Unnecessary Big Gem
-Determined Investor
-Hullbreaker
-Silvermere Dawn
-Horizon Focus
-Blighted Jewel
-Wit's End (Artifact)
-Vampiric Scepter
-Fishbones
-Cursed Blade
-Luden's Tempest
-Prowler's Claw
-Rapid Firecannon (Artifact)
-Seeker's Armguard
-Statikk Stinger
-Unstable Treasure Chest
-Spectral Gauntlet
-Forbidden Idol
-Licence to Kill
-Innervating Locket
-Corrupted Vampiric Scepter
+person
+bicycle
+car
+motorcycle
+airplane
+bus
+train
+truck
+boat
+traffic light
+fire hydrant
+stop sign
+parking meter
+bench
+bird
+cat
+dog
+horse
+sheep
+cow
+elephant
+bear
+zebra
+giraffe
+backpack
+umbrella
+handbag
+tie
+suitcase
+frisbee
+skis
+snowboard
+sports ball
+kite
+baseball bat
+baseball glove
+skateboard
+surfboard
+tennis racket
+bottle
+wine glass
+cup
+fork
+knife
+spoon
+bowl
+banana
+apple
+sandwich
+orange
+broccoli
+carrot
+hot dog
+pizza
+donut
+cake
+chair
+couch
+potted plant
+bed
+dining table
+toilet
+tv
+laptop
+mouse
+remote
+keyboard
+cell phone
+microwave
+oven
+toaster
+sink
+refrigerator
+book
+clock
+vase
+scissors
+teddy bear
+hair drier
+toothbrush
