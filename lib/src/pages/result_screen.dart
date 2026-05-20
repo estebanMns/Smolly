@@ -1,13 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:juego_movil/components/player_profile_controller.dart';
 
-class ResultScreen extends StatelessWidget {
+class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key});
 
   @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  bool _hasUpdated = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    if (!_hasUpdated) {
+      _hasUpdated = true;
+      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
+      final int score = args['score'] ?? 1000;
+      final int coins = args['coins'] ?? 50;
+      final int objectsScanned = args['objectsScanned'] ?? 3;
+      final bool isVictory = args['isVictory'] ?? true;
+
+      // Actualizar el perfil del jugador
+      final controller = Get.put(PlayerProfileController());
+      controller.processGameResult(
+        score: score,
+        coinsEarned: coins,
+        objectsScanned: objectsScanned,
+        isVictory: isVictory,
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Recibimos los argumentos (puedes pasar score, monedas, etc., desde game_screen)
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? {};
     final int levelId = args['levelId'] ?? 0;
     final int score = args['score'] ?? 1000;
     final int coins = args['coins'] ?? 50;

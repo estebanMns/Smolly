@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:juego_movil/models/player_model.dart';
 
 class SupabaseService {
   final _supabase = Supabase.instance.client;
@@ -104,6 +105,27 @@ class SupabaseService {
       await _supabase.from('perfiles').update({
         'username': newName,
       }).eq('id', user.id);
+    }
+  }
+
+  // Método para actualizar estadísticas de juego (Progreso)
+  Future<void> updateGameStats(PlayerModel player) async {
+    final user = _supabase.auth.currentUser;
+    if (user != null) {
+      try {
+        await _supabase.from('perfiles').update({
+          'coins': player.coins,
+          'level': player.level,
+          'xp': player.xp,
+          'xp_to_next_level': player.xpToNextLevel,
+          'rank': player.rank,
+          'scan_accuracy': player.scanAccuracy,
+          'total_scans': player.totalScans,
+          'dogs_collected': player.dogsCollected,
+        }).eq('id', user.id);
+      } catch (e) {
+        print('Error updating game stats: $e');
+      }
     }
   }
 }

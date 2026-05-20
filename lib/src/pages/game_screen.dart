@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:math';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -113,6 +115,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   int _score = 0;
   int _currentTargetIndex = 0;
   bool _isPaused = false;
+  
+  List<String> _allLabels = [];
+  bool _isLoadingLabels = true;
+  List<TargetItem> _randomTargets = [];
 
   @override
   void initState() {
@@ -132,30 +138,72 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     }
   }
 
+  bool _isInit = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    _currentLevelId = args['levelId'];
+    if (!_isInit) {
+      _isInit = true;
+      final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      _currentLevelId = args['levelId'];
 
-    _detail = levelDetailsList.firstWhere((l) => l.id == _currentLevelId);
-    _config = getLevelConfig(_currentLevelId);
+      _detail = levelDetailsList.firstWhere((l) => l.id == _currentLevelId);
+      _config = getLevelConfig(_currentLevelId);
 
-    _scanController = Get.put(
-      GameScanController(targetObject: _config.targets.first.targetObject),
-      tag: 'level_$_currentLevelId',
-    );
-    _scanController.updateTargetObject(_config.targets.first.targetObject);
+      _maxTime = _config.timeLimit;
+      _timeLeft = _maxTime;
+      
+      _scanController = Get.put(
+        GameScanController(targetObject: "item"),
+        tag: 'level_$_currentLevelId',
+      );
 
-    // Inicialización del tiempo según el nivel actual
-    _maxTime = _config.timeLimit;
-    _timeLeft = _maxTime;
-    _startTimer();
+      _playLevelMusic();
+      _loadLabels();
+    }
+  }
 
-    _playLevelMusic();
+  Future<void> _loadLabels() async {
+    try {
+      final String fileContent = await rootBundle.loadString('assets/labels.txt');
+      _allLabels = fileContent.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+    } catch (e) {
+      print("Error loading labels: $e");
+      // Fallback a los quemados
+      _allLabels = _config.targets.map((t) => t.targetObject).toList();
+    }
+    _generateRandomTargets();
+  }
+
+  void _generateRandomTargets() {
+    if (_allLabels.isNotEmpty) {
+      final random = Random();
+      final List<String> shuffled = List.from(_allLabels)..shuffle(random);
+      
+      final int count = _detail.itemsToCollect > 0 ? _detail.itemsToCollect : 3;
+      _randomTargets = shuffled.take(count).map((label) => TargetItem(
+        targetObject: label,
+        displayName: label.toUpperCase(),
+      )).toList();
+    } else {
+      _randomTargets = _config.targets;
+    }
     
-    // Verificación inicial por si los objetos ya están en 0
-    _checkWinCondition();
+    _scanController.updateTargetObject(_randomTargets.first.targetObject);
+
+    if (mounted) {
+      setState(() {
+        _isLoadingLabels = false;
+        _objectsScanned = 0;
+        _score = 0;
+        _currentTargetIndex = 0;
+        _timeLeft = _maxTime;
+        _isPaused = false;
+      });
+      _startTimer();
+      _checkWinCondition();
+    }
   }
 
   void _startTimer() {
@@ -188,14 +236,26 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     // Si alcanza la cantidad máxima de objetos del nivel, puede ganar de una vez.
     if (_objectsScanned >= _detail.itemsToCollect) {
       _timer?.cancel();
-      Get.offNamed('/result_screen');
+      Get.offNamed('/result_screen', arguments: {
+        'levelId': _currentLevelId,
+        'score': _score,
+        'coins': _score ~/ 2, // 1 moneda por cada 2 puntos
+        'objectsScanned': _objectsScanned,
+        'isVictory': true,
+      });
     }
   }
 
   void _handleTimeOut() {
     // Cuando el tiempo llega a 00:00 verificamos si alcanzó el mínimo de 3 objetos
     if (_objectsScanned >= 3) {
-      Get.offNamed('/result_screen');
+      Get.offNamed('/result_screen', arguments: {
+        'levelId': _currentLevelId,
+        'score': _score,
+        'coins': _score ~/ 2,
+        'objectsScanned': _objectsScanned,
+        'isVictory': true,
+      });
     } else {
       _showGameOverDialog();
     }
@@ -228,15 +288,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el modal
-                setState(() {
-                  _objectsScanned = 0;
-                  _score = 0;
-                  _timeLeft = _maxTime;
-                  _isPaused = false;
-                  _currentTargetIndex = 0;
-                  _startTimer();
-                });
-                _scanController.updateTargetObject(_config.targets[0].targetObject);
+                _timer?.cancel(); // Cancelar timer anterior explícitamente
+                _generateRandomTargets(); // Regenerar objetivos aleatorios e iniciar timer desde cero
               },
               child: const Text(
                 'Volver a intentar',
@@ -303,7 +356,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
           // 2. CONTENIDO DEL JUEGO
           SafeArea(
-            child: Column(
+            child: _isLoadingLabels 
+                ? const Center(child: CircularProgressIndicator(color: Colors.cyanAccent))
+                : Column(
               children: [
                 _buildTopBar(_detail, _config),
 
@@ -362,7 +417,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Widget _buildStatusOverlay(GameScanController controller, LevelGameData config) {
     return Obx(() {
       final isFound = controller.isTargetFound.value;
-      final currentTarget = config.targets[_currentTargetIndex % config.targets.length];
+      
+      // Seguridad si _randomTargets no se ha cargado (no debería pasar por _isLoadingLabels)
+      if (_randomTargets.isEmpty) return const SizedBox.shrink();
+      
+      final currentTarget = _randomTargets[_currentTargetIndex % _randomTargets.length];
       
       return Positioned(
         top: 20,
@@ -520,7 +579,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                     _score += 10;
                     _currentTargetIndex++;
                   });
-                  _scanController.updateTargetObject(_config.targets[_currentTargetIndex % _config.targets.length].targetObject);
+                  _scanController.updateTargetObject(_randomTargets[_currentTargetIndex % _randomTargets.length].targetObject);
                   _checkWinCondition();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

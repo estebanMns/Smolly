@@ -47,11 +47,13 @@ class _SmartYoloCameraState extends State<SmartYoloCamera> {
   }
 
   void _checkPlatformAndInit() {
-    // Si estamos en un entorno que no es móvil real (web, desktop), usamos fallback
-    if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+    // En iOS la vista nativa de YOLOView a veces presenta problemas o requiere configuración extra en XCode.
+    // Usaremos el modo fallback (emulador/manual) para iOS, que usa la cámara estándar de Flutter,
+    // garantizando 100% de compatibilidad.
+    if (kIsWeb || Platform.isIOS || !Platform.isAndroid) {
       _initFallbackCamera();
     } else {
-      // En móvil real, YOLOView es mucho más rápido y estable. (Él pide permisos automáticamente)
+      // En Android, YOLOView nativo suele ser más estable y rápido.
       setState(() {
         _isUsingFallback = false;
         _cameraReady = true; 

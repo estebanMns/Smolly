@@ -205,6 +205,66 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     _loadPlayerData();
   }
 
+  Future<void> processGameResult({
+    required int score,
+    required int coinsEarned,
+    required int objectsScanned,
+    required bool isVictory,
+  }) async {
+    // Esperar a que se cargue el perfil si el controlador se acaba de inicializar
+    while (isLoading.value) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
+    if (player.value == null) {
+      print("Error: processGameResult falló porque el jugador es null");
+      return;
+    }
+
+    final p = player.value!;
+
+    // Calcular nuevas monedas y XP
+    final newCoins = p.coins + coinsEarned;
+    final newXp = p.xp + score;
+
+    // Calcular subida de nivel
+    int newLevel = p.level;
+    int currentXpToNext = p.xpToNextLevel;
+    
+    // Si sube de nivel
+    if (newXp >= currentXpToNext) {
+      newLevel++;
+      // Aumentar el requerimiento de XP para el próximo nivel (ej: +500)
+      currentXpToNext += 500;
+    }
+
+    // Calcular nuevas estadísticas de escaneo
+    final newTotalScans = p.totalScans + objectsScanned;
+    final newDogsCollected = p.dogsCollected + (isVictory ? 1 : 0);
+    // Para accuracy, podrías tener otra lógica, pero aquí hay un ejemplo básico
+    final newAccuracy = newTotalScans > 0 ? ((p.scanAccuracy * p.totalScans) + objectsScanned) / newTotalScans : p.scanAccuracy;
+
+    final updatedPlayer = PlayerModel(
+      uid: p.uid,
+      username: p.username,
+      avatarUrl: p.avatarUrl,
+      coins: newCoins,
+      level: newLevel,
+      xp: newXp,
+      xpToNextLevel: currentXpToNext,
+      rank: p.rank,
+      scanAccuracy: newAccuracy,
+      totalScans: newTotalScans,
+      dogsCollected: newDogsCollected,
+    );
+
+    // Actualizar estado local
+    player.value = updatedPlayer;
+
+    // Persistir en Supabase
+    await _supabaseService.updateGameStats(updatedPlayer);
+  }
+
   double get xpProgress => (player.value?.xp ?? 0) / (player.value?.xpToNextLevel ?? 1);
 
   @override
