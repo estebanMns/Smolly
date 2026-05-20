@@ -26,7 +26,6 @@ class LevelDetailInfo {
 // ============================================================
 
 final List<LevelDetailInfo> levelDetailsList = List.generate(21, (index) {
-  // Specific levels that unlock a story fragment: 0, 3, 10, 17, 20
   final bool hasStory = [0, 3, 10, 17, 20].contains(index);
   
   return LevelDetailInfo(
@@ -46,10 +45,8 @@ class LevelDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Receiving arguments from the Map screen
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-    // Protección: Si no hay argumentos, volvemos atrás para evitar el crash
     if (args == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pop(context);
@@ -59,8 +56,6 @@ class LevelDetailScreen extends StatelessWidget {
 
     final int levelId = args['levelId'];
     final String levelName = args['levelName'];
-
-    // Finding the specific data for this level
     final detail = levelDetailsList.firstWhere((element) => element.id == levelId);
 
     return Scaffold(
@@ -70,14 +65,26 @@ class LevelDetailScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondoiker.png'),
+                image: AssetImage('assets/images/detail.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           
-          // 2. SEMI-TRANSPARENT OVERLAY
-          Container(color: Colors.black.withValues(alpha: 0.5)),
+          // 2. MAGICAL FOREST OVERLAY
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.deepPurple.withValues(alpha: 0.4),
+                  Colors.blue.withValues(alpha: 0.3),
+                  Colors.teal.withValues(alpha: 0.2),
+                ],
+              ),
+            ),
+          ),
 
           // 3. MAIN CONTENT CARD
           Center(
@@ -96,32 +103,50 @@ class LevelDetailScreen extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.black.withValues(alpha: 0.7),
+            Colors.deepPurple.withValues(alpha: 0.5),
+          ],
+        ),
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+        border: Border.all(
+          color: Colors.amber.withValues(alpha: 0.4),
+          width: 2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.4),
+            color: Colors.amber.withValues(alpha: 0.2),
             blurRadius: 20,
             spreadRadius: 5,
+          ),
+          BoxShadow(
+            color: Colors.cyan.withValues(alpha: 0.1),
+            blurRadius: 30,
+            spreadRadius: 2,
           ),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Title
+          // Title with magical glow
           Text(
             name.toUpperCase(),
             style: const TextStyle(
-              color: Colors.white,
+              color: Colors.amber,
               fontSize: 32,
               fontWeight: FontWeight.bold,
               letterSpacing: 2,
-              shadows: [Shadow(color: Colors.cyanAccent, blurRadius: 10)],
+              shadows: [
+                Shadow(color: Colors.orange, blurRadius: 15),
+                Shadow(color: Colors.yellow, blurRadius: 10),
+              ],
             ),
           ),
-          const Divider(color: Colors.white24, height: 30),
+          Divider(color: Colors.amber.withValues(alpha: 0.24), height: 30),
 
           // Level Info Rows
           _buildInfoRow(Icons.category_rounded, "${'items_to_collect'.tr}: ${detail.itemsToCollect}"),
@@ -136,17 +161,28 @@ class LevelDetailScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.amber.withValues(alpha: 0.2),
+              gradient: LinearGradient(
+                colors: [
+                  Colors.amber.withValues(alpha: 0.3),
+                  Colors.orange.withValues(alpha: 0.2),
+                ],
+              ),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 1),
             ),
             child: Row(
               children: [
-                const Icon(Icons.videocam_rounded, color: Colors.amberAccent),
+                const Icon(Icons.videocam_rounded, color: Colors.amberAccent, size: 24),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     detail.cameraNotice.isNotEmpty ? detail.cameraNotice : 'camera_notice'.tr,
-                    style: const TextStyle(color: Colors.white70, fontSize: 13),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    softWrap: true,
                   ),
                 ),
               ],
@@ -155,10 +191,9 @@ class LevelDetailScreen extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // START BUTTON - CORREGIDO
+          // START BUTTON - Tema mágico
           ElevatedButton(
             onPressed: () {
-              // Navegación hacia la pantalla de juego pasando el ID del nivel
               Navigator.pushNamed(
                 context, 
                 '/game-screen', 
@@ -166,15 +201,23 @@ class LevelDetailScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.cyanAccent,
-              foregroundColor: Colors.black,
+              backgroundColor: Colors.amber,
+              foregroundColor: Colors.black87,
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: Colors.yellow.withValues(alpha: 0.5), width: 2),
+              ),
               elevation: 10,
+              shadowColor: Colors.amber.withValues(alpha: 0.6),
             ),
             child: Text(
               'start_caps'.tr,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                letterSpacing: 1.2,
+              ),
             ),
           ),
         ],
@@ -184,17 +227,43 @@ class LevelDetailScreen extends StatelessWidget {
 
   Widget _buildInfoRow(IconData icon, String text, {bool isHighlight = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // ✅ Alineación superior para multi-línea
         children: [
-          Icon(icon, color: isHighlight ? Colors.pinkAccent : Colors.white, size: 24),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isHighlight 
+                  ? Colors.pinkAccent.withValues(alpha: 0.2) 
+                  : Colors.amber.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isHighlight 
+                    ? Colors.pinkAccent.withValues(alpha: 0.5) 
+                    : Colors.amber.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              icon,
+              color: isHighlight ? Colors.pinkAccent : Colors.amberAccent,
+              size: 24,
+            ),
+          ),
           const SizedBox(width: 12),
-          Text(
-            text,
-            style: TextStyle(
-              color: isHighlight ? Colors.pinkAccent : Colors.white,
-              fontSize: 16,
-              fontWeight: isHighlight ? FontWeight.bold : FontWeight.normal,
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                color: isHighlight ? Colors.pinkAccent : Colors.white,
+                fontSize: 16,
+                fontWeight: isHighlight ? FontWeight.bold : FontWeight.w500,
+                letterSpacing: 0.5,
+                height: 1.3, // ✅ Espaciado entre líneas
+              ),
+              softWrap: true, // ✅ Permite salto de línea
+              // ✅ ELIMINADO: overflow: TextOverflow.ellipsis (esto causaba los "...")
             ),
           ),
         ],
@@ -211,10 +280,18 @@ class LevelDetailScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.2),
+            color: Colors.black.withValues(alpha: 0.5),
             shape: BoxShape.circle,
+            border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withValues(alpha: 0.3),
+                blurRadius: 10,
+                spreadRadius: 2,
+              ),
+            ],
           ),
-          child: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+          child: const Icon(Icons.close_rounded, color: Colors.amber, size: 28),
         ),
       ),
     );
