@@ -41,7 +41,7 @@ class ShopScreen extends StatelessWidget {
               const SizedBox(height: 20),
               _buildTitle(),
               const SizedBox(height: 50),
-              ...menuItems.map((item) => ShopCard(item: item)).toList(),
+              ...menuItems.map((item) => ShopCard(item: item)),
             ],
           ),
         ),

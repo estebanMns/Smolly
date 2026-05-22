@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:juego_movil/components/yolo/game_scan_controller.dart';
 import 'package:juego_movil/components/yolo/smart_yolo_camera.dart';
-import 'package:juego_movil/config/app_colors.dart';
 import 'package:juego_movil/utils/item_translations.dart';
 import 'level_detail.dart';
 

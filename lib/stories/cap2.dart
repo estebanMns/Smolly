@@ -9,15 +9,15 @@ class Cap2Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final messages = [
       NarrativeMessage('cap2_narrative_1'),
-      DialogueMessage('cap2_horus_1', 'assets/images/perroblanco.png', isLeft: true),
-      DialogueMessage('cap2_iker_1', 'assets/images/perroblanco.png', isLeft: false),
+      DialogueMessage('cap2_horus_1', 'assets/images/horus.jpeg', isLeft: true),
+      DialogueMessage('cap2_iker_1', 'assets/images/iker.jpeg', isLeft: false),
       NarrativeMessage('cap2_narrative_2'),
-      DialogueMessage('cap2_horus_2', 'assets/images/perroblanco.png', isLeft: true),
+      DialogueMessage('cap2_horus_2', 'assets/images/horus.jpeg', isLeft: true),
       NarrativeMessage('cap2_narrative_3'),
-      DialogueMessage('cap2_molly_1', 'assets/images/perroblanco.png', isLeft: false),
-      DialogueMessage('cap2_iker_2', 'assets/images/perroblanco.png', isLeft: true),
-      DialogueMessage('cap2_molly_2', 'assets/images/perroblanco.png', isLeft: false),
-      DialogueMessage('cap2_horus_3', 'assets/images/perroblanco.png', isLeft: true),
+      DialogueMessage('cap2_molly_1', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage('cap2_iker_2', 'assets/images/iker.jpeg', isLeft: true),
+      DialogueMessage('cap2_molly_2', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage('cap2_horus_3', 'assets/images/horus.jpeg', isLeft: true),
       NarrativeMessage('cap2_narrative_4'),
       NarrativeMessage('cap2_narrative_5'),
     ];

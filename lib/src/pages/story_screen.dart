@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../stories/cap1.dart';
 import '../../stories/cap2.dart';
+import '../../stories/cap3.dart';
+import '../../stories/cap4.dart';
+import '../../stories/cap5.dart';
+import '../../stories/cap6.dart';
+import '../../stories/cap7.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
@@ -91,11 +96,21 @@ class StoryScreen extends StatelessWidget {
                         _buildStoryButton('the_first_fragment'.tr, () {
                           Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap2Screen()));
                         }),
-                        _buildStoryButton('the_clock'.tr, () {}),
-                        _buildStoryButton('the_hidden_truth'.tr, () {}),
-                        _buildStoryButton('the_last_path'.tr, () {}),
-                        _buildStoryButton('final'.tr, () {}),
-                        _buildStoryButton('final_2'.tr, () {}),
+                        _buildStoryButton('the_clock'.tr, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap3Screen()));
+                        }),
+                        _buildStoryButton('the_hidden_truth'.tr, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap4Screen()));
+                        }),
+                        _buildStoryButton('the_last_path'.tr, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap5Screen()));
+                        }),
+                        _buildStoryButton('final'.tr, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap6Screen()));
+                        }),
+                        _buildStoryButton('final_2'.tr, () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap7Screen()));
+                        }),
                       ],
                     ),
                   ),
