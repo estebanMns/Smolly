@@ -9,27 +9,22 @@ class Cap5Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final messages = [
       NarrativeMessage('cap5_narrative_1'),
-      DialogueMessage('cap5_kovu_1', 'assets/images/kovu.jpeg', isLeft: false),
       DialogueMessage('cap5_iker_1', 'assets/images/iker.jpeg', isLeft: true),
+      DialogueMessage('cap5_horus_1', 'assets/images/horus.jpeg', isLeft: false),
       NarrativeMessage('cap5_narrative_2'),
-      DialogueMessage('cap5_molly_1', 'assets/images/molly.jpeg', isLeft: false),
-      DialogueMessage('cap5_iker_2', 'assets/images/iker.jpeg', isLeft: true),
-      DialogueMessage('cap5_molly_2', 'assets/images/molly.jpeg', isLeft: false),
-      DialogueMessage('cap5_horus_1', 'assets/images/horus.jpeg', isLeft: true),
-      DialogueMessage('cap5_molly_3', 'assets/images/molly.jpeg', isLeft: false),
-      DialogueMessage('cap5_perroblanco_1', 'assets/images/perroblanco.png', isLeft: true),
-      NarrativeMessage('cap5_narrative_3'),
-      DialogueMessage('cap5_molly_4', 'assets/images/molly.jpeg', isLeft: false),
-      NarrativeMessage('cap5_narrative_4'),
+      DialogueMessage('cap5_horus_2', 'assets/images/horus.jpeg', isLeft: true),
+      DialogueMessage('cap5_iker_2', 'assets/images/iker.jpeg', isLeft: false),
     ];
 
     return ChapterScreenTemplate(
       titleKey: 'chapter_5',
       messages: messages,
-      backgroundImage: 'assets/images/fondomolly.png',
+      backgroundImage: 'assets/images/fondohorus.jpg',
       onPlay: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Level 5 no implementado aún')),
+        Navigator.pushReplacementNamed(
+          context,
+          '/game-screen',
+          arguments: {'levelId': 5},
         );
       },
     );

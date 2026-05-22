@@ -291,6 +291,7 @@ class _RegisterState extends State<Register> {
     // Si hay error (ej: el email ya está registrado)
     if (!context.mounted) return;
     _showSnackBar(context, '${'register_error'.tr} ${e.toString()}', Colors.red);
+    return;
   }
 
     // Regresar al login después de 2 segundos

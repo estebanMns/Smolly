@@ -27,8 +27,10 @@ class Cap2Screen extends StatelessWidget {
       messages: messages,
       backgroundImage: 'assets/images/horus.jpeg',
       onPlay: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Level 2 no implementado aún')),
+        Navigator.pushReplacementNamed(
+          context,
+          '/game-screen',
+          arguments: {'levelId': 2},
         );
       },
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'achievements.dart';
+import 'package:juego_movil/components/player_profile_controller.dart';
 import 'package:get/get.dart';
 
 class RewardsScreen extends StatelessWidget {
@@ -8,7 +9,7 @@ class RewardsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Se eliminaron las variables screenHeight e isSmallScreen que no se utilizaban
+    final controller = Get.find<PlayerProfileController>();
     
     return Scaffold(
       body: Stack(
@@ -127,9 +128,9 @@ class RewardsScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 15),
-                        const Text(
-                          '2,450',
-                          style: TextStyle(
+                        Obx(() => Text(
+                          '${controller.player.value?.coins ?? 0}',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -141,7 +142,7 @@ class RewardsScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                        ),
+                        )),
                         const SizedBox(width: 8),
                         Text(
                           'coins'.tr,
@@ -196,39 +197,57 @@ class RewardsScreen extends StatelessWidget {
 
                 // Lista de recompensas
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    physics: const BouncingScrollPhysics(),
-                    children: [
-                      _buildClaimableRewardTile(
-                        'collector_level_5'.tr,
-                        'plus_500_coins'.tr,
-                        Icons.stars_rounded,
-                        const Color(0xFF69F0AE),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildClaimableRewardTile(
-                        'super_star'.tr,
-                        'plus_1000_exp'.tr,
-                        Icons.workspace_premium_rounded,
-                        const Color(0xFFFFD93D),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildClaimableRewardTile(
-                        'time_master'.tr,
-                        'plus_30_sec'.tr,
-                        Icons.timer_rounded,
-                        const Color(0xFFFF6B6B),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildClaimableRewardTile(
-                        'mystic_warrior'.tr,
-                        'plus_1_power_potion'.tr,
-                        Icons.auto_awesome,
-                        const Color(0xFF9C27B0),
-                      ),
-                    ],
-                  ),
+                  child: Obx(() {
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        _buildClaimableRewardTile(
+                          'reward_collector_5',
+                          'collector_level_5'.tr,
+                          'plus_500_coins'.tr,
+                          Icons.stars_rounded,
+                          const Color(0xFF69F0AE),
+                          500,
+                          0,
+                          controller,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildClaimableRewardTile(
+                          'reward_super_star',
+                          'super_star'.tr,
+                          'plus_1000_exp'.tr,
+                          Icons.workspace_premium_rounded,
+                          const Color(0xFFFFD93D),
+                          0,
+                          1000,
+                          controller,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildClaimableRewardTile(
+                          'reward_time_master',
+                          'time_master'.tr,
+                          'plus_30_sec'.tr,
+                          Icons.timer_rounded,
+                          const Color(0xFFFF6B6B),
+                          300,
+                          0,
+                          controller,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildClaimableRewardTile(
+                          'reward_mystic_warrior',
+                          'mystic_warrior'.tr,
+                          'plus_1_power_potion'.tr,
+                          Icons.auto_awesome,
+                          const Color(0xFF9C27B0),
+                          500,
+                          500,
+                          controller,
+                        ),
+                      ],
+                    );
+                  }),
                 ),
               ],
             ),
@@ -311,11 +330,16 @@ class RewardsScreen extends StatelessWidget {
   }
 
   Widget _buildClaimableRewardTile(
+    String rewardId,
     String title,
     String subtitle,
     IconData icon,
     Color color,
+    int coins,
+    int xp,
+    PlayerProfileController controller,
   ) {
+    final isClaimed = controller.claimedRewards.contains(rewardId);
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
       duration: const Duration(milliseconds: 400),
@@ -333,7 +357,7 @@ class RewardsScreen extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.2),
+              color: isClaimed ? Colors.transparent : color.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 3),
             ),
@@ -347,14 +371,16 @@ class RewardsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withValues(alpha: 0.6)],
+                    colors: isClaimed
+                        ? [Colors.grey, Colors.grey.withValues(alpha: 0.6)]
+                        : [color, color.withValues(alpha: 0.6)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.5),
+                      color: isClaimed ? Colors.transparent : color.withValues(alpha: 0.5),
                       blurRadius: 10,
                       spreadRadius: 1,
                     ),
@@ -380,7 +406,7 @@ class RewardsScreen extends StatelessWidget {
                     Text(
                       subtitle,
                       style: TextStyle(
-                        color: color.withValues(alpha: 0.9),
+                        color: isClaimed ? Colors.white38 : color.withValues(alpha: 0.9),
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
@@ -391,14 +417,16 @@ class RewardsScreen extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [color, color.withValues(alpha: 0.7)],
+                    colors: isClaimed
+                        ? [Colors.grey.shade600, Colors.grey.shade700]
+                        : [color, color.withValues(alpha: 0.7)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.4),
+                      color: isClaimed ? Colors.black12 : color.withValues(alpha: 0.4),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -407,14 +435,16 @@ class RewardsScreen extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () {
-                      // Lógica para reclamar
-                    },
+                    onTap: isClaimed
+                        ? null
+                        : () {
+                            controller.claimReward(rewardId, coins: coins, xp: xp);
+                          },
                     borderRadius: BorderRadius.circular(12),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                       child: Text(
-                        'claim'.tr,
+                        isClaimed ? 'claimed'.tr : 'claim'.tr,
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 11,

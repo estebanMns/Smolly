@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../components/player_profile_controller.dart';
+import '../../utils/avatar_helper.dart';
 
 // ============================================================
 // MODELO DE DATOS
@@ -51,7 +52,11 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _initializeLevels();
+    final profileController = Get.isRegistered<PlayerProfileController>()
+        ? Get.find<PlayerProfileController>()
+        : Get.put(PlayerProfileController());
+    final maxUnlocked = profileController.player.value?.maxUnlockedLevel ?? 1;
+    _initializeLevels(maxUnlocked);
 
     _characterController = AnimationController(
       vsync: this,
@@ -97,14 +102,14 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
     }
   }
 
-  void _initializeLevels() {
+  void _initializeLevels(int maxUnlocked) {
     levels = List.generate(21, (index) {
       LevelStatus status;
       if (index == 0) {
         status = LevelStatus.tutorial;
-      } else if (index == 1) {
+      } else if (index < maxUnlocked) {
         status = LevelStatus.completed;
-      } else if (index == 2) {
+      } else if (index == maxUnlocked) {
         status = LevelStatus.available;
       } else {
         status = LevelStatus.locked;
@@ -122,7 +127,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
         col: col,
       );
     });
-    _currentLevelIndex = 0; 
+    _currentLevelIndex = maxUnlocked.clamp(0, levels.length - 1); 
   }
 
   Offset _getLevelPosition(LevelData level, double screenWidth) {
@@ -144,24 +149,38 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final profileController = Get.isRegistered<PlayerProfileController>()
+        ? Get.find<PlayerProfileController>()
+        : Get.put(PlayerProfileController());
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/fondolevels.jpg'),
-                fit: BoxFit.cover,
+      body: Obx(() {
+        final maxUnlocked = profileController.player.value?.maxUnlockedLevel ?? 1;
+        _initializeLevels(maxUnlocked);
+        
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            _scrollToCurrentLevel();
+          }
+        });
+
+        return Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/fondolevels.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Container(color: Colors.black.withValues(alpha: 0.25)),
-          _buildScrollView(size),
-          _buildHeader(),
-          _buildBackButton(),
-        ],
-      ),
+            Container(color: Colors.black.withValues(alpha: 0.25)),
+            _buildScrollView(size),
+            _buildHeader(),
+            _buildBackButton(),
+          ],
+        );
+      }),
     );
   }
 
@@ -259,8 +278,8 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
             child: ClipOval(
               child: Obx(() {
                 final avatarUrl = controller.player.value?.avatarUrl ?? '';
-                return Image.network(
-                  avatarUrl.startsWith('http') ? avatarUrl : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+                return Image(
+                  image: getAvatarImageProvider(avatarUrl),
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.person, size: 30),

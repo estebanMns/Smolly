@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../stories/cap1.dart';
-import '../../stories/cap2.dart';
-import '../../stories/cap3.dart';
-import '../../stories/cap4.dart';
-import '../../stories/cap5.dart';
-import '../../stories/cap6.dart';
-import '../../stories/cap7.dart';
+import 'chapter_screen.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
@@ -19,15 +13,13 @@ class StoryScreen extends StatelessWidget {
           // Fondo Galáctico
           Positioned.fill(
             child: Image.asset(
-              'assets/images/Historias.jpg', 
+              'assets/images/Historias.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          
+
           Positioned.fill(
-            child: Container(
-              color: Colors.black.withValues(alpha: 0.5),
-            ),
+            child: Container(color: Colors.black.withValues(alpha: 0.5)),
           ),
 
           SafeArea(
@@ -39,16 +31,20 @@ class StoryScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        _buildCircularButton(context, Icons.arrow_back_ios_new, () => Navigator.pop(context)),
+                        _buildCircularButton(
+                          context,
+                          Icons.arrow_back_ios_new,
+                          () => Navigator.pop(context),
+                        ),
                         Expanded(
                           child: Text(
                             'story'.tr.toUpperCase(),
                             textAlign: TextAlign.center,
                             style: const TextStyle(
-                              color: Colors.white, 
-                              fontSize: 28, 
-                              fontWeight: FontWeight.bold, 
-                              letterSpacing: 2
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
                             ),
                           ),
                         ),
@@ -59,7 +55,10 @@ class StoryScreen extends StatelessWidget {
 
                   // Lore text
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0,
+                      vertical: 8.0,
+                    ),
                     child: Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
@@ -91,30 +90,72 @@ class StoryScreen extends StatelessWidget {
                       alignment: WrapAlignment.center,
                       children: [
                         _buildStoryButton('magic_in_danger'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap1Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 1),
+                            ),
+                          );
                         }),
                         _buildStoryButton('the_first_fragment'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap2Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 2),
+                            ),
+                          );
                         }),
                         _buildStoryButton('the_clock'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap3Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 3),
+                            ),
+                          );
                         }),
                         _buildStoryButton('the_hidden_truth'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap4Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 4),
+                            ),
+                          );
                         }),
                         _buildStoryButton('the_last_path'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap5Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 5),
+                            ),
+                          );
                         }),
                         _buildStoryButton('final'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap6Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 6),
+                            ),
+                          );
                         }),
                         _buildStoryButton('final_2'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap7Screen()));
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DynamicChapterScreen(chapterId: 7),
+                            ),
+                          );
                         }),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 40),
                 ],
               ),
@@ -125,7 +166,11 @@ class StoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCircularButton(BuildContext context, IconData icon, VoidCallback onTap) {
+  Widget _buildCircularButton(
+    BuildContext context,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

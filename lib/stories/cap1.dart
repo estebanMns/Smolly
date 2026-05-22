@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/story/chapter_screen_template.dart';
 import '../components/story/story_message_model.dart';
-import '../levels/level1.dart';
 
 class Cap1Screen extends StatelessWidget {
   const Cap1Screen({super.key});
@@ -30,9 +29,10 @@ class Cap1Screen extends StatelessWidget {
       messages: messages,
       backgroundImage: 'assets/images/fondomolly.png',
       onPlay: () {
-        Navigator.pushReplacement(
+        Navigator.pushReplacementNamed(
           context,
-          MaterialPageRoute(builder: (context) => const Level1Screen()),
+          '/game-screen',
+          arguments: {'levelId': 1},
         );
       },
     );

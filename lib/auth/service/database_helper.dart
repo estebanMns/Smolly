@@ -20,12 +20,13 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDB,
+      onUpgrade: _upgradeDB,
     );
   }
 
-  // Creamos la tabla basada en tu PlayerModel
+  // Creamos la tabla basada en tu PlayerModel con potenciadores
   Future _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE player (
@@ -39,9 +40,25 @@ class DatabaseHelper {
         rank TEXT,
         scanAccuracy REAL,
         totalScans INTEGER,
-        dogsCollected INTEGER
+        dogsCollected INTEGER,
+        boosters30s INTEGER DEFAULT 0,
+        boosters1m INTEGER DEFAULT 0,
+        boosters2m INTEGER DEFAULT 0
       )
     ''');
+  }
+
+  // Manejo de actualización de base de datos para usuarios existentes
+  Future _upgradeDB(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      try {
+        await db.execute('ALTER TABLE player ADD COLUMN boosters30s INTEGER DEFAULT 0');
+        await db.execute('ALTER TABLE player ADD COLUMN boosters1m INTEGER DEFAULT 0');
+        await db.execute('ALTER TABLE player ADD COLUMN boosters2m INTEGER DEFAULT 0');
+      } catch (e) {
+        print('Error running database upgrade: $e');
+      }
+    }
   }
 
   // === OPERACIONES CRUD ===

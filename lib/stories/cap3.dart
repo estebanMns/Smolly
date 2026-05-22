@@ -13,11 +13,23 @@ class Cap3Screen extends StatelessWidget {
       DialogueMessage('cap3_kovu_1', 'assets/images/kovu.jpeg', isLeft: false),
       DialogueMessage('cap3_iker_2', 'assets/images/iker.jpeg', isLeft: true),
       NarrativeMessage('cap3_narrative_2'),
-      DialogueMessage('cap3_molly_1', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage(
+        'cap3_molly_1',
+        'assets/images/molly.jpeg',
+        isLeft: false,
+      ),
       DialogueMessage('cap3_horus_1', 'assets/images/horus.jpeg', isLeft: true),
-      DialogueMessage('cap3_molly_2', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage(
+        'cap3_molly_2',
+        'assets/images/molly.jpeg',
+        isLeft: false,
+      ),
       DialogueMessage('cap3_iker_3', 'assets/images/iker.jpeg', isLeft: true),
-      DialogueMessage('cap3_molly_3', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage(
+        'cap3_molly_3',
+        'assets/images/molly.jpeg',
+        isLeft: false,
+      ),
       NarrativeMessage('cap3_narrative_3'),
     ];
 
@@ -26,8 +38,10 @@ class Cap3Screen extends StatelessWidget {
       messages: messages,
       backgroundImage: 'assets/images/fondohorus.jpg',
       onPlay: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Level 3 no implementado aún')),
+        Navigator.pushReplacementNamed(
+          context,
+          '/game-screen',
+          arguments: {'levelId': 3},
         );
       },
     );

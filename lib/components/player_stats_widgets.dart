@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:juego_movil/config/app_colors.dart';
 import 'player_glass_elements.dart';
+import '../utils/avatar_helper.dart';
 
 // ---------------------------------------------------------------------------
 // Avatar del jugador con badge de nivel
@@ -51,9 +52,7 @@ class PlayerAvatar extends StatelessWidget {
               ],
             ),
             child: CircleAvatar(
-              backgroundImage: NetworkImage(avatarUrl.startsWith('http') 
-                  ? avatarUrl 
-                  : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg'),
+              backgroundImage: getAvatarImageProvider(avatarUrl),
               backgroundColor: Colors.white10,
             ),
           ),

@@ -7,88 +7,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:juego_movil/components/yolo/game_scan_controller.dart';
 import 'package:juego_movil/components/yolo/smart_yolo_camera.dart';
 import 'package:juego_movil/utils/item_translations.dart';
-import 'level_detail.dart';
-
-// ============================================================
-// LÓGICA DE NIVELES (DIFERENCIACIÓN Y FONDO)
-// ============================================================
-class TargetItem {
-  final String targetObject;
-  final String displayName;
-
-  TargetItem({required this.targetObject, required this.displayName});
-}
-
-class LevelGameData {
-  final String levelName;
-  final List<TargetItem> targets;
-  final double timeLimit;
-  final bool isHard;
-
-  LevelGameData({
-    required this.levelName,
-    required this.targets,
-    required this.timeLimit,
-    this.isHard = false,
-  });
-}
-
-final Map<int, LevelGameData> gameLevelConfigs = {
-  0: LevelGameData(
-    levelName: 'molly_tutorial'.tr,
-    targets: [TargetItem(targetObject: "dog", displayName: 'molly_tutorial'.tr)],
-    timeLimit: 120, 
-  ),
-  1: LevelGameData(
-    levelName: 'game_ball'.tr,
-    targets: [
-      TargetItem(targetObject: "sports ball", displayName: 'game_ball'.tr),
-      TargetItem(targetObject: "bottle", displayName: 'water_bottle'.tr),
-      TargetItem(targetObject: "cup", displayName: 'coffee_cup'.tr),
-    ],
-    timeLimit: 60, 
-  ),
-  2: LevelGameData(
-    levelName: 'food_bowl'.tr,
-    targets: [
-      TargetItem(targetObject: "bowl", displayName: 'food_bowl'.tr),
-      TargetItem(targetObject: "book", displayName: 'book'.tr),
-      TargetItem(targetObject: "keyboard", displayName: 'keyboard'.tr),
-    ],
-    timeLimit: 55, 
-  ),
-  3: LevelGameData(
-    levelName: 'water_bottle'.tr,
-    targets: [
-      TargetItem(targetObject: "bottle", displayName: 'water_bottle'.tr),
-      TargetItem(targetObject: "cell phone", displayName: 'cell_phone'.tr),
-      TargetItem(targetObject: "mouse", displayName: 'mouse'.tr),
-    ],
-    timeLimit: 50,
-  ), 
-  4: LevelGameData(
-    levelName: 'coffee_cup'.tr,
-    targets: [
-      TargetItem(targetObject: "cup", displayName: 'coffee_cup'.tr),
-      TargetItem(targetObject: "laptop", displayName: 'laptop'.tr),
-      TargetItem(targetObject: "chair", displayName: 'chair'.tr),
-    ],
-    timeLimit: 45, 
-  ),
-};
-
-LevelGameData getLevelConfig(int id) {
-  return gameLevelConfigs[id] ?? LevelGameData(
-    levelName: 'human'.tr,
-    targets: [
-      TargetItem(targetObject: "person", displayName: 'human'.tr),
-      TargetItem(targetObject: "tv", displayName: 'tv'.tr),
-      TargetItem(targetObject: "backpack", displayName: 'backpack'.tr),
-    ],
-    timeLimit: (60 - id).clamp(20, 60).toDouble(),
-    isHard: id % 5 == 0,
-  );
-}
+import 'package:juego_movil/models/level_model.dart';
+import 'package:juego_movil/components/levels_controller.dart';
+import 'package:juego_movil/components/player_profile_controller.dart';
 
 // ============================================================
 // PANTALLA DE JUEGO PRINCIPAL CON YOLO INTELIGENTE
@@ -103,8 +24,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   late final AudioPlayer _audioPlayer;
   late final GameScanController _scanController;
-  late final LevelDetailInfo _detail;
-  late final LevelGameData _config;
+  late final LevelModel _config;
   late final int _currentLevelId;
 
   // Variables para el temporizador dinámico
@@ -115,7 +35,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   int _score = 0;
   int _currentTargetIndex = 0;
   bool _isPaused = false;
-  
+
   List<String> _allLabels = [];
   bool _isLoadingLabels = true;
   List<TargetItem> _randomTargets = [];
@@ -129,7 +49,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached ||
+        state == AppLifecycleState.inactive) {
       _audioPlayer.pause();
     } else if (state == AppLifecycleState.resumed) {
       if (!_isPaused) {
@@ -148,12 +70,13 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       _currentLevelId = args['levelId'];
 
-      _detail = levelDetailsList.firstWhere((l) => l.id == _currentLevelId);
-      _config = getLevelConfig(_currentLevelId);
+      // Cargar configuración dinámica de niveles usando LevelsController
+      final levelsController = Get.find<LevelsController>();
+      _config = levelsController.getLevel(_currentLevelId);
 
       _maxTime = _config.timeLimit;
       _timeLeft = _maxTime;
-      
+
       _scanController = Get.put(
         GameScanController(targetObject: "item"),
         tag: 'level_$_currentLevelId',
@@ -166,8 +89,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
   Future<void> _loadLabels() async {
     try {
-      final String fileContent = await rootBundle.loadString('assets/labels.txt');
-      _allLabels = fileContent.split('\n').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+      final String fileContent = await rootBundle.loadString(
+        'assets/labels.txt',
+      );
+      _allLabels = fileContent
+          .split('\n')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
     } catch (e) {
       print("Error loading labels: $e");
       // Fallback a los quemados
@@ -180,10 +109,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (_allLabels.isNotEmpty) {
       final random = Random();
       final List<String> shuffled = List.from(_allLabels)..shuffle(random);
-      
-      final int count = _detail.itemsToCollect > 0 ? _detail.itemsToCollect : 3;
+
+      final int count = _config.itemsToCollect > 0 ? _config.itemsToCollect : 3;
       _randomTargets = shuffled.take(count).map((label) {
-        // Obtenemos la traducción del mapa o usamos el label original si no se encuentra
         final String displayName = itemTranslations[label] ?? label;
         return TargetItem(
           targetObject: label,
@@ -193,7 +121,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     } else {
       _randomTargets = _config.targets;
     }
-    
+
     _scanController.updateTargetObject(_randomTargets.first.targetObject);
 
     if (mounted) {
@@ -237,29 +165,33 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   void _checkWinCondition() {
-    // Si alcanza la cantidad máxima de objetos del nivel, puede ganar de una vez.
-    if (_objectsScanned >= _detail.itemsToCollect) {
+    if (_objectsScanned >= _config.itemsToCollect) {
       _timer?.cancel();
-      Get.offNamed('/result_screen', arguments: {
-        'levelId': _currentLevelId,
-        'score': _score,
-        'coins': _score ~/ 2, // 1 moneda por cada 2 puntos
-        'objectsScanned': _objectsScanned,
-        'isVictory': true,
-      });
+      Get.offNamed(
+        '/result_screen',
+        arguments: {
+          'levelId': _currentLevelId,
+          'score': _score,
+          'coins': _config.coinsReward, // Usar la recompensa oficial del nivel cargada de Supabase
+          'objectsScanned': _objectsScanned,
+          'isVictory': true,
+        },
+      );
     }
   }
 
   void _handleTimeOut() {
-    // Cuando el tiempo llega a 00:00 verificamos si alcanzó el mínimo de 3 objetos
     if (_objectsScanned >= 3) {
-      Get.offNamed('/result_screen', arguments: {
-        'levelId': _currentLevelId,
-        'score': _score,
-        'coins': _score ~/ 2,
-        'objectsScanned': _objectsScanned,
-        'isVictory': true,
-      });
+      Get.offNamed(
+        '/result_screen',
+        arguments: {
+          'levelId': _currentLevelId,
+          'score': _score,
+          'coins': _config.coinsReward,
+          'objectsScanned': _objectsScanned,
+          'isVictory': true,
+        },
+      );
     } else {
       _showGameOverDialog();
     }
@@ -272,9 +204,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: const Color(0xff1f4475),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text(
-            '¡Tiempo Agotado!', 
+            '¡Tiempo Agotado!',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
@@ -288,7 +222,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xffFBC741),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el modal
@@ -297,13 +233,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               },
               child: const Text(
                 'Volver a intentar',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -311,7 +252,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               },
               child: const Text(
                 'Salir',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -331,6 +275,136 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   Future<void> _playLevelMusic() async {
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
     await _audioPlayer.play(AssetSource('audio/Niveles.mp3'));
+  }
+
+  // --- LÓGICA DE USO DE POTENCIADORES ---
+
+  void _useBooster(String type) {
+    if (_isPaused) return;
+    final controller = Get.find<PlayerProfileController>();
+    final success = controller.consumeBooster(type);
+
+    if (success) {
+      double secondsToAdd = 0;
+      if (type == '30s') secondsToAdd = 30;
+      if (type == '1m') secondsToAdd = 60;
+      if (type == '2m') secondsToAdd = 120;
+
+      setState(() {
+        _timeLeft += secondsToAdd;
+        _maxTime += secondsToAdd;
+      });
+
+      Get.snackbar(
+        '¡Potenciador Activado!',
+        'Se han añadido $secondsToAdd segundos al temporizador.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.cyan.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    } else {
+      Get.snackbar(
+        'Sin Potenciadores',
+        'No tienes potenciadores de este tipo disponibles.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.redAccent.withValues(alpha: 0.8),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
+
+  Widget _buildBoosterPanel() {
+    final controller = Get.find<PlayerProfileController>();
+    return Obx(() {
+      final p = controller.player.value;
+      if (p == null) return const SizedBox.shrink();
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildBoosterItem(
+              icon: Icons.bolt,
+              label: "+30s",
+              count: p.boosters30s,
+              color: Colors.orangeAccent,
+              onTap: () => _useBooster('30s'),
+            ),
+            _buildBoosterItem(
+              icon: Icons.speed,
+              label: "+1m",
+              count: p.boosters1m,
+              color: Colors.cyanAccent,
+              onTap: () => _useBooster('1m'),
+            ),
+            _buildBoosterItem(
+              icon: Icons.hourglass_full,
+              label: "+2m",
+              count: p.boosters2m,
+              color: Colors.greenAccent,
+              onTap: () => _useBooster('2m'),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildBoosterItem({
+    required IconData icon,
+    required String label,
+    required int count,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final bool hasBooster = count > 0;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: hasBooster ? Colors.white.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: hasBooster ? color.withValues(alpha: 0.5) : Colors.white24,
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: hasBooster ? color : Colors.grey, size: 18),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: hasBooster ? Colors.white : Colors.grey,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: hasBooster ? color.withValues(alpha: 0.3) : Colors.white10,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                "x$count",
+                style: TextStyle(
+                  color: hasBooster ? Colors.white : Colors.grey,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -360,47 +434,59 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
 
           // 2. CONTENIDO DEL JUEGO
           SafeArea(
-            child: _isLoadingLabels 
-                ? const Center(child: CircularProgressIndicator(color: Colors.cyanAccent))
+            child: _isLoadingLabels
+                ? const Center(
+                    child: CircularProgressIndicator(color: Colors.cyanAccent),
+                  )
                 : Column(
-              children: [
-                _buildTopBar(_detail, _config),
+                    children: [
+                      _buildTopBar(_config),
 
-                // ÁREA DE CÁMARA (CUADRO GRIS CON BORDES REDONDEADOS DE 20)
-                Expanded(
-                  flex: 7,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          _buildDetectionCamera(_scanController),
-                          _buildStatusOverlay(_scanController, _config),
-                          if (_isPaused)
-                            Container(
-                              color: Colors.black.withValues(alpha: 0.6),
-                              child: const Center(
-                                child: Text(
-                                  "JUEGO PAUSADO",
-                                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                                ),
-                              ),
+                      // ÁREA DE CÁMARA (CUADRO GRIS CON BORDES REDONDEADOS DE 20)
+                      Expanded(
+                        flex: 6,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                _buildDetectionCamera(_scanController),
+                                _buildStatusOverlay(_scanController, _config),
+                                if (_isPaused)
+                                  Container(
+                                    color: Colors.black.withValues(alpha: 0.6),
+                                    child: const Center(
+                                      child: Text(
+                                        "JUEGO PAUSADO",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                        ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
 
-                // BOTONES INFERIORES ESTILO FIGMA
-                Expanded(
-                  flex: 2,
-                  child: _buildBottomControls(_scanController, context),
-                ),
-              ],
-            ),
+                      // PANEL DE CONTROL DE POTENCIADORES DE TIEMPO
+                      _buildBoosterPanel(),
+
+                      // BOTONES INFERIORES ESTILO FIGMA
+                      Expanded(
+                        flex: 2,
+                        child: _buildBottomControls(_scanController, context),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -418,15 +504,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     );
   }
 
-  Widget _buildStatusOverlay(GameScanController controller, LevelGameData config) {
+  Widget _buildStatusOverlay(
+    GameScanController controller,
+    LevelModel config,
+  ) {
     return Obx(() {
       final isFound = controller.isTargetFound.value;
-      
-      // Seguridad si _randomTargets no se ha cargado (no debería pasar por _isLoadingLabels)
+
       if (_randomTargets.isEmpty) return const SizedBox.shrink();
-      
-      final currentTarget = _randomTargets[_currentTargetIndex % _randomTargets.length];
-      
+
+      final currentTarget =
+          _randomTargets[_currentTargetIndex % _randomTargets.length];
+
       return Positioned(
         top: 20,
         child: Column(
@@ -434,11 +523,13 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               decoration: BoxDecoration(
-                color: const Color(0xff1f4475), // Color azul oscuro del contenedor de Figma
+                color: const Color(0xff1f4475), // Color azul oscuro de Figma
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isFound ? 'correct_object'.tr : currentTarget.displayName.toUpperCase(),
+                isFound
+                    ? 'correct_object'.tr
+                    : currentTarget.displayName.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -461,10 +552,11 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     });
   }
 
-  Widget _buildTopBar(LevelDetailInfo detail, LevelGameData config) {
+  Widget _buildTopBar(LevelModel config) {
     double progressFactor = (_timeLeft / _maxTime).clamp(0.0, 1.0);
-    // Cambiar a color rojo si el tiempo es menor o igual a 10 segundos
-    Color timerColor = (_timeLeft <= 10.0) ? Colors.redAccent : const Color(0xffFBC741);
+    Color timerColor = (_timeLeft <= 10.0)
+        ? Colors.redAccent
+        : const Color(0xffFBC741);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
@@ -475,7 +567,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       ),
       child: Row(
         children: [
-          // Icono de Pausa Integrado al inicio
+          // Icono de Pausa Integrado
           GestureDetector(
             onTap: _togglePause,
             child: Icon(
@@ -486,30 +578,30 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           ),
           const SizedBox(width: 8),
 
-          // Icono del Reloj (Contenedor de 30x30 con tamaño corregido de 24 para evitar desbordes)
+          // Icono del Reloj
           SizedBox(
             width: 30,
             height: 30,
             child: Icon(
-              Icons.access_time_filled_rounded, 
-              color: const Color(0xffF8F9B0), 
+              Icons.access_time_filled_rounded,
+              color: const Color(0xffF8F9B0),
               size: 24,
             ),
           ),
           const SizedBox(width: 6),
-          
-          // Texto del temporizador (Cambia a rojo en los últimos 10 segundos)
+
+          // Texto del temporizador
           Text(
             _formatTime(_timeLeft),
             style: TextStyle(
-              color: (_timeLeft <= 10.0) ? Colors.redAccent : Colors.white, 
+              color: (_timeLeft <= 10.0) ? Colors.redAccent : Colors.white,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
           ),
           const SizedBox(width: 12),
 
-          // Línea del temporizador que va disminuyendo
+          // Línea del temporizador
           Expanded(
             child: Container(
               height: 8,
@@ -530,8 +622,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             ),
           ),
           const SizedBox(width: 15),
-          
-          // Iconos informativos superiores (Color F8F9B0)
+
+          // Iconos informativos superiores
           _buildTopIcon(Icons.sports_basketball_rounded, "$_objectsScanned"),
           const SizedBox(width: 12),
           _buildTopIcon(Icons.pets_rounded, "$_score"),
@@ -546,44 +638,57 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         Icon(icon, color: const Color(0xffF8F9B0), size: 22),
         const SizedBox(width: 4),
         Text(
-          label, 
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildBottomControls(GameScanController controller, BuildContext context) {
+  Widget _buildBottomControls(
+    GameScanController controller,
+    BuildContext context,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Configuración -> Redirige correctamente a settings_screen.dart sin colgar el árbol de estados
           IconButton(
             onPressed: () {
-              if (!_isPaused) _togglePause(); // Pausa automáticamente al entrar a ajustes
+              if (!_isPaused) _togglePause();
               Get.toNamed('/settings_screen');
             },
-            icon: const Icon(Icons.settings_rounded, color: Colors.white, size: 44),
+            icon: const Icon(
+              Icons.settings_rounded,
+              color: Colors.white,
+              size: 44,
+            ),
           ),
-          
-          // Botón central de Captura (Amarillo según Figma)
+
+          // Botón central de Captura
           Obx(() {
             final isFound = controller.isTargetFound.value;
             return GestureDetector(
               onTap: () {
-                if (_isPaused) return; // Desactiva captura en pausa
+                if (_isPaused) return;
                 if (isFound) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('capture_success'.tr)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('capture_success'.tr)));
                   setState(() {
                     _objectsScanned++;
                     _score += 10;
                     _currentTargetIndex++;
                   });
-                  _scanController.updateTargetObject(_randomTargets[_currentTargetIndex % _randomTargets.length].targetObject);
+                  _scanController.updateTargetObject(
+                    _randomTargets[_currentTargetIndex % _randomTargets.length]
+                        .targetObject,
+                  );
                   _checkWinCondition();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -599,21 +704,24 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   color: Color(0xffFBC741),
                 ),
                 child: const Icon(
-                  Icons.camera_alt_outlined, 
-                  color: Colors.white, 
-                  size: 38
+                  Icons.camera_alt_outlined,
+                  color: Colors.white,
+                  size: 38,
                 ),
               ),
             );
           }),
 
-          // Salida -> Redirige de vuelta de forma segura a la pantalla level_detail.dart
           IconButton(
             onPressed: () {
               _timer?.cancel();
-              Navigator.of(context).pop(); // Regresa de forma segura a LevelDetailScreen
+              Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 44),
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: Colors.white,
+              size: 44,
+            ),
           ),
         ],
       ),

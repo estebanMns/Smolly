@@ -5,6 +5,8 @@ import 'pages/lobby_screen.dart';
 import 'pages/level_map.dart';
 import 'pages/level_detail.dart';
 import 'pages/game_screen.dart';
+import 'pages/result_screen.dart';
+import 'pages/settings_screen.dart';
 import 'localization/app_translations.dart';
 
 class MyApp extends StatelessWidget {
@@ -33,6 +35,8 @@ class MyApp extends StatelessWidget {
         '/level-map': (context) => const Levelmap(),
         '/level-detail': (context) => const LevelDetailScreen(),
         '/game-screen': (context) => const GameScreen(),
+        '/result_screen': (context) => const ResultScreen(),
+        '/settings_screen': (context) => const SettingsScreen(),
       },
 
       // Esto ayuda por si hay errores de navegación
