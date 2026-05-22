@@ -1,7 +1,7 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:juego_movil/config/app_colors.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
 import '../../components/player_profile_controller.dart';
@@ -76,11 +76,19 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     await _audioPlayer.play(AssetSource('audio/LobbySong.mp3'));
   }
 
-  Future<void> _navigateWithAudio(VoidCallback navigateAction) async {
-    await _audioPlayer.pause();
-    navigateAction();
+  Future<void> _navigateWithAudio(Future<void> Function() navigateAction) async {
+    try {
+      await _audioPlayer.pause();
+    } catch (e) {
+      debugPrint("AudioPlayer pause error: $e");
+    }
+    await navigateAction();
     // Reanudar la música cuando se regrese al Lobby
-    await _audioPlayer.resume();
+    try {
+      await _audioPlayer.resume();
+    } catch (e) {
+      debugPrint("AudioPlayer resume error: $e");
+    }
   }
 
   @override
@@ -95,8 +103,6 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final screenSize = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Stack(
         children: [
@@ -110,7 +116,6 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           CenterMenuSection(
             onCharacterTap: () => _navigateWithAudio(_navigationService.navigateToCharacters),
             onShopTap: () => _navigateWithAudio(_navigationService.navigateToShop),
-            onRewardsTap: () => _navigateWithAudio(_navigationService.navigateToRewards),
             onAchievementsTap: () => _navigateWithAudio(_navigationService.navigateToAchievements),
             onStoryTap: () => _navigateWithAudio(_navigationService.navigateToStory),
           ),
@@ -136,36 +141,36 @@ class NavigationService {
 
   NavigationService({required this.context});
 
-  void navigateToPlayerProfile() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const PlayerProfileScreen()));
+  Future<void> navigateToPlayerProfile() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const PlayerProfileScreen()));
   }
 
-  void navigateToLevelMap() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
+  Future<void> navigateToLevelMap() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
   }
 
-  void navigateToCharacters() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const local_characters.CharactersScreen()));
+  Future<void> navigateToCharacters() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const local_characters.CharactersScreen()));
   }
 
-  void navigateToSettings() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+  Future<void> navigateToSettings() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
   }
 
-  void navigateToShop() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
+  Future<void> navigateToShop() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
   }
 
-  void navigateToRewards() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const RewardsScreen()));
+  Future<void> navigateToRewards() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const RewardsScreen()));
   }
 
-  void navigateToAchievements() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const AchievementsScreen()));
+  Future<void> navigateToAchievements() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const AchievementsScreen()));
   }
 
-  void navigateToStory() {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const StoryScreen()));
+  Future<void> navigateToStory() async {
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const StoryScreen()));
   }
 }
 
@@ -195,11 +200,15 @@ class StarField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0x55000033), Color(0x22000000), Color(0x88000033)],
+            colors: [
+              Colors.deepPurple.withValues(alpha: 0.55),
+              Colors.blue.withValues(alpha: 0.35),
+              Colors.teal.withValues(alpha: 0.15),
+            ],
           ),
         ),
       ),
@@ -435,12 +444,24 @@ class HeroSection extends StatelessWidget {
               }),
               const SizedBox(height: 10),
               Text(
-                'title_login'.tr,
-                style: const TextStyle(
+                'title_login'.tr.toUpperCase(),
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 5,
+                  shadows: [
+                    Shadow(
+                      color: const Color(0xFFE040FB).withValues(alpha: 0.8),
+                      blurRadius: 10,
+                      offset: const Offset(0, 0),
+                    ),
+                    Shadow(
+                      color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
+                      blurRadius: 20,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -458,7 +479,6 @@ class HeroSection extends StatelessWidget {
 class CenterMenuSection extends StatelessWidget {
   final VoidCallback onCharacterTap;
   final VoidCallback onShopTap;
-  final VoidCallback onRewardsTap;
   final VoidCallback onAchievementsTap;
   final VoidCallback onStoryTap;
 
@@ -466,7 +486,6 @@ class CenterMenuSection extends StatelessWidget {
     super.key,
     required this.onCharacterTap,
     required this.onShopTap,
-    required this.onRewardsTap,
     required this.onAchievementsTap,
     required this.onStoryTap,
   });
@@ -475,59 +494,47 @@ class CenterMenuSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final screenWidth = screenSize.width;
-    final buttonWidth = (screenWidth - 48) / 3;
+    final buttonWidth = (screenWidth - 64) / 2;
 
     final menuItems = [
       MenuItemData(
         label: 'story'.tr,
         icon: Icons.auto_stories_rounded,
-        color: const Color(0xFF40C4FF),
+        color: AppColors.menuStory,
         onTap: onStoryTap,
       ),
       MenuItemData(
         label: 'characters'.tr,
         icon: Icons.people_rounded,
-        color: const Color(0xFFE040FB),
+        color: AppColors.menuCharacters,
         onTap: onCharacterTap,
       ),
       MenuItemData(
         label: 'achievements'.tr,
         icon: Icons.emoji_events_rounded,
-        color: const Color(0xFFFFD740),
+        color: AppColors.menuAchievements,
         onTap: onAchievementsTap,
-      ),
-      MenuItemData(
-        label: 'rewards'.tr,
-        icon: Icons.card_giftcard_rounded,
-        color: const Color(0xFF69F0AE),
-        onTap: onRewardsTap,
       ),
       MenuItemData(
         label: 'shop'.tr,
         icon: Icons.storefront_rounded,
-        color: const Color(0xFFFF6D00),
+        color: AppColors.menuShop,
         onTap: onShopTap,
-      ),
-      MenuItemData(
-        label: 'collection'.tr,
-        icon: Icons.collections_bookmark_rounded,
-        color: const Color(0xFFEA80FC),
-        onTap: () {},
       ),
     ];
 
     return Positioned(
-      top: screenSize.height * 0.45,
+      top: screenSize.height * 0.44,
       left: 0,
       right: 0,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Wrap(
           alignment: WrapAlignment.center,
-          spacing: 12,
-          runSpacing: 12,
+          spacing: 16,
+          runSpacing: 16,
           children: menuItems.map((item) => SizedBox(
-            width: buttonWidth > 100 ? 100 : buttonWidth,
+            width: buttonWidth > 150 ? 150 : buttonWidth,
             child: MenuIconButton(item: item),
           )).toList(),
         ),
@@ -588,33 +595,59 @@ class _MenuIconButtonState extends State<MenuIconButton> with SingleTickerProvid
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          height: 85,
+          height: 100,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            color: Colors.black.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                widget.item.color.withValues(alpha: 0.25),
+                widget.item.color.withValues(alpha: 0.15),
+              ],
+            ),
             border: Border.all(
-              color: widget.item.color.withValues(alpha: 0.7),
-              width: 2,
+              color: widget.item.color.withValues(alpha: 0.5),
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: widget.item.color.withValues(alpha: 0.2),
-                blurRadius: 8,
+                color: widget.item.color.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(widget.item.icon, color: widget.item.color, size: 28),
-              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: widget.item.color.withValues(alpha: 0.3),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: widget.item.color.withValues(alpha: 0.6),
+                    width: 2,
+                  ),
+                ),
+                child: Icon(widget.item.icon, color: widget.item.color, size: 26),
+              ),
+              const SizedBox(height: 10),
               Text(
                 widget.item.label.toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.95),
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
+                  shadows: [
+                    Shadow(
+                      color: widget.item.color.withValues(alpha: 0.5),
+                      blurRadius: 4,
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -710,11 +743,20 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
             gradient: const LinearGradient(
               colors: [Color(0xFFE040FB), Color(0xFF7C4DFF)],
             ),
+            border: Border.all(
+              color: AppColors.gold.withValues(alpha: 0.8),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE040FB).withValues(alpha: 0.65),
+                color: const Color(0xFFE040FB).withValues(alpha: 0.6),
                 blurRadius: widget.glowRadius,
                 spreadRadius: 2,
+              ),
+              BoxShadow(
+                color: AppColors.gold.withValues(alpha: 0.4),
+                blurRadius: widget.glowRadius * 1.5,
+                spreadRadius: 1,
               ),
             ],
           ),
@@ -724,7 +766,7 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
               const Icon(Icons.rocket_launch, color: Colors.white, size: 24),
               const SizedBox(width: 10),
               Text(
-                'play'.tr,
+                'play'.tr.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,

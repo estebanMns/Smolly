@@ -115,6 +115,7 @@ class PlayerLevelProgressCard extends StatelessWidget {
     final double progress = (xp / nextLevel).clamp(0.0, 1.0);
 
     return PlayerGlassCard(
+      color: AppColors.cyan,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -223,6 +224,7 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return PlayerGlassCard(
       padding: const EdgeInsets.symmetric(vertical: 16),
+      color: color,
       child: Column(
         children: [
           Text(

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 class AchievementsScreen extends StatelessWidget {
   const AchievementsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(

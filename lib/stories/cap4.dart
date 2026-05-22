@@ -26,7 +26,6 @@ class Cap4Screen extends StatelessWidget {
     return ChapterScreenTemplate(
       titleKey: 'chapter_4',
       messages: messages,
-      backgroundImage: 'assets/images/fondokovu.png',
       onPlay: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Level 4 no implementado aún')),

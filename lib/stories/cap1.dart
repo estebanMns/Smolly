@@ -28,7 +28,6 @@ class Cap1Screen extends StatelessWidget {
     return ChapterScreenTemplate(
       titleKey: 'chapter_1',
       messages: messages,
-      backgroundImage: 'assets/images/fondomolly.png',
       onPlay: () {
         Navigator.pushReplacement(
           context,

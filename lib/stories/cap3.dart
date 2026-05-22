@@ -24,7 +24,6 @@ class Cap3Screen extends StatelessWidget {
     return ChapterScreenTemplate(
       titleKey: 'chapter_3',
       messages: messages,
-      backgroundImage: 'assets/images/fondohorus.jpg',
       onPlay: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Level 3 no implementado aún')),

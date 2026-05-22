@@ -10,15 +10,16 @@ import 'package:juego_movil/config/app_colors.dart';
 // Tarjeta de vidrio con blur
 // ---------------------------------------------------------------------------
 
-/// Contenedor con efecto glassmorphism, blur y borde traslúcido.
 class PlayerGlassCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
+  final Color? color;
 
-  const PlayerGlassCard({super.key, required this.child, this.padding});
+  const PlayerGlassCard({super.key, required this.child, this.padding, this.color});
 
   @override
   Widget build(BuildContext context) {
+    final hasColor = color != null;
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: BackdropFilter(
@@ -26,9 +27,31 @@ class PlayerGlassCard extends StatelessWidget {
         child: Container(
           padding: padding ?? const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            gradient: hasColor
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      color!.withValues(alpha: 0.25),
+                      color!.withValues(alpha: 0.15),
+                    ],
+                  )
+                : null,
+            color: hasColor ? null : AppColors.surface,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(
+              color: hasColor ? color!.withValues(alpha: 0.5) : AppColors.border,
+              width: hasColor ? 1.5 : 1.0,
+            ),
+            boxShadow: hasColor
+                ? [
+                    BoxShadow(
+                      color: color!.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           child: child,
         ),

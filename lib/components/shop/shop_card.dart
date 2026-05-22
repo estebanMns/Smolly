@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import '../../models/shop_item_model.dart';
 
 class ShopCard extends StatelessWidget {
@@ -9,45 +8,57 @@ class ShopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Color color = item.gradientColors.isNotEmpty ? item.gradientColors.first : const Color(0xFF7C4DFF);
     return GestureDetector(
       onTap: item.onTap,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  _buildIcon(),
-                  const SizedBox(width: 18),
-                  _buildTextContent(),
-                  _buildArrow(),
-                ],
-              ),
-            ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withValues(alpha: 0.25),
+              color.withValues(alpha: 0.15),
+            ],
           ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            _buildIcon(color),
+            const SizedBox(width: 16),
+            _buildTextContent(),
+            _buildArrow(color),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildIcon() {
+  Widget _buildIcon(Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      width: 60,
+      height: 60,
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: item.gradientColors),
+        color: color.withValues(alpha: 0.3),
         shape: BoxShape.circle,
+        border: Border.all(
+          color: color.withValues(alpha: 0.6),
+          width: 2,
+        ),
       ),
       child: Icon(item.icon, color: Colors.white, size: 28),
     );
@@ -58,19 +69,35 @@ class ShopCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(item.title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+          Text(
+            item.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(item.subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.85), fontSize: 13)),
+          Text(
+            item.subtitle,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.85),
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildArrow() {
+  Widget _buildArrow(Color color) {
     return Container(
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), shape: BoxShape.circle),
-      child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.3),
+        shape: BoxShape.circle,
+      ),
+      child: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 16),
     );
   }
 }

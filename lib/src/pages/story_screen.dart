@@ -16,108 +16,180 @@ class StoryScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo Galáctico
+          // Fondo Galáctico / de Niveles
           Positioned.fill(
             child: Image.asset(
-              'assets/images/Historias.jpg', 
+              'assets/images/fondoniveles.jpg', 
               fit: BoxFit.cover,
             ),
           ),
-          
+          // Magical Forest Overlay
           Positioned.fill(
             child: Container(
-              color: Colors.black.withValues(alpha: 0.5),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    const Color(0xFF1A0B2E).withValues(alpha: 0.7),
+                    const Color(0xFF2D1B4E).withValues(alpha: 0.6),
+                    const Color(0xFF4A1D6D).withValues(alpha: 0.5),
+                  ],
+                ),
+              ),
             ),
           ),
 
           SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        _buildCircularButton(context, Icons.arrow_back_ios_new, () => Navigator.pop(context)),
-                        Expanded(
-                          child: Text(
-                            'story'.tr.toUpperCase(),
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white, 
-                              fontSize: 28, 
-                              fontWeight: FontWeight.bold, 
-                              letterSpacing: 2
-                            ),
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      _buildCircularButton(context, Icons.arrow_back_ios_new, () => Navigator.pop(context)),
+                      Expanded(
+                        child: Text(
+                          'story'.tr.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white, 
+                            fontSize: 28, 
+                            fontWeight: FontWeight.bold, 
+                            letterSpacing: 3,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 10,
+                                color: Color(0xFFFFD93D),
+                                offset: Offset(0, 0),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 45),
-                      ],
-                    ),
-                  ),
-
-                  // Lore text
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6A4C93).withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: Colors.white24),
                       ),
-                      child: Text(
-                        'story_lore'.tr,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          height: 1.5,
-                          fontWeight: FontWeight.w600,
+                      const SizedBox(width: 45),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                // Lore text card
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFF4A1D6D).withValues(alpha: 0.4),
+                          const Color(0xFF2D1B4E).withValues(alpha: 0.3),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.3),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
                         ),
-                      ),
+                      ],
                     ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Botones de Capítulos en Grid/Wrap
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      alignment: WrapAlignment.center,
+                    child: Column(
                       children: [
-                        _buildStoryButton('magic_in_danger'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap1Screen()));
-                        }),
-                        _buildStoryButton('the_first_fragment'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap2Screen()));
-                        }),
-                        _buildStoryButton('the_clock'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap3Screen()));
-                        }),
-                        _buildStoryButton('the_hidden_truth'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap4Screen()));
-                        }),
-                        _buildStoryButton('the_last_path'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap5Screen()));
-                        }),
-                        _buildStoryButton('final'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap6Screen()));
-                        }),
-                        _buildStoryButton('final_2'.tr, () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap7Screen()));
-                        }),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.auto_awesome,
+                              color: Color(0xFFFFD93D),
+                              size: 22,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              'story'.tr.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'story_lore'.tr,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 13,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  
-                  const SizedBox(height: 40),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 25),
+
+                // Botones de Capítulos en Grid Responsivo
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final double totalWidth = constraints.maxWidth;
+                        final double buttonWidth = (totalWidth - 16) / 2;
+                        return ListView(
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            Wrap(
+                              spacing: 16,
+                              runSpacing: 16,
+                              alignment: WrapAlignment.center,
+                              children: [
+                                _buildStoryButton(buttonWidth, 'magic_in_danger'.tr, const Color(0xFF69F0AE), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap1Screen()));
+                                }),
+                                _buildStoryButton(buttonWidth, 'the_first_fragment'.tr, const Color(0xFF40C4FF), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap2Screen()));
+                                }),
+                                _buildStoryButton(buttonWidth, 'the_clock'.tr, const Color(0xFFFFD93D), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap3Screen()));
+                                }),
+                                _buildStoryButton(buttonWidth, 'the_hidden_truth'.tr, const Color(0xFFFF8E53), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap4Screen()));
+                                }),
+                                _buildStoryButton(buttonWidth, 'the_last_path'.tr, const Color(0xFFFF6B6B), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap5Screen()));
+                                }),
+                                _buildStoryButton(buttonWidth, 'final'.tr, const Color(0xFFE040FB), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap6Screen()));
+                                }),
+                                _buildStoryButton(totalWidth, 'final_2'.tr, const Color(0xFF7C4DFF), () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => const Cap7Screen()));
+                                }),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -129,37 +201,70 @@ class StoryScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        width: 45,
+        height: 45,
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.1),
+          color: Colors.white.withValues(alpha: 0.15),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.3),
+            width: 1.5,
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: 20,
+        ),
       ),
     );
   }
 
-  Widget _buildStoryButton(String text, VoidCallback onTap) {
+  Widget _buildStoryButton(double width, String text, Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 140,
-        height: 80,
+        width: width,
+        height: 90,
         alignment: Alignment.center,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF4A3470).withValues(alpha: 0.8),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white38, width: 1.5),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              color.withValues(alpha: 0.25),
+              color.withValues(alpha: 0.15),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: color.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.3),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Text(
-          text,
+          text.toUpperCase(),
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 12,
             fontWeight: FontWeight.bold,
+            letterSpacing: 1.0,
+            shadows: [
+              Shadow(
+                color: Colors.black38,
+                blurRadius: 4,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
         ),
       ),

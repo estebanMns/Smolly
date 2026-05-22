@@ -15,17 +15,35 @@ class ChatBubbleWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF6A4C93).withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.black.withValues(alpha: 0.75),
+                Colors.deepPurple.withValues(alpha: 0.45),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: Colors.amber.withValues(alpha: 0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withValues(alpha: 0.15),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           child: Text(
             message.textKey.tr,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
+              color: Colors.amberAccent,
+              fontSize: 13,
               fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
             ),
           ),
         ),
@@ -33,12 +51,32 @@ class ChatBubbleWidget extends StatelessWidget {
     } else if (message is DialogueMessage) {
       final diag = message as DialogueMessage;
       
-      Widget avatar = CircleAvatar(
-        radius: 20,
-        backgroundColor: Colors.white,
+      Widget avatar = Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: diag.isLeft 
+                ? Colors.cyan.withValues(alpha: 0.6) 
+                : Colors.amber.withValues(alpha: 0.6),
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: diag.isLeft 
+                  ? Colors.cyan.withValues(alpha: 0.25) 
+                  : Colors.amber.withValues(alpha: 0.25),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
         child: CircleAvatar(
-          radius: 18,
-          backgroundImage: AssetImage(diag.avatarPath),
+          radius: 20,
+          backgroundColor: Colors.black45,
+          child: CircleAvatar(
+            radius: 18,
+            backgroundImage: AssetImage(diag.avatarPath),
+          ),
         ),
       );
 
@@ -46,18 +84,43 @@ class ChatBubbleWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: const Color(0xFF4A3470).withValues(alpha: 0.9),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.black.withValues(alpha: 0.8),
+                Colors.deepPurple.withValues(alpha: 0.45),
+              ],
+            ),
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(16),
               topRight: const Radius.circular(16),
               bottomLeft: Radius.circular(diag.isLeft ? 0 : 16),
               bottomRight: Radius.circular(diag.isLeft ? 16 : 0),
             ),
-            border: Border.all(color: Colors.white24),
+            border: Border.all(
+              color: diag.isLeft 
+                  ? Colors.cyan.withValues(alpha: 0.4) 
+                  : Colors.amber.withValues(alpha: 0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: diag.isLeft 
+                    ? Colors.cyan.withValues(alpha: 0.1) 
+                    : Colors.amber.withValues(alpha: 0.1),
+                blurRadius: 10,
+                spreadRadius: 1,
+              ),
+            ],
           ),
           child: Text(
             diag.textKey.tr,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
+            style: const TextStyle(
+              color: Colors.white, 
+              fontSize: 13,
+              height: 1.4,
+            ),
           ),
         ),
       );
