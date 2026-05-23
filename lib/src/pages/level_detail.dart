@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/level_model.dart';
 import '../../components/levels_controller.dart';
+import '../../stories/cap1.dart';
+import '../../stories/cap2.dart';
+import '../../stories/cap3.dart';
+import '../../stories/cap4.dart';
+import '../../stories/cap5.dart';
+import '../../stories/cap6.dart';
+import '../../stories/cap7.dart';
 
 // ============================================================
 // LEVEL DETAIL SCREEN
@@ -9,6 +16,27 @@ import '../../components/levels_controller.dart';
 
 class LevelDetailScreen extends StatelessWidget {
   const LevelDetailScreen({super.key});
+
+  Widget _getChapterScreen(int levelId) {
+    switch (levelId) {
+      case 1:
+        return const Cap1Screen();
+      case 4:
+        return const Cap2Screen();
+      case 8:
+        return const Cap3Screen();
+      case 12:
+        return const Cap4Screen();
+      case 17:
+        return const Cap5Screen();
+      case 20:
+        return const Cap6Screen();
+      case 21:
+        return const Cap7Screen();
+      default:
+        return const SizedBox.shrink();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +92,7 @@ class LevelDetailScreen extends StatelessWidget {
               }
               final detail = levelsController.getLevel(levelId);
               final levelName = detail.levelName.isNotEmpty ? detail.levelName : initialLevelName;
-              return _buildDetailCard(context, levelName, detail);
+              return _buildDetailCard(context, levelName, detail, levelId);
             }),
           ),
 
@@ -75,7 +103,7 @@ class LevelDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard(BuildContext context, String name, LevelModel detail) {
+  Widget _buildDetailCard(BuildContext context, String name, LevelModel detail, int levelId) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.all(24),
@@ -130,7 +158,7 @@ class LevelDetailScreen extends StatelessWidget {
           _buildInfoRow(Icons.monetization_on_rounded, "${'reward'.tr}: ${detail.coinsReward} ${'coins'.tr}"),
           
           if (detail.unlocksStory)
-            _buildInfoRow(Icons.auto_stories_rounded, 'story_fragment'.tr, isHighlight: true),
+            _buildInfoRow(Icons.auto_stories_rounded, 'Fragmento de historia incluido', isHighlight: true),
 
           const SizedBox(height: 15),
           
@@ -171,11 +199,18 @@ class LevelDetailScreen extends StatelessWidget {
           // START BUTTON - Tema mágico
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(
-                context, 
-                '/game-screen', 
-                arguments: {'levelId': detail.id},
-              );
+              if (detail.unlocksStory) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => _getChapterScreen(levelId)),
+                );
+              } else {
+                Navigator.pushNamed(
+                  context, 
+                  '/game-screen', 
+                  arguments: {'levelId': detail.id},
+                );
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber,

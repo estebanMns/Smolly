@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../models/level_model.dart';
 
 class FallbackLevelData {
-  static const List<int> storyUnlockLevelIds = [0, 3, 10, 17, 20];
+  static const List<int> storyUnlockLevelIds = [1, 4, 8, 12, 17, 20, 21];
 
   static LevelModel getFallbackLevel(int id) {
     final bool hasStory = storyUnlockLevelIds.contains(id);

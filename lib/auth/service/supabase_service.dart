@@ -182,8 +182,8 @@ class SupabaseService {
 
   List<Map<String, dynamic>> _getLocalLevels() {
     List<Map<String, dynamic>> list = [];
-    for (int i = 0; i <= 20; i++) {
-      final bool hasStory = [0, 3, 10, 17, 20].contains(i);
+    for (int i = 0; i <= 21; i++) {
+      final bool hasStory = [1, 4, 8, 12, 17, 20, 21].contains(i);
       List<Map<String, String>> targets;
       double limit;
       String name;

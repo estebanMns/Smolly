@@ -122,7 +122,7 @@ class StoryScreen extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            const Text(
+                            Text(
                               "En una aldea mágica llena de perritos y gatitos mágicos, Iker protegía el equilibrio entre el bien y el mal usando las Esferas de Lunaris.\n\n"
                               "Pero una noche, cuando Iker y sus amigos estaban divirtiéndose, Molly robó las esferas y las rompió en cientos de fragmentos ocultándolos por toda la aldea.\n\n"
                               "Desde entonces, Iker se debilita poco a poco, ya que las esferas controlaban su energía vital. Sin ellas, Iker podría morir.\n\n"
@@ -131,7 +131,7 @@ class StoryScreen extends StatelessWidget {
                               "Nota:\n"
                               "Tu misión es recolectar los objetos que Lunaris te pida. Salva a Iker y a su aldea antes de que sea tarde.",
                               style: TextStyle(
-                                color: Colors.white90,
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 14.5,
                                 height: 1.6,
                                 fontWeight: FontWeight.w400,

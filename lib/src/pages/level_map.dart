@@ -18,6 +18,7 @@ class LevelData {
   final bool isBossLevel;
   final int row;
   final int col;
+  final bool hasStory;
 
   LevelData({
     required this.id,
@@ -26,6 +27,7 @@ class LevelData {
     this.isBossLevel = false,
     required this.row,
     required this.col,
+    this.hasStory = false,
   });
 }
 
@@ -105,7 +107,8 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
   }
 
   void _initializeLevels(int maxUnlocked) {
-    levels = List.generate(21, (index) {
+    const storyLevelIds = [1, 4, 8, 12, 17, 20, 21];
+    levels = List.generate(22, (index) {
       LevelStatus status;
       if (index == 0) {
         status = LevelStatus.tutorial;
@@ -127,6 +130,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
         isBossLevel: index > 0 && index % 5 == 0,
         row: row,
         col: col,
+        hasStory: storyLevelIds.contains(index),
       );
     });
     _currentLevelIndex = maxUnlocked.clamp(0, levels.length - 1); 
@@ -528,6 +532,7 @@ class _LevelNode extends StatelessWidget {
             children: [
               _centerIcon(),
               if (level.isBossLevel) _bossBadge(),
+              if (level.hasStory) _storyBadge(),
             ],
           ),
         );
@@ -584,6 +589,22 @@ class _LevelNode extends StatelessWidget {
             ],
           ),
           child: const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 16),
+        ),
+      );
+
+  Widget _storyBadge() => Positioned(
+        bottom: -2,
+        left: -2,
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: const BoxDecoration(
+            color: Color(0xFF9C27B0),
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(color: Colors.purple, blurRadius: 10, spreadRadius: 2),
+            ],
+          ),
+          child: const Icon(Icons.auto_stories_rounded, color: Colors.white, size: 16),
         ),
       );
 

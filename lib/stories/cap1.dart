@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../components/story/chapter_screen_template.dart';
 import '../components/story/story_message_model.dart';
+import '../config/app_routes.dart';
 
 class Cap1Screen extends StatelessWidget {
   const Cap1Screen({super.key});
@@ -30,7 +31,7 @@ class Cap1Screen extends StatelessWidget {
       onPlay: () {
         Navigator.pushReplacementNamed(
           context,
-          '/game-screen',
+          AppRoutes.gameScreen,
           arguments: {'levelId': 1},
         );
       },
