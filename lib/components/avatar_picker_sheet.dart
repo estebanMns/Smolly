@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../config/app_colors.dart';
+import '../utils/avatar_helper.dart';
 import 'player_profile_controller.dart';
 
 class AvatarPickerSheet extends StatelessWidget {
@@ -164,13 +165,9 @@ class _AvatarOption extends StatelessWidget {
           ),
           padding: const EdgeInsets.all(4),
           child: ClipOval(
-            child: Image.network(
-              url,
+            child: Image(
+              image: getAvatarImageProvider(url),
               fit: BoxFit.cover,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white24));
-              },
               errorBuilder: (context, error, stackTrace) => const Icon(Icons.error_outline, color: Colors.white24),
             ),
           ),

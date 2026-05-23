@@ -26,8 +26,10 @@ class Cap2Screen extends StatelessWidget {
       titleKey: 'chapter_2',
       messages: messages,
       onPlay: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Level 2 no implementado aún')),
+        Navigator.pushReplacementNamed(
+          context,
+          '/game-screen',
+          arguments: {'levelId': 2},
         );
       },
     );

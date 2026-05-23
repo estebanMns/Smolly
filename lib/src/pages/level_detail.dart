@@ -1,40 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-// ============================================================
-// LEVEL DETAIL MODEL
-// ============================================================
-
-class LevelDetailInfo {
-  final int id;
-  final int itemsToCollect;
-  final int coinsReward;
-  final bool unlocksStory;
-  final String cameraNotice;
-
-  LevelDetailInfo({
-    required this.id,
-    required this.itemsToCollect,
-    required this.coinsReward,
-    required this.unlocksStory,
-    this.cameraNotice = "",
-  });
-}
-
-// ============================================================
-// DATA SOURCE (LIST OF LEVELS)
-// ============================================================
-
-final List<LevelDetailInfo> levelDetailsList = List.generate(21, (index) {
-  final bool hasStory = [0, 3, 10, 17, 20].contains(index);
-  
-  return LevelDetailInfo(
-    id: index,
-    itemsToCollect: 4 + (index % 3), 
-    coinsReward: 50 + (index * 10),  
-    unlocksStory: hasStory,
-  );
-});
+import '../../models/level_model.dart';
+import '../../components/levels_controller.dart';
 
 // ============================================================
 // LEVEL DETAIL SCREEN
@@ -55,8 +22,11 @@ class LevelDetailScreen extends StatelessWidget {
     }
 
     final int levelId = args['levelId'];
-    final String levelName = args['levelName'];
-    final detail = levelDetailsList.firstWhere((element) => element.id == levelId);
+    final String initialLevelName = args['levelName'];
+
+    final levelsController = Get.isRegistered<LevelsController>()
+        ? Get.find<LevelsController>()
+        : Get.put(LevelsController());
 
     return Scaffold(
       body: Stack(
@@ -88,7 +58,14 @@ class LevelDetailScreen extends StatelessWidget {
 
           // 3. MAIN CONTENT CARD
           Center(
-            child: _buildDetailCard(context, levelName, detail),
+            child: Obx(() {
+              if (levelsController.isLoading.value && levelsController.levels.isEmpty) {
+                return const CircularProgressIndicator(color: Colors.amber);
+              }
+              final detail = levelsController.getLevel(levelId);
+              final levelName = detail.levelName.isNotEmpty ? detail.levelName : initialLevelName;
+              return _buildDetailCard(context, levelName, detail);
+            }),
           ),
 
           // 4. CLOSE BUTTON (X)
@@ -98,7 +75,7 @@ class LevelDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard(BuildContext context, String name, LevelDetailInfo detail) {
+  Widget _buildDetailCard(BuildContext context, String name, LevelModel detail) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.all(24),

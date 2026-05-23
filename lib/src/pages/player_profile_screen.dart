@@ -6,6 +6,7 @@ import 'package:juego_movil/components/avatar_picker_sheet.dart';
 import 'package:juego_movil/components/player_top_bar.dart';
 import 'package:juego_movil/components/player_galaxy_background.dart';
 import 'package:juego_movil/components/player_stats_widgets.dart';
+import 'package:juego_movil/utils/avatar_helper.dart';
 
 class PlayerProfileScreen extends StatelessWidget {
   const PlayerProfileScreen({super.key});
@@ -344,8 +345,8 @@ class _SmallAvatarOption extends StatelessWidget {
           ] : [],
         ),
         child: ClipOval(
-          child: Image.network(
-            url,
+          child: Image(
+            image: getAvatarImageProvider(url),
             width: 45,
             height: 45,
             fit: BoxFit.cover,

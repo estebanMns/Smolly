@@ -20,6 +20,8 @@ import 'story_screen.dart';
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN LOBBY SCREEN (ORQUESTADOR PRINCIPAL)
 // ─────────────────────────────────────────────────────────────────────────────
+import '../../components/levels_controller.dart';
+import '../../utils/avatar_helper.dart';
 
 class Lobby extends StatefulWidget {
   const Lobby({super.key});
@@ -43,6 +45,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     super.initState();
     _navigationService = NavigationService(context: context);
     Get.put(PlayerProfileController());
+    Get.put(LevelsController());
 
     _floatController = AnimationController(
       vsync: this,
@@ -426,15 +429,13 @@ class HeroSection extends StatelessWidget {
               Obx(() {
                 final avatarUrl = controller.player.value?.avatarUrl ?? '';
                 return ClipOval(
-                  child: Image.network(
-                    avatarUrl.startsWith('http')
-                        ? avatarUrl
-                        : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+                  child: Image(
+                    image: getAvatarImageProvider(avatarUrl),
                     width: 130,
                     height: 130,
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.network(
-                      'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+                    errorBuilder: (context, error, stackTrace) => const Image(
+                      image: AssetImage('assets/images/kovu.jpeg'),
                       width: 130,
                       height: 130,
                       fit: BoxFit.cover,

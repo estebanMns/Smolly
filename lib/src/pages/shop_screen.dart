@@ -4,6 +4,7 @@ import 'package:juego_movil/models/shop_item_model.dart';
 import 'package:juego_movil/components/shop/shop_card.dart';
 import 'package:juego_movil/src/pages/time_shop.dart';
 import 'package:juego_movil/src/pages/rewards_screen.dart';
+import 'package:juego_movil/components/player_profile_controller.dart';
 import 'package:get/get.dart';
 
 class ShopScreen extends StatelessWidget {
@@ -17,7 +18,10 @@ class ShopScreen extends StatelessWidget {
         subtitle: 'time_boosters_desc'.tr,
         icon: Icons.access_time_filled,
         gradientColors: [AppColors.shopPurple1, AppColors.shopPurple2],
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const TimeShop())),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const TimeShop()),
+        ),
       ),
       ShopItem(
         title: 'upgrades'.tr,
@@ -25,7 +29,10 @@ class ShopScreen extends StatelessWidget {
         icon: Icons.auto_fix_high,
         gradientColors: [AppColors.shopBlue1, AppColors.shopBlue2],
         onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('coming_soon'.tr), backgroundColor: Colors.white70),
+          SnackBar(
+            content: Text('coming_soon'.tr),
+            backgroundColor: Colors.white70,
+          ),
         ),
       ),
       ShopItem(
@@ -80,6 +87,7 @@ class ShopScreen extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final controller = Get.find<PlayerProfileController>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -88,7 +96,7 @@ class ShopScreen extends StatelessWidget {
           _buildCircularButton(Icons.arrow_back_ios_new, () => Navigator.pop(context)),
           Row(
             children: [
-              _buildCoinCounter(0),
+              Obx(() => _buildCoinCounter(controller.player.value?.coins ?? 0)),
               const SizedBox(width: 12),
               _buildRewardsHeaderButton(context),
             ],

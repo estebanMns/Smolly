@@ -197,7 +197,11 @@ class StoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCircularButton(BuildContext context, IconData icon, VoidCallback onTap) {
+  Widget _buildCircularButton(
+    BuildContext context,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
