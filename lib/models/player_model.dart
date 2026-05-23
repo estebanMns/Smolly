@@ -1,7 +1,6 @@
-//=====
-// MODELO: PlayerModel
 // Ubicación: lib/models/player_model.dart
 // =====================================================================================================================================================
+import '../config/app_constants.dart';
 
 class PlayerModel {
   final String uid;
@@ -109,4 +108,82 @@ class PlayerModel {
         'boosters2m': boosters2m,
         'maxUnlockedLevel': maxUnlockedLevel,
       };
+
+  // --- MÉTODOS ORIENTADOS A OBJETOS (LOGICA DE DOMINIO) ---
+
+  PlayerModel addExperience(int amount) {
+    int newXp = xp + amount;
+    int newLevel = level;
+    int currentXpToNext = xpToNextLevel;
+
+    while (newXp >= currentXpToNext) {
+      newLevel++;
+      newXp -= currentXpToNext;
+      currentXpToNext += AppConstants.xpIncreasePerLevel;
+    }
+
+    return copyWith(
+      level: newLevel,
+      xp: newXp,
+      xpToNextLevel: currentXpToNext,
+    );
+  }
+
+  PlayerModel? buyBooster(int cost, String type) {
+    if (coins < cost) return null;
+
+    int extra30s = type == '30s' ? 1 : 0;
+    int extra1m = type == '1m' ? 1 : 0;
+    int extra2m = type == '2m' ? 1 : 0;
+
+    return copyWith(
+      coins: coins - cost,
+      boosters30s: boosters30s + extra30s,
+      boosters1m: boosters1m + extra1m,
+      boosters2m: boosters2m + extra2m,
+    );
+  }
+
+  PlayerModel? consumeBooster(String type) {
+    if (type == '30s' && boosters30s > 0) {
+      return copyWith(boosters30s: boosters30s - 1);
+    } else if (type == '1m' && boosters1m > 0) {
+      return copyWith(boosters1m: boosters1m - 1);
+    } else if (type == '2m' && boosters2m > 0) {
+      return copyWith(boosters2m: boosters2m - 1);
+    }
+    return null;
+  }
+
+  PlayerModel applyGameResult({
+    required int score,
+    required int coinsEarned,
+    required int objectsScanned,
+    required bool isVictory,
+    required int newMaxUnlockedLevel,
+    int extra30s = 0,
+    int extra1m = 0,
+    int extra2m = 0,
+  }) {
+    final int newCoins = coins + coinsEarned;
+    final int newTotalScans = totalScans + objectsScanned;
+    final int newDogsCollected = dogsCollected + (isVictory ? 1 : 0);
+    final double newAccuracy = newTotalScans > 0 
+        ? ((scanAccuracy * totalScans) + objectsScanned) / newTotalScans 
+        : scanAccuracy;
+
+    // Calcular la experiencia agregada
+    final updatedXpPlayer = addExperience(score);
+
+    return updatedXpPlayer.copyWith(
+      coins: newCoins,
+      totalScans: newTotalScans,
+      dogsCollected: newDogsCollected,
+      scanAccuracy: newAccuracy,
+      boosters30s: boosters30s + extra30s,
+      boosters1m: boosters1m + extra1m,
+      boosters2m: boosters2m + extra2m,
+      maxUnlockedLevel: newMaxUnlockedLevel,
+    );
+  }
 }

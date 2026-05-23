@@ -2,16 +2,17 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import '../models/player_model.dart';
+import '../config/app_constants.dart';
 
 class LocalStorageHelper {
   static Future<File> _getLocalFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/game_progress.json');
+    return File('${directory.path}/${AppConstants.fileGameProgress}');
   }
 
   static Future<File> _getPlayerFile() async {
     final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/player_profile.json');
+    return File('${directory.path}/${AppConstants.filePlayerProfile}');
   }
 
   static Future<int> getMaxUnlockedLevel() async {

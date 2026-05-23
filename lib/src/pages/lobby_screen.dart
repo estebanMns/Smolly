@@ -21,7 +21,7 @@ import 'story_screen.dart';
 // MAIN LOBBY SCREEN (ORQUESTADOR PRINCIPAL)
 // ─────────────────────────────────────────────────────────────────────────────
 import '../../components/levels_controller.dart';
-import '../../utils/avatar_helper.dart';
+import '../../config/app_assets.dart';
 
 class Lobby extends StatefulWidget {
   const Lobby({super.key});
@@ -76,7 +76,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
   Future<void> _playLobbySong() async {
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.play(AssetSource('audio/LobbySong.mp3'));
+    await _audioPlayer.play(AssetSource(AppAssets.audioLobbySong));
   }
 
   Future<void> _navigateWithAudio(Future<void> Function() navigateAction) async {
@@ -188,7 +188,7 @@ class GalacticBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: Image.asset(
-        'assets/images/FondoLobby.jpg',
+        AppAssets.fondoLobby,
         fit: BoxFit.cover,
       ),
     );
@@ -235,6 +235,8 @@ class TopHudSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PlayerProfileController>();
+
     return Positioned(
       top: MediaQuery.of(context).padding.top + 12,
       left: 16,
@@ -253,9 +255,23 @@ class TopHudSection extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           const Expanded(child: PlayerInfoDisplay()),
-          const HudBadge(icon: Icons.stars_rounded, value: '120', color: Color(0xFFFFD740)),
+          Obx(() {
+            final coins = controller.player.value?.coins ?? 0;
+            return HudBadge(
+              icon: Icons.stars_rounded, 
+              value: '$coins', 
+              color: const Color(0xFFFFD740),
+            );
+          }),
           const SizedBox(width: 10),
-          const HudBadge(icon: Icons.rocket_launch_rounded, value: 'Lv.3', color: Color(0xFF69F0AE)),
+          Obx(() {
+            final level = controller.player.value?.level ?? 0;
+            return HudBadge(
+              icon: Icons.rocket_launch_rounded, 
+              value: 'Lv.$level', 
+              color: const Color(0xFF69F0AE),
+            );
+          }),
         ],
       ),
     );
@@ -293,7 +309,7 @@ class AvatarDisplay extends StatelessWidget {
               backgroundImage: NetworkImage(
                 avatarUrl.startsWith('http')
                     ? avatarUrl
-                    : 'https://tvjdkuitdsmqiyymzjto.supabase.co/storage/v1/object/public/avatares/kobu.jpeg',
+                    : AppAssets.fallbackAvatarUrl,
               ),
             ),
           ),
@@ -414,7 +430,6 @@ class HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final controller = Get.find<PlayerProfileController>();
     
     return Positioned(
       top: screenSize.height * 0.12,
@@ -426,26 +441,23 @@ class HeroSection extends StatelessWidget {
           offset: Offset(0, floatAnimation.value),
           child: Column(
             children: [
-              Obx(() {
-                final avatarUrl = controller.player.value?.avatarUrl ?? '';
-                return ClipOval(
-                  child: Image(
-                    image: getAvatarImageProvider(avatarUrl),
-                    width: 130,
-                    height: 130,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Image(
-                      image: AssetImage('assets/images/kovu.jpeg'),
-                      width: 130,
-                      height: 130,
-                      fit: BoxFit.cover,
-                    ),
+              ClipOval(
+                child: Image.network(
+                  AppAssets.fallbackAvatarUrl,
+                  width: 130,
+                  height: 130,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.rocket_launch_rounded,
+                    size: 80,
+                    color: Colors.white,
                   ),
-                );
-              }),
+                ),
+              ),
               const SizedBox(height: 10),
               Text(
                 'title_login'.tr.toUpperCase(),
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 32,

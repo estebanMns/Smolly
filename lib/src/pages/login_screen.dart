@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../auth/service/auth_services.dart';
 import 'register_screen.dart'; 
 import 'lobby_screen.dart';
+import '../../config/app_assets.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -40,7 +41,7 @@ class _LoginState extends State<Login>{
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondologin.jpg'),
+                image: AssetImage(AppAssets.fondoLogin),
                 fit: BoxFit.cover,
               ),
             ),
