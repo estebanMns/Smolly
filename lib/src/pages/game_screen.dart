@@ -408,6 +408,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   @override
+  void deactivate() {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();

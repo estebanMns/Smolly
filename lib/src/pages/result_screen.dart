@@ -86,6 +86,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   // Texto de Estado
                   Text(
                     isVictory ? 'mission_complete'.tr : 'mission_failed'.tr,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: isVictory ? Colors.cyanAccent : Colors.redAccent,
                       fontSize: 32,
