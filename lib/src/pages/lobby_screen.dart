@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:juego_movil/config/app_colors.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
 import '../../components/player_profile_controller.dart';
@@ -208,9 +207,9 @@ class StarField extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Colors.deepPurple.withValues(alpha: 0.55),
-              Colors.blue.withValues(alpha: 0.35),
-              Colors.teal.withValues(alpha: 0.15),
+              const Color(0xFF13172E).withValues(alpha: 0.7),
+              const Color(0xFF2F3E67).withValues(alpha: 0.55),
+              const Color(0xFF60436D).withValues(alpha: 0.45),
             ],
           ),
         ),
@@ -255,7 +254,7 @@ class TopHudSection extends StatelessWidget {
           const Expanded(child: PlayerInfoDisplay()),
           const HudBadge(icon: Icons.stars_rounded, value: '120', color: Color(0xFFFFD740)),
           const SizedBox(width: 10),
-          const HudBadge(icon: Icons.rocket_launch_rounded, value: 'Lv.3', color: Color(0xFF69F0AE)),
+          const HudBadge(icon: Icons.rocket_launch_rounded, value: 'Lv.3', color: Color(0xFF62C0E0)),
         ],
       ),
     );
@@ -279,10 +278,10 @@ class AvatarDisplay extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFFE040FB), width: 2.5),
+              border: Border.all(color: const Color(0xFFE097CC), width: 2.5),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFE040FB).withValues(alpha: 0.6),
+                  color: const Color(0xFFE097CC).withValues(alpha: 0.6),
                   blurRadius: 12,
                   spreadRadius: 2,
                 ),
@@ -305,7 +304,7 @@ class AvatarDisplay extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF00E5FF),
+                  color: Color(0xFF62C0E0),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
@@ -453,12 +452,12 @@ class HeroSection extends StatelessWidget {
                   letterSpacing: 5,
                   shadows: [
                     Shadow(
-                      color: const Color(0xFFE040FB).withValues(alpha: 0.8),
+                      color: const Color(0xFFE097CC).withValues(alpha: 0.8),
                       blurRadius: 10,
                       offset: const Offset(0, 0),
                     ),
                     Shadow(
-                      color: const Color(0xFF00E5FF).withValues(alpha: 0.8),
+                      color: const Color(0xFF6286D1).withValues(alpha: 0.8),
                       blurRadius: 20,
                       offset: const Offset(0, 0),
                     ),
@@ -501,25 +500,25 @@ class CenterMenuSection extends StatelessWidget {
       MenuItemData(
         label: 'story'.tr,
         icon: Icons.auto_stories_rounded,
-        color: AppColors.menuStory,
+        color: const Color(0xFF6286D1),
         onTap: onStoryTap,
       ),
       MenuItemData(
         label: 'characters'.tr,
         icon: Icons.people_rounded,
-        color: AppColors.menuCharacters,
+        color: const Color(0xFFE097CC),
         onTap: onCharacterTap,
       ),
       MenuItemData(
         label: 'achievements'.tr,
         icon: Icons.emoji_events_rounded,
-        color: AppColors.menuAchievements,
+        color: const Color(0xFF62C0E0),
         onTap: onAchievementsTap,
       ),
       MenuItemData(
         label: 'shop'.tr,
         icon: Icons.storefront_rounded,
-        color: AppColors.menuShop,
+        color: const Color(0xFFFD98C6),
         onTap: onShopTap,
       ),
     ];
@@ -603,17 +602,17 @@ class _MenuIconButtonState extends State<MenuIconButton> with SingleTickerProvid
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                widget.item.color.withValues(alpha: 0.25),
-                widget.item.color.withValues(alpha: 0.15),
+                const Color(0xFF13172E).withValues(alpha: 0.8),
+                const Color(0xFF1A152B).withValues(alpha: 0.75),
               ],
             ),
             border: Border.all(
-              color: widget.item.color.withValues(alpha: 0.5),
+              color: widget.item.color.withValues(alpha: 0.55),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: widget.item.color.withValues(alpha: 0.3),
+                color: widget.item.color.withValues(alpha: 0.35),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -625,7 +624,7 @@ class _MenuIconButtonState extends State<MenuIconButton> with SingleTickerProvid
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: widget.item.color.withValues(alpha: 0.3),
+                  color: widget.item.color.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: widget.item.color.withValues(alpha: 0.6),
@@ -742,20 +741,20 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32),
             gradient: const LinearGradient(
-              colors: [Color(0xFFE040FB), Color(0xFF7C4DFF)],
+              colors: [Color(0xFF6286D1), Color(0xFFE097CC)],
             ),
             border: Border.all(
-              color: AppColors.gold.withValues(alpha: 0.8),
+              color: const Color(0xFFFD98C6).withValues(alpha: 0.8),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE040FB).withValues(alpha: 0.6),
+                color: const Color(0xFF6286D1).withValues(alpha: 0.6),
                 blurRadius: widget.glowRadius,
                 spreadRadius: 2,
               ),
               BoxShadow(
-                color: AppColors.gold.withValues(alpha: 0.4),
+                color: const Color(0xFFE097CC).withValues(alpha: 0.4),
                 blurRadius: widget.glowRadius * 1.5,
                 spreadRadius: 1,
               ),
@@ -814,13 +813,13 @@ class BottomNavigationSection extends StatelessWidget {
             BottomNavItem(
               icon: Icons.settings_rounded,
               label: 'settings_nav'.tr,
-              color: const Color(0xFF69F0AE),
+              color: const Color(0xFF62C0E0),
               onTap: onSettingsTap,
             ),
             BottomNavItem(
               icon: Icons.help_outline_rounded,
               label: 'help_nav'.tr,
-              color: const Color(0xFF40C4FF),
+              color: const Color(0xFFE097CC),
               onTap: () {},
             ),
           ],
