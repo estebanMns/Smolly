@@ -11,7 +11,7 @@ import '../../components/avatar_picker_sheet.dart';
 import 'player_profile_screen.dart';
 import 'level_map.dart';
 import 'characters_screen.dart' as local_characters;
-import 'settings_screen.dart'; 
+import 'settings_screen.dart';
 import 'shop_screen.dart';
 import 'rewards_screen.dart';
 import 'achievements.dart';
@@ -51,7 +51,7 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    
+
     _floatAnimation = Tween<double>(begin: -8, end: 8).animate(
       CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
     );
@@ -65,28 +65,13 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
-    
+
     _glowAnimation = Tween<double>(begin: 6, end: 22).animate(
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
     _audioPlayer = AudioPlayer();
     _playLobbySong();
-    _checkStoryIntro();
-  }
-
-  Future<void> _checkStoryIntro() async {
-    final bool seen = await LocalStorageHelper.hasSeenStory();
-    if (!seen) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const StoryScreen()),
-          );
-        }
-      });
-    }
   }
 
   Future<void> _playLobbySong() async {
@@ -94,7 +79,9 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     await _audioPlayer.play(AssetSource(AppAssets.audioLobbySong));
   }
 
-  Future<void> _navigateWithAudio(Future<void> Function() navigateAction) async {
+  Future<void> _navigateWithAudio(
+    Future<void> Function() navigateAction,
+  ) async {
     try {
       await _audioPlayer.pause();
     } catch (e) {
@@ -128,20 +115,26 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
           StarField(controller: _twinkleController),
           TopHudSection(
             floatAnimation: _floatAnimation,
-            onAvatarTap: () => _navigateWithAudio(_navigationService.navigateToPlayerProfile),
+            onAvatarTap: () =>
+                _navigateWithAudio(_navigationService.navigateToPlayerProfile),
           ),
           HeroSection(floatAnimation: _floatAnimation),
           CenterMenuSection(
-            onCharacterTap: () => _navigateWithAudio(_navigationService.navigateToCharacters),
-            onShopTap: () => _navigateWithAudio(_navigationService.navigateToShop),
-            onAchievementsTap: () => _navigateWithAudio(_navigationService.navigateToAchievements),
+            onCharacterTap: () =>
+                _navigateWithAudio(_navigationService.navigateToCharacters),
+            onShopTap: () =>
+                _navigateWithAudio(_navigationService.navigateToShop),
+            onAchievementsTap: () =>
+                _navigateWithAudio(_navigationService.navigateToAchievements),
           ),
           PlayButtonSection(
             glowAnimation: _glowAnimation,
-            onTap: () => _navigateWithAudio(_navigationService.navigateToLevelMap),
+            onTap: () =>
+                _navigateWithAudio(_navigationService.navigateToLevelMap),
           ),
           BottomNavigationSection(
-            onSettingsTap: () => _navigateWithAudio(_navigationService.navigateToSettings),
+            onSettingsTap: () =>
+                _navigateWithAudio(_navigationService.navigateToSettings),
           ),
         ],
       ),
@@ -159,31 +152,54 @@ class NavigationService {
   NavigationService({required this.context});
 
   Future<void> navigateToPlayerProfile() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const PlayerProfileScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PlayerProfileScreen()),
+    );
   }
 
   Future<void> navigateToLevelMap() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const Levelmap()),
+    );
   }
 
   Future<void> navigateToCharacters() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const local_characters.CharactersScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const local_characters.CharactersScreen(),
+      ),
+    );
   }
 
   Future<void> navigateToSettings() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SettingsScreen()),
+    );
   }
 
   Future<void> navigateToShop() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const ShopScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ShopScreen()),
+    );
   }
 
   Future<void> navigateToRewards() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const RewardsScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const RewardsScreen()),
+    );
   }
 
   Future<void> navigateToAchievements() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const AchievementsScreen()));
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AchievementsScreen()),
+    );
   }
 }
 
@@ -197,10 +213,7 @@ class GalacticBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned.fill(
-      child: Image.asset(
-        AppAssets.fondoLobby,
-        fit: BoxFit.cover,
-      ),
+      child: Image.asset(AppAssets.fondoLobby, fit: BoxFit.cover),
     );
   }
 }
@@ -268,8 +281,8 @@ class TopHudSection extends StatelessWidget {
           Obx(() {
             final coins = controller.player.value?.coins ?? 0;
             return HudBadge(
-              icon: Icons.stars_rounded, 
-              value: '$coins', 
+              icon: Icons.stars_rounded,
+              value: '$coins',
               color: const Color(0xFFFFD740),
             );
           }),
@@ -277,8 +290,8 @@ class TopHudSection extends StatelessWidget {
           Obx(() {
             final level = controller.player.value?.level ?? 0;
             return HudBadge(
-              icon: Icons.rocket_launch_rounded, 
-              value: 'Lv.$level', 
+              icon: Icons.rocket_launch_rounded,
+              value: 'Lv.$level',
               color: const Color(0xFF62C0E0),
             );
           }),
@@ -334,7 +347,11 @@ class AvatarDisplay extends StatelessWidget {
                   color: Color(0xFF62C0E0),
                   shape: BoxShape.circle,
                   boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
                   ],
                 ),
                 child: const Icon(Icons.edit, size: 12, color: Colors.black),
@@ -440,7 +457,7 @@ class HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    
+
     return Positioned(
       top: screenSize.height * 0.12,
       left: 0,
@@ -548,10 +565,14 @@ class CenterMenuSection extends StatelessWidget {
           alignment: WrapAlignment.center,
           spacing: 16,
           runSpacing: 16,
-          children: menuItems.map((item) => SizedBox(
-            width: buttonWidth > 150 ? 150 : buttonWidth,
-            child: MenuIconButton(item: item),
-          )).toList(),
+          children: menuItems
+              .map(
+                (item) => SizedBox(
+                  width: buttonWidth > 150 ? 150 : buttonWidth,
+                  child: MenuIconButton(item: item),
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -581,7 +602,8 @@ class MenuIconButton extends StatefulWidget {
   State<MenuIconButton> createState() => _MenuIconButtonState();
 }
 
-class _MenuIconButtonState extends State<MenuIconButton> with SingleTickerProviderStateMixin {
+class _MenuIconButtonState extends State<MenuIconButton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
 
@@ -646,7 +668,11 @@ class _MenuIconButtonState extends State<MenuIconButton> with SingleTickerProvid
                     width: 2,
                   ),
                 ),
-                child: Icon(widget.item.icon, color: widget.item.color, size: 26),
+                child: Icon(
+                  widget.item.icon,
+                  color: widget.item.color,
+                  size: 26,
+                ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -690,7 +716,7 @@ class PlayButtonSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    
+
     return Positioned(
       bottom: screenSize.height * 0.18,
       left: 0,
@@ -698,10 +724,8 @@ class PlayButtonSection extends StatelessWidget {
       child: Center(
         child: AnimatedBuilder(
           animation: glowAnimation,
-          builder: (_, _) => PlayButton(
-            glowRadius: glowAnimation.value,
-            onTap: onTap,
-          ),
+          builder: (_, _) =>
+              PlayButton(glowRadius: glowAnimation.value, onTap: onTap),
         ),
       ),
     );
@@ -712,17 +736,14 @@ class PlayButton extends StatefulWidget {
   final double glowRadius;
   final VoidCallback onTap;
 
-  const PlayButton({
-    super.key,
-    required this.glowRadius,
-    required this.onTap,
-  });
+  const PlayButton({super.key, required this.glowRadius, required this.onTap});
 
   @override
   State<PlayButton> createState() => _PlayButtonState();
 }
 
-class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateMixin {
+class _PlayButtonState extends State<PlayButton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _scaleController;
   late final Animation<double> _scaleAnimation;
 
@@ -733,7 +754,10 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
       vsync: this,
       duration: const Duration(milliseconds: 120),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.90).animate(_scaleController);
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.90,
+    ).animate(_scaleController);
   }
 
   @override
@@ -804,10 +828,7 @@ class _PlayButtonState extends State<PlayButton> with SingleTickerProviderStateM
 class BottomNavigationSection extends StatelessWidget {
   final VoidCallback onSettingsTap;
 
-  const BottomNavigationSection({
-    super.key,
-    required this.onSettingsTap,
-  });
+  const BottomNavigationSection({super.key, required this.onSettingsTap});
 
   @override
   Widget build(BuildContext context) {
@@ -862,7 +883,8 @@ class BottomNavItem extends StatefulWidget {
   State<BottomNavItem> createState() => _BottomNavItemState();
 }
 
-class _BottomNavItemState extends State<BottomNavItem> with SingleTickerProviderStateMixin {
+class _BottomNavItemState extends State<BottomNavItem>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
 
@@ -903,10 +925,7 @@ class _BottomNavItemState extends State<BottomNavItem> with SingleTickerProvider
             ),
             Text(
               widget.label,
-              style: TextStyle(
-                color: widget.color,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: widget.color, fontSize: 11),
             ),
           ],
         ),

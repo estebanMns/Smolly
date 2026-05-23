@@ -1,34 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/local_storage_helper.dart';
 import 'level_map.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
-
-  Future<void> _completeStoryIntro(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seen_intro_story', true);
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const Levelmap()),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo Galáctico / de Niveles
+          // Fondo Galáctico
           Positioned.fill(
             child: Image.asset(
-              'assets/images/fondoniveles.jpg', 
+              'assets/images/fondoniveles.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          // Magical Forest Overlay
+          // Overlay mágico oscuro
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -36,9 +25,9 @@ class StoryScreen extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF1A0B2E).withValues(alpha: 0.8),
-                    const Color(0xFF2D1B4E).withValues(alpha: 0.7),
-                    const Color(0xFF4A1D6D).withValues(alpha: 0.6),
+                    const Color(0xFF1A0B2E).withValues(alpha: 0.85),
+                    const Color(0xFF2D1B4E).withValues(alpha: 0.75),
+                    const Color(0xFF4A1D6D).withValues(alpha: 0.65),
                   ],
                 ),
               ),
@@ -49,11 +38,12 @@ class StoryScreen extends StatelessWidget {
             child: Center(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 20.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Icono Mágico / Estrella con brillo
+                    // Icono mágico
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -65,7 +55,8 @@ class StoryScreen extends StatelessWidget {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFFD93D).withValues(alpha: 0.2),
+                            color:
+                                const Color(0xFFFFD93D).withValues(alpha: 0.2),
                             blurRadius: 15,
                             spreadRadius: 2,
                           ),
@@ -104,50 +95,27 @@ class StoryScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "En una aldea mágica llena de perritos y gatitos mágicos, Iker protegía el equilibrio entre el bien y el mal usando las Esferas de Lunaris.\n\n"
-                            "Pero una noche, cuando Iker y sus amigos estaban divirtiéndose, Molly robó las esferas y las rompió en cientos de fragmentos ocultándolos por toda la aldea.\n\n"
-                            "Desde entonces, Iker se debilita poco a poco, ya que las esferas controlaban su energía vital. Sin ellas, Iker podría morir.\n\n"
-                            "Ahora él y sus amigos recorren distintos lugares buscando los objetos brillantes en los que se transformaron los fragmentos.\n\n"
-                            "Si no logran recuperarlos antes que Molly… la oscuridad consumirá la aldea para siempre.\n\n"
-                            "Nota:\n"
-                            "Tu misión es recolectar los objetos que Lunaris te pida. Salva a Iker y a su aldea antes de que sea tarde.",
-                            textAlign: TextAlign.justify,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              height: 1.6,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.4,
-                              shadows: [
-                                Shadow(
-                                  blurRadius: 4.0,
-                                  color: Colors.black38,
-                                  offset: Offset(0.0, 1.5),
-                                ),
-                              ],
+                      child: const Text(
+                        "En una aldea mágica llena de perritos y gatitos mágicos, Iker protegía el equilibrio entre el bien y el mal usando las Esferas de Lunaris.\n\n"
+                        "Pero una noche, cuando Iker y sus amigos estaban divirtiéndose, Molly robó las esferas y las rompió en cientos de fragmentos ocultándolos por toda la aldea.\n\n"
+                        "Desde entonces, Iker se debilita poco a poco, ya que las esferas controlaban su energía vital. Sin ellas, Iker podría morir.\n\n"
+                        "Ahora él y sus amigos recorren distintos lugares buscando los objetos brillantes en los que se transformaron los fragmentos.\n\n"
+                        "Si no logran recuperarlos antes que Molly… la oscuridad consumirá la aldea para siempre.\n\n"
+                        "Nota:\n"
+                        "Tu misión es recolectar los objetos que Lunaris te pida. Salva a Iker y a su aldea antes de que sea tarde.",
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          height: 1.6,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 0.4,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 4.0,
+                              color: Colors.black38,
+                              offset: Offset(0.0, 1.5),
                             ),
-                            const SizedBox(height: 20),
-                            Text(
-                              "En una aldea mágica llena de perritos y gatitos mágicos, Iker protegía el equilibrio entre el bien y el mal usando las Esferas de Lunaris.\n\n"
-                              "Pero una noche, cuando Iker y sus amigos estaban divirtiéndose, Molly robó las esferas y las rompió en cientos de fragmentos ocultándolos por toda la aldea.\n\n"
-                              "Desde entonces, Iker se debilita poco a poco, ya que las esferas controlaban su energía vital. Sin ellas, Iker podría morir.\n\n"
-                              "Ahora él y sus amigos recorren distintos lugares buscando los objetos brillantes en los que se transformaron los fragmentos.\n\n"
-                              "Si no logran recuperarlos antes que Molly… la oscuridad consumirá la aldea para siempre.\n\n"
-                              "Nota:\n"
-                              "Tu misión es recolectar los objetos que Lunaris te pida. Salva a Iker y a su aldea antes de que sea tarde.",
-                              style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.9),
-                                fontSize: 14.5,
-                                height: 1.6,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 10),
                           ],
                         ),
                       ),
@@ -159,7 +127,11 @@ class StoryScreen extends StatelessWidget {
                       onTap: () async {
                         await LocalStorageHelper.setSeenStory(true);
                         if (context.mounted) {
-                          Navigator.pushReplacementNamed(context, AppRoutes.lobby);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const Levelmap()),
+                          );
                         }
                       },
                     ),
@@ -183,7 +155,8 @@ class _PlayButton extends StatefulWidget {
   State<_PlayButton> createState() => _PlayButtonState();
 }
 
-class _PlayButtonState extends State<_PlayButton> with SingleTickerProviderStateMixin {
+class _PlayButtonState extends State<_PlayButton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _scaleController;
   late final Animation<double> _scaleAnimation;
 
@@ -194,7 +167,8 @@ class _PlayButtonState extends State<_PlayButton> with SingleTickerProviderState
       vsync: this,
       duration: const Duration(milliseconds: 120),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(_scaleController);
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 0.92).animate(_scaleController);
   }
 
   @override

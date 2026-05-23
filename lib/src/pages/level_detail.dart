@@ -40,7 +40,8 @@ class LevelDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     if (args == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,7 +69,7 @@ class LevelDetailScreen extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // 2. MAGICAL FOREST OVERLAY
           Container(
             decoration: BoxDecoration(
@@ -87,11 +88,14 @@ class LevelDetailScreen extends StatelessWidget {
           // 3. MAIN CONTENT CARD
           Center(
             child: Obx(() {
-              if (levelsController.isLoading.value && levelsController.levels.isEmpty) {
+              if (levelsController.isLoading.value &&
+                  levelsController.levels.isEmpty) {
                 return const CircularProgressIndicator(color: Colors.amber);
               }
               final detail = levelsController.getLevel(levelId);
-              final levelName = detail.levelName.isNotEmpty ? detail.levelName : initialLevelName;
+              final levelName = detail.levelName.isNotEmpty
+                  ? detail.levelName
+                  : initialLevelName;
               return _buildDetailCard(context, levelName, detail, levelId);
             }),
           ),
@@ -103,7 +107,12 @@ class LevelDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailCard(BuildContext context, String name, LevelModel detail, int levelId) {
+  Widget _buildDetailCard(
+    BuildContext context,
+    String name,
+    LevelModel detail,
+    int levelId,
+  ) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.85,
       padding: const EdgeInsets.all(24),
@@ -154,14 +163,24 @@ class LevelDetailScreen extends StatelessWidget {
           Divider(color: Colors.amber.withValues(alpha: 0.24), height: 30),
 
           // Level Info Rows
-          _buildInfoRow(Icons.category_rounded, "${'items_to_collect'.tr}: ${detail.itemsToCollect}"),
-          _buildInfoRow(Icons.monetization_on_rounded, "${'reward'.tr}: ${detail.coinsReward} ${'coins'.tr}"),
-          
+          _buildInfoRow(
+            Icons.category_rounded,
+            "${'items_to_collect'.tr}: ${detail.itemsToCollect}",
+          ),
+          _buildInfoRow(
+            Icons.monetization_on_rounded,
+            "${'reward'.tr}: ${detail.coinsReward} ${'coins'.tr}",
+          ),
+
           if (detail.unlocksStory)
-            _buildInfoRow(Icons.auto_stories_rounded, 'Fragmento de historia incluido', isHighlight: true),
+            _buildInfoRow(
+              Icons.auto_stories_rounded,
+              'Fragmento de historia incluido',
+              isHighlight: true,
+            ),
 
           const SizedBox(height: 15),
-          
+
           // Camera Warning
           Container(
             padding: const EdgeInsets.all(12),
@@ -173,15 +192,24 @@ class LevelDetailScreen extends StatelessWidget {
                 ],
               ),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 1),
+              border: Border.all(
+                color: Colors.amber.withValues(alpha: 0.5),
+                width: 1,
+              ),
             ),
             child: Row(
               children: [
-                const Icon(Icons.videocam_rounded, color: Colors.amberAccent, size: 24),
+                const Icon(
+                  Icons.videocam_rounded,
+                  color: Colors.amberAccent,
+                  size: 24,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    detail.cameraNotice.isNotEmpty ? detail.cameraNotice : 'camera_notice'.tr,
+                    detail.cameraNotice.isNotEmpty
+                        ? detail.cameraNotice
+                        : 'camera_notice'.tr,
                     style: const TextStyle(
                       color: Colors.white70,
                       fontSize: 13,
@@ -205,8 +233,8 @@ class LevelDetailScreen extends StatelessWidget {
                 );
               } else {
                 Navigator.pushNamed(
-                  context, 
-                  '/game-screen', 
+                  context,
+                  '/game-screen',
                   arguments: {'levelId': detail.id},
                 );
               }
@@ -217,7 +245,10 @@ class LevelDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
-                side: BorderSide(color: Colors.yellow.withValues(alpha: 0.5), width: 2),
+                side: BorderSide(
+                  color: Colors.yellow.withValues(alpha: 0.5),
+                  width: 2,
+                ),
               ),
               elevation: 10,
               shadowColor: Colors.amber.withValues(alpha: 0.6),
@@ -240,18 +271,19 @@ class LevelDetailScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // ✅ Alineación superior para multi-línea
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // ✅ Alineación superior para multi-línea
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: isHighlight 
-                  ? Colors.pinkAccent.withValues(alpha: 0.2) 
+              color: isHighlight
+                  ? Colors.pinkAccent.withValues(alpha: 0.2)
                   : Colors.amber.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: isHighlight 
-                    ? Colors.pinkAccent.withValues(alpha: 0.5) 
+                color: isHighlight
+                    ? Colors.pinkAccent.withValues(alpha: 0.5)
                     : Colors.amber.withValues(alpha: 0.3),
                 width: 1,
               ),
@@ -293,7 +325,10 @@ class LevelDetailScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.5),
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
+            border: Border.all(
+              color: Colors.amber.withValues(alpha: 0.5),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Colors.amber.withValues(alpha: 0.3),
