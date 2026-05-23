@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:juego_movil/components/player_profile_controller.dart';
+import 'package:juego_movil/config/app_assets.dart';
+import 'package:juego_movil/config/app_routes.dart';
 
 class ResultScreen extends StatefulWidget {
   const ResultScreen({super.key});
@@ -63,7 +65,7 @@ class _ResultScreenState extends State<ResultScreen> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondo_resultados.png'), // Tu asset aquí
+                image: AssetImage(AppAssets.fondoResultados), // Tu asset aquí
                 fit: BoxFit.cover,
               ),
             ),
@@ -86,6 +88,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   // Texto de Estado
                   Text(
                     isVictory ? 'mission_complete'.tr : 'mission_failed'.tr,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: isVictory ? Colors.cyanAccent : Colors.redAccent,
                       fontSize: 32,
@@ -212,7 +215,7 @@ class _ResultScreenState extends State<ResultScreen> {
         // Regresamos al mapa de niveles
         Navigator.pushReplacementNamed(
           context,
-          '/level-map',
+          AppRoutes.levelMap,
         );
       },
       style: ElevatedButton.styleFrom(

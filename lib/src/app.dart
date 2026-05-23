@@ -8,6 +8,7 @@ import 'pages/game_screen.dart';
 import 'pages/result_screen.dart';
 import 'pages/settings_screen.dart';
 import 'localization/app_translations.dart';
+import '../config/app_routes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -26,17 +27,16 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
 
-      // La pantalla con la que inicia la app
-      initialRoute: '/home',
+      initialRoute: AppRoutes.home,
 
       routes: {
-        '/home': (context) => const Home(),
-        '/lobby': (context) => const Lobby(),
-        '/level-map': (context) => const Levelmap(),
-        '/level-detail': (context) => const LevelDetailScreen(),
-        '/game-screen': (context) => const GameScreen(),
-        '/result_screen': (context) => const ResultScreen(),
-        '/settings_screen': (context) => const SettingsScreen(),
+        AppRoutes.home: (context) => const Home(),
+        AppRoutes.lobby: (context) => const Lobby(),
+        AppRoutes.levelMap: (context) => const Levelmap(),
+        AppRoutes.levelDetail: (context) => const LevelDetailScreen(),
+        AppRoutes.gameScreen: (context) => const GameScreen(),
+        AppRoutes.resultScreen: (context) => const ResultScreen(),
+        AppRoutes.settingsScreen: (context) => const SettingsScreen(),
       },
 
       // Esto ayuda por si hay errores de navegación

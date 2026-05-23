@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'login_screen.dart';
+import '../../config/app_assets.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -16,7 +17,7 @@ class Home extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondoinicial.png'),
+                image: AssetImage(AppAssets.fondoInicial),
                 fit: BoxFit.cover,
               ),
             ),

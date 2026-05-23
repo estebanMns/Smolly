@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:juego_movil/auth/service/auth_services.dart';
 import 'login_screen.dart';
+import '../../config/app_assets.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -35,7 +36,7 @@ class _RegisterState extends State<Register> {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/fondologin.jpg'),
+                image: AssetImage(AppAssets.fondoLogin),
                 fit: BoxFit.cover,
               ),
             ),

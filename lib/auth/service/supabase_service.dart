@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:juego_movil/models/player_model.dart';
+import 'package:juego_movil/config/app_constants.dart';
 
 class SupabaseService {
   final _supabase = Supabase.instance.client;
@@ -8,12 +9,12 @@ class SupabaseService {
   Future<List<String>> getAvailableAvatars() async {
     try {
       final List<FileObject> objects = await _supabase.storage
-          .from('avatares')
+          .from(AppConstants.bucketAvatars)
           .list();
 
       List<String> urls = [];
       for (var obj in objects) {
-        final url = _supabase.storage.from('avatares').getPublicUrl(obj.name);
+        final url = _supabase.storage.from(AppConstants.bucketAvatars).getPublicUrl(obj.name);
         urls.add(url);
       }
       return urls;
@@ -29,7 +30,7 @@ class SupabaseService {
       if (user == null) return null;
 
       final profileData = await _supabase
-          .from('perfiles')
+          .from(AppConstants.tableProfiles)
           .select()
           .eq('id', user.id)
           .maybeSingle();
@@ -54,16 +55,16 @@ class SupabaseService {
       final fileExt = imageFile.path.split('.').last;
       final fileName = '${DateTime.now().millisecondsSinceEpoch}.$fileExt';
 
-      await _supabase.storage.from('avatares').uploadBinary(fileName, bytes);
+      await _supabase.storage.from(AppConstants.bucketAvatars).uploadBinary(fileName, bytes);
 
       final String publicUrl = _supabase.storage
-          .from('avatares')
+          .from(AppConstants.bucketAvatars)
           .getPublicUrl(fileName);
 
       final user = _supabase.auth.currentUser;
       if (user != null) {
         await _supabase
-            .from('perfiles')
+            .from(AppConstants.tableProfiles)
             .update({'avatar_url': publicUrl})
             .eq('id', user.id);
       }
@@ -78,7 +79,7 @@ class SupabaseService {
   Future<void> selectExistingAvatar(String url) async {
     final user = _supabase.auth.currentUser;
     if (user != null) {
-      await _supabase.from('perfiles').update({
+      await _supabase.from(AppConstants.tableProfiles).update({
         'avatar_url': url,
       }).eq('id', user.id);
     }
@@ -92,7 +93,7 @@ class SupabaseService {
   Future<void> updateSelectedAvatar(String url) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId != null) {
-      await _supabase.from('perfiles').update({
+      await _supabase.from(AppConstants.tableProfiles).update({
         'avatar_url': url, // Guardamos la URL de la imagen elegida
       }).eq('id', userId);
     }
@@ -102,7 +103,7 @@ class SupabaseService {
   Future<void> updateUsername(String newName) async {
     final user = _supabase.auth.currentUser;
     if (user != null) {
-      await _supabase.from('perfiles').update({
+      await _supabase.from(AppConstants.tableProfiles).update({
         'username': newName,
       }).eq('id', user.id);
     }
@@ -113,7 +114,7 @@ class SupabaseService {
     final user = _supabase.auth.currentUser;
     if (user != null) {
       try {
-        await _supabase.from('perfiles').update({
+        await _supabase.from(AppConstants.tableProfiles).update({
           'coins': player.coins,
           'level': player.level,
           'xp': player.xp,
@@ -130,7 +131,7 @@ class SupabaseService {
       } catch (e) {
         print('Error updating game stats (retrying without max_unlocked_level): $e');
         try {
-          await _supabase.from('perfiles').update({
+          await _supabase.from(AppConstants.tableProfiles).update({
             'coins': player.coins,
             'level': player.level,
             'xp': player.xp,
@@ -155,7 +156,7 @@ class SupabaseService {
   Future<List<Map<String, dynamic>>> fetchLevels() async {
     try {
       final response = await _supabase
-          .from('niveles')
+          .from(AppConstants.tableLevels)
           .select()
           .order('id', ascending: true);
       return List<Map<String, dynamic>>.from(response);
@@ -168,7 +169,7 @@ class SupabaseService {
   Future<Map<String, dynamic>?> fetchChapter(int id) async {
     try {
       final response = await _supabase
-          .from('capitulos')
+          .from(AppConstants.tableChapters)
           .select()
           .eq('id', id)
           .maybeSingle();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../components/player_profile_controller.dart';
 import '../../utils/avatar_helper.dart';
+import '../../config/app_assets.dart';
+import '../../config/app_routes.dart';
 
 // ============================================================
 // MODELO DE DATOS
@@ -169,7 +171,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
             Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/fondolevels.jpg'),
+                  image: AssetImage(AppAssets.fondoLevels),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -422,7 +424,7 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
     
     Navigator.pushNamed(
       context,
-      '/level-detail',
+      AppRoutes.levelDetail,
       arguments: {'levelId': level.id, 'levelName': level.name},
     );
   }

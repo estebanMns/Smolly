@@ -10,6 +10,7 @@ import 'package:juego_movil/utils/item_translations.dart';
 import 'package:juego_movil/models/level_model.dart';
 import 'package:juego_movil/components/levels_controller.dart';
 import 'package:juego_movil/components/player_profile_controller.dart';
+import 'package:juego_movil/config/app_routes.dart';
 
 // ============================================================
 // PANTALLA DE JUEGO PRINCIPAL CON YOLO INTELIGENTE
@@ -167,8 +168,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void _checkWinCondition() {
     if (_objectsScanned >= _config.itemsToCollect) {
       _timer?.cancel();
-      Get.offNamed(
-        '/result_screen',
+       Get.offNamed(
+        AppRoutes.resultScreen,
         arguments: {
           'levelId': _currentLevelId,
           'score': _score,
@@ -183,7 +184,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void _handleTimeOut() {
     if (_objectsScanned >= 3) {
       Get.offNamed(
-        '/result_screen',
+        AppRoutes.resultScreen,
         arguments: {
           'levelId': _currentLevelId,
           'score': _score,
@@ -247,8 +248,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Regresa de forma segura a LevelDetailScreen
+                Navigator.of(context).pop(); // Cierra el modal
+                Navigator.pushReplacementNamed(context, AppRoutes.levelMap);
               },
               child: const Text(
                 'Salir',
@@ -405,6 +406,12 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
         ),
       ),
     );
+  }
+
+  @override
+  void deactivate() {
+    ScaffoldMessenger.maybeOf(context)?.clearSnackBars();
+    super.deactivate();
   }
 
   @override
@@ -677,9 +684,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               onTap: () {
                 if (_isPaused) return;
                 if (isFound) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('capture_success'.tr)));
+                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                    SnackBar(content: Text('capture_success'.tr)),
+                  );
                   setState(() {
                     _objectsScanned++;
                     _score += 10;
@@ -691,7 +698,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   );
                   _checkWinCondition();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
                     SnackBar(content: Text('not_detected_yet'.tr)),
                   );
                 }
@@ -715,7 +722,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           IconButton(
             onPressed: () {
               _timer?.cancel();
-              Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, AppRoutes.levelMap);
             },
             icon: const Icon(
               Icons.logout_rounded,

@@ -128,6 +128,32 @@ class PlayerProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: 40),
 
+                    // Botón de reiniciar progreso
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: TextButton.icon(
+                        onPressed: () => _showResetConfirmationDialog(context, controller),
+                        icon: const Icon(Icons.delete_forever_rounded, color: Colors.orangeAccent, size: 20),
+                        label: const Text(
+                          'REINICIAR TODO EL JUEGO',
+                          style: TextStyle(
+                            color: Colors.orangeAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.orangeAccent.withValues(alpha: 0.1),
+                          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            side: BorderSide(color: Colors.orangeAccent.withValues(alpha: 0.3)),
+                          ),
+                        ),
+                      ),
+                    ),
+
                     // Botón de cerrar sesión
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),
@@ -241,6 +267,100 @@ class PlayerProfileScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
                     child: const Text('GUARDAR', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showResetConfirmationDialog(BuildContext context, PlayerProfileController controller) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: AppColors.background.withValues(alpha: 0.95),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.3)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.orangeAccent.withValues(alpha: 0.1),
+                blurRadius: 20,
+                spreadRadius: 5,
+              )
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 50),
+              const SizedBox(height: 15),
+              const Text(
+                'REINICIAR PROGRESO',
+                style: TextStyle(
+                  color: Colors.orangeAccent,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 3,
+                ),
+              ),
+              const SizedBox(height: 15),
+              const Text(
+                '¿Estás seguro de que deseas reiniciar todo tu progreso, monedas y potenciadores? Esta acción no se puede deshacer.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white70, fontSize: 14),
+              ),
+              const SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Get.back(),
+                    child: const Text('CANCELAR', style: TextStyle(color: Colors.white54)),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      Get.back(); // Cierra el modal de confirmación
+                      // Mostrar indicador de carga
+                      Get.dialog(
+                        const Center(child: CircularProgressIndicator(color: AppColors.cyan)),
+                        barrierDismissible: false,
+                      );
+                      final success = await controller.resetGameProgress();
+                      Get.back(); // Cierra el indicador de carga
+                      if (success) {
+                        Get.snackbar(
+                          'Éxito',
+                          'El progreso del juego se ha reiniciado por completo.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.green.withValues(alpha: 0.8),
+                          colorText: Colors.white,
+                        );
+                      } else {
+                        Get.snackbar(
+                          'Error',
+                          'No se pudo reiniciar el progreso. Inténtalo de nuevo.',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red.withValues(alpha: 0.8),
+                          colorText: Colors.white,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                      foregroundColor: AppColors.background,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    child: const Text('REINICIAR', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

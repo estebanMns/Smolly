@@ -9,6 +9,8 @@ import 'package:juego_movil/models/time_option_model.dart';
 import 'package:juego_movil/auth/service/supabase_service.dart';
 import 'package:juego_movil/auth/service/auth_services.dart';
 import 'package:juego_movil/utils/local_storage_helper.dart';
+import 'package:juego_movil/config/app_constants.dart';
+import 'package:juego_movil/config/app_assets.dart';
 
 class PlayerProfileController extends GetxController with GetSingleTickerProviderStateMixin {
   
@@ -49,28 +51,29 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     isLoading.value = true;
     
     try {
+      final localPlayer = await LocalStorageHelper.loadPlayer();
+      final int localMaxUnlocked = await LocalStorageHelper.getMaxUnlockedLevel();
+
       final profileData = await _supabaseService.getUserProfile().timeout(
         const Duration(seconds: 5),
         onTimeout: () => null,
       );
       
-      final int localMaxUnlocked = await LocalStorageHelper.getMaxUnlockedLevel();
-
       if (profileData != null) {
         String rawAvatar = profileData['avatar_url'] ?? '';
         // Si el avatar guardado no es una URL real ni un asset, usamos kovu por defecto
         String finalAvatar = (rawAvatar.startsWith('http') || rawAvatar.startsWith('assets/')) 
             ? rawAvatar 
-            : 'assets/images/kovu.jpeg';
+            : AppAssets.fallbackAvatarUrl;
 
-        final updatedPlayer = PlayerModel(
-          uid: profileData['id'] ?? 'u001',
+        final supabasePlayer = PlayerModel(
+          uid: profileData['id'] ?? AppConstants.defaultPlayerUid,
           username: profileData['username'] ?? 'Usuario',
           avatarUrl: finalAvatar, 
           coins: profileData['coins'] ?? 0,
           level: profileData['level'] ?? 0,
           xp: profileData['xp'] ?? 0,
-          xpToNextLevel: profileData['xp_to_next_level'] ?? 1000,
+          xpToNextLevel: profileData['xp_to_next_level'] ?? AppConstants.defaultXpToNextLevel,
           rank: profileData['rank'] ?? 'RECLUTA',
           scanAccuracy: (profileData['scan_accuracy'] ?? 0.0).toDouble(),
           totalScans: profileData['total_scans'] ?? 0,
@@ -80,11 +83,48 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
           boosters2m: profileData['boosters_2m'] ?? 0,
           maxUnlockedLevel: profileData['max_unlocked_level'] ?? localMaxUnlocked,
         );
-        player.value = updatedPlayer;
-        await LocalStorageHelper.savePlayer(updatedPlayer);
+
+        PlayerModel chosenPlayer = supabasePlayer;
+
+        // Si tenemos datos locales del mismo usuario, o si es la primera migración desde la cuenta local temporal 'u001'
+        if (localPlayer != null && (localPlayer.uid == 'u001' || localPlayer.uid == supabasePlayer.uid)) {
+          bool isLocalBetter = false;
+          if (localPlayer.maxUnlockedLevel > supabasePlayer.maxUnlockedLevel) {
+            isLocalBetter = true;
+          } else if (localPlayer.maxUnlockedLevel == supabasePlayer.maxUnlockedLevel) {
+            if (localPlayer.level > supabasePlayer.level) {
+              isLocalBetter = true;
+            } else if (localPlayer.level == supabasePlayer.level) {
+              if (localPlayer.xp > supabasePlayer.xp) {
+                isLocalBetter = true;
+              } else if (localPlayer.xp == supabasePlayer.xp) {
+                if (localPlayer.coins > supabasePlayer.coins) {
+                  isLocalBetter = true;
+                }
+              }
+            }
+          }
+
+          if (isLocalBetter) {
+            chosenPlayer = localPlayer.copyWith(
+              uid: supabasePlayer.uid, // Asegurarnos de usar la UID de Supabase
+              username: (supabasePlayer.username.isNotEmpty && supabasePlayer.username != AppConstants.defaultPlayerUsername)
+                  ? supabasePlayer.username 
+                  : localPlayer.username,
+              avatarUrl: (supabasePlayer.avatarUrl.isNotEmpty && supabasePlayer.avatarUrl != AppAssets.fallbackAvatarUrl)
+                  ? supabasePlayer.avatarUrl 
+                  : localPlayer.avatarUrl,
+            );
+            // Sincronizamos inmediatamente a Supabase
+            await _supabaseService.updateGameStats(chosenPlayer);
+          }
+        }
+
+        player.value = chosenPlayer;
+        await LocalStorageHelper.savePlayer(chosenPlayer);
+        await LocalStorageHelper.saveMaxUnlockedLevel(chosenPlayer.maxUnlockedLevel);
       } else {
-        print("Aviso: No se encontró perfil para este usuario. Intentando cargar datos locales.");
-        final localPlayer = await LocalStorageHelper.loadPlayer();
+        print("Aviso: No se encontró perfil para este usuario o la petición expiró. Cargando datos locales.");
         if (localPlayer != null) {
           player.value = localPlayer;
         } else {
@@ -107,14 +147,14 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
   void _setFallbackPlayerData(int localMaxUnlocked) {
     player.value = PlayerModel(
-      uid: 'u001',
-      username: 'Perro Blanco',
-      avatarUrl: 'assets/images/kovu.jpeg',
+      uid: AppConstants.defaultPlayerUid,
+      username: AppConstants.defaultPlayerUsername,
+      avatarUrl: AppAssets.fallbackAvatarUrl,
       coins: 0,
       level: 0,
       xp: 0,
-      xpToNextLevel: 1000,
-      rank: 'COMANDANTE GALÁCTICO',
+      xpToNextLevel: AppConstants.defaultXpToNextLevel,
+      rank: AppConstants.defaultPlayerRank,
       scanAccuracy: 0,
       totalScans: 0,
       dogsCollected: 0,
@@ -133,11 +173,11 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       print("Avatares cargados desde servicio: ${urls.length}");
       if (urls.isEmpty) {
         availableAvatars.assignAll([
-          'assets/images/kovu.jpeg',
-          'assets/images/molly.jpeg',
-          'assets/images/horus.jpeg',
-          'assets/images/iker.jpeg',
-          'assets/images/perroblanco.png',
+          AppAssets.avatarKovu,
+          AppAssets.avatarMolly,
+          AppAssets.avatarHorus,
+          AppAssets.avatarIker,
+          AppAssets.avatarPerroBlanco,
         ]);
       } else {
         availableAvatars.assignAll(urls);
@@ -145,11 +185,11 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     } catch (e) {
       print("Error cargando avatares en el controlador: $e");
       availableAvatars.assignAll([
-        'assets/images/kovu.jpeg',
-        'assets/images/molly.jpeg',
-        'assets/images/horus.jpeg',
-        'assets/images/iker.jpeg',
-        'assets/images/perroblanco.png',
+        AppAssets.avatarKovu,
+        AppAssets.avatarMolly,
+        AppAssets.avatarHorus,
+        AppAssets.avatarIker,
+        AppAssets.avatarPerroBlanco,
       ]);
     }
   }
@@ -181,22 +221,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
   void addXp(int amount) {
     if (player.value == null) return;
-    final p = player.value!;
-    int newXp = p.xp + amount;
-    int newLevel = p.level;
-    int currentXpToNext = p.xpToNextLevel;
-    
-    while (newXp >= currentXpToNext) {
-      newLevel++;
-      newXp -= currentXpToNext;
-      currentXpToNext += 500;
-    }
-    
-    final updatedPlayer = p.copyWith(
-      level: newLevel,
-      xp: newXp,
-      xpToNextLevel: currentXpToNext,
-    );
+    final updatedPlayer = player.value!.addExperience(amount);
     player.value = updatedPlayer;
     LocalStorageHelper.savePlayer(updatedPlayer);
     _supabaseService.updateGameStats(updatedPlayer);
@@ -231,19 +256,8 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
   bool buyBooster(TimeOption option) {
     if (player.value == null) return false;
-    final currentCoins = player.value!.coins;
-    if (currentCoins < option.coinCost) return false;
-
-    int extra30s = option.type == '30s' ? 1 : 0;
-    int extra1m = option.type == '1m' ? 1 : 0;
-    int extra2m = option.type == '2m' ? 1 : 0;
-
-    final updatedPlayer = player.value!.copyWith(
-      coins: currentCoins - option.coinCost,
-      boosters30s: player.value!.boosters30s + extra30s,
-      boosters1m: player.value!.boosters1m + extra1m,
-      boosters2m: player.value!.boosters2m + extra2m,
-    );
+    final updatedPlayer = player.value!.buyBooster(option.coinCost, option.type);
+    if (updatedPlayer == null) return false;
 
     player.value = updatedPlayer;
     LocalStorageHelper.savePlayer(updatedPlayer);
@@ -253,28 +267,13 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
   bool consumeBooster(String type) {
     if (player.value == null) return false;
-    final p = player.value!;
+    final updatedPlayer = player.value!.consumeBooster(type);
+    if (updatedPlayer == null) return false;
 
-    if (type == '30s' && p.boosters30s > 0) {
-      final updated = p.copyWith(boosters30s: p.boosters30s - 1);
-      player.value = updated;
-      LocalStorageHelper.savePlayer(updated);
-      _supabaseService.updateGameStats(updated);
-      return true;
-    } else if (type == '1m' && p.boosters1m > 0) {
-      final updated = p.copyWith(boosters1m: p.boosters1m - 1);
-      player.value = updated;
-      LocalStorageHelper.savePlayer(updated);
-      _supabaseService.updateGameStats(updated);
-      return true;
-    } else if (type == '2m' && p.boosters2m > 0) {
-      final updated = p.copyWith(boosters2m: p.boosters2m - 1);
-      player.value = updated;
-      LocalStorageHelper.savePlayer(updated);
-      _supabaseService.updateGameStats(updated);
-      return true;
-    }
-    return false;
+    player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
+    _supabaseService.updateGameStats(updatedPlayer);
+    return true;
   }
 
   // --- MÉTODOS DE ACCIÓN AVATAR / USERNAME ---
@@ -333,6 +332,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
   Future<void> logout() async {
     try {
       await _authServices.signOut();
+      Get.delete<PlayerProfileController>();
       Get.offAllNamed('/home');
     } catch (e) {
       print("Error al cerrar sesión: $e");
@@ -362,29 +362,18 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
     final p = player.value!;
 
-    // Calcular nuevas monedas y XP
-    final newCoins = p.coins + coinsEarned;
-    int newXp = p.xp + score;
-
-    // Calcular subida de nivel
-    int newLevel = p.level;
-    int currentXpToNext = p.xpToNextLevel;
-    
-    while (newXp >= currentXpToNext) {
-      newLevel++;
-      newXp -= currentXpToNext;
-      currentXpToNext += 500;
+    // Calcular nuevo nivel máximo desbloqueado
+    int newMaxUnlockedLevel = p.maxUnlockedLevel;
+    if (isVictory && levelId != null && levelId >= p.maxUnlockedLevel) {
+      newMaxUnlockedLevel = levelId + 1;
+      // Guardar localmente
+      await LocalStorageHelper.saveMaxUnlockedLevel(newMaxUnlockedLevel);
     }
 
-    final newTotalScans = p.totalScans + objectsScanned;
-    final newDogsCollected = p.dogsCollected + (isVictory ? 1 : 0);
-    final newAccuracy = newTotalScans > 0 ? ((p.scanAccuracy * p.totalScans) + objectsScanned) / newTotalScans : p.scanAccuracy;
-
-    // Conceder potenciador aleatorio si hay victoria
-    String? earnedBooster;
     int extra30s = 0;
     int extra1m = 0;
     int extra2m = 0;
+    String? earnedBooster;
 
     if (isVictory) {
       final rand = Random().nextDouble();
@@ -400,30 +389,15 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       }
     }
 
-    // Calcular nuevo nivel máximo desbloqueado
-    int newMaxUnlockedLevel = p.maxUnlockedLevel;
-    if (isVictory && levelId != null && levelId >= p.maxUnlockedLevel) {
-      newMaxUnlockedLevel = levelId + 1;
-      // Guardar localmente
-      await LocalStorageHelper.saveMaxUnlockedLevel(newMaxUnlockedLevel);
-    }
-
-    final updatedPlayer = PlayerModel(
-      uid: p.uid,
-      username: p.username,
-      avatarUrl: p.avatarUrl,
-      coins: newCoins,
-      level: newLevel,
-      xp: newXp,
-      xpToNextLevel: currentXpToNext,
-      rank: p.rank,
-      scanAccuracy: newAccuracy,
-      totalScans: newTotalScans,
-      dogsCollected: newDogsCollected,
-      boosters30s: p.boosters30s + extra30s,
-      boosters1m: p.boosters1m + extra1m,
-      boosters2m: p.boosters2m + extra2m,
-      maxUnlockedLevel: newMaxUnlockedLevel,
+    final updatedPlayer = p.applyGameResult(
+      score: score,
+      coinsEarned: coinsEarned,
+      objectsScanned: objectsScanned,
+      isVictory: isVictory,
+      newMaxUnlockedLevel: newMaxUnlockedLevel,
+      extra30s: extra30s,
+      extra1m: extra1m,
+      extra2m: extra2m,
     );
 
     // Actualizar estado local
@@ -434,6 +408,39 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     await _supabaseService.updateGameStats(updatedPlayer);
 
     return earnedBooster;
+  }
+
+  Future<bool> resetGameProgress() async {
+    if (player.value == null) return false;
+    try {
+      final resetPlayer = PlayerModel(
+        uid: player.value!.uid,
+        username: player.value!.username,
+        avatarUrl: AppAssets.fallbackAvatarUrl,
+        coins: 0,
+        level: 0,
+        xp: 0,
+        xpToNextLevel: AppConstants.defaultXpToNextLevel,
+        rank: AppConstants.defaultPlayerRank,
+        scanAccuracy: 0.0,
+        totalScans: 0,
+        dogsCollected: 0,
+        boosters30s: 0,
+        boosters1m: 0,
+        boosters2m: 0,
+        maxUnlockedLevel: 1,
+      );
+
+      await LocalStorageHelper.savePlayer(resetPlayer);
+      await LocalStorageHelper.saveMaxUnlockedLevel(1);
+      await _supabaseService.updateGameStats(resetPlayer);
+
+      player.value = resetPlayer;
+      return true;
+    } catch (e) {
+      print("Error resetting game progress: $e");
+      return false;
+    }
   }
 
   double get xpProgress => (player.value?.xp ?? 0) / (player.value?.xpToNextLevel ?? 1);
