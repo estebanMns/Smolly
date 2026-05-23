@@ -10,10 +10,15 @@ class Cap6Screen extends StatelessWidget {
     final messages = [
       NarrativeMessage('cap6_narrative_1'),
       DialogueMessage('cap6_iker_1', 'assets/images/iker.jpeg', isLeft: true),
-      DialogueMessage('cap6_molly_1', 'assets/images/perroblanco.png', isLeft: false),
-      DialogueMessage('cap6_kovu_1', 'assets/images/kovu.jpeg', isLeft: true),
-      DialogueMessage('cap6_horus_1', 'assets/images/horus.jpeg', isLeft: false),
       NarrativeMessage('cap6_narrative_2'),
+      DialogueMessage('cap6_kovu_1', 'assets/images/kovu.jpeg', isLeft: false),
+      DialogueMessage('cap6_molly_1', 'assets/images/molly.jpeg', isLeft: false),
+      DialogueMessage('cap6_horus_1', 'assets/images/horus.jpeg', isLeft: true),
+      DialogueMessage('cap6_perroblanco_1', 'assets/images/perroblanco.png', isLeft: true),
+      DialogueMessage('cap6_iker_2', 'assets/images/iker.jpeg', isLeft: true),
+      NarrativeMessage('cap6_narrative_3'),
+      DialogueMessage('cap6_molly_2', 'assets/images/molly.jpeg', isLeft: false),
+      NarrativeMessage('cap6_narrative_4'),
     ];
 
     return ChapterScreenTemplate(
