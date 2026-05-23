@@ -247,8 +247,8 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(); // Regresa de forma segura a LevelDetailScreen
+                Navigator.of(context).pop(); // Cierra el modal
+                Navigator.pushReplacementNamed(context, '/level-map');
               },
               child: const Text(
                 'Salir',
@@ -721,7 +721,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           IconButton(
             onPressed: () {
               _timer?.cancel();
-              Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, '/level-map');
             },
             icon: const Icon(
               Icons.logout_rounded,
