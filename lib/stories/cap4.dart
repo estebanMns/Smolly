@@ -30,7 +30,7 @@ class Cap4Screen extends StatelessWidget {
         Navigator.pushReplacementNamed(
           context,
           '/game-screen',
-          arguments: {'levelId': 4},
+          arguments: {'levelId': 12},
         );
       },
     );

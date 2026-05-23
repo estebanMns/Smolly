@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
 import '../../components/player_profile_controller.dart';
@@ -71,6 +72,22 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
     _audioPlayer = AudioPlayer();
     _playLobbySong();
+    _checkStoryIntro();
+  }
+
+  Future<void> _checkStoryIntro() async {
+    final prefs = await SharedPreferences.getInstance();
+    final bool seen = prefs.getBool('seen_intro_story') ?? false;
+    if (!seen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const StoryScreen()),
+          );
+        }
+      });
+    }
   }
 
   Future<void> _playLobbySong() async {
@@ -119,7 +136,6 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
             onCharacterTap: () => _navigateWithAudio(_navigationService.navigateToCharacters),
             onShopTap: () => _navigateWithAudio(_navigationService.navigateToShop),
             onAchievementsTap: () => _navigateWithAudio(_navigationService.navigateToAchievements),
-            onStoryTap: () => _navigateWithAudio(_navigationService.navigateToStory),
           ),
           PlayButtonSection(
             glowAnimation: _glowAnimation,
@@ -169,10 +185,6 @@ class NavigationService {
 
   Future<void> navigateToAchievements() async {
     await Navigator.push(context, MaterialPageRoute(builder: (_) => const AchievementsScreen()));
-  }
-
-  Future<void> navigateToStory() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const StoryScreen()));
   }
 }
 
@@ -492,14 +504,12 @@ class CenterMenuSection extends StatelessWidget {
   final VoidCallback onCharacterTap;
   final VoidCallback onShopTap;
   final VoidCallback onAchievementsTap;
-  final VoidCallback onStoryTap;
 
   const CenterMenuSection({
     super.key,
     required this.onCharacterTap,
     required this.onShopTap,
     required this.onAchievementsTap,
-    required this.onStoryTap,
   });
 
   @override
@@ -509,12 +519,6 @@ class CenterMenuSection extends StatelessWidget {
     final buttonWidth = (screenWidth - 64) / 2;
 
     final menuItems = [
-      MenuItemData(
-        label: 'story'.tr,
-        icon: Icons.auto_stories_rounded,
-        color: const Color(0xFF6286D1),
-        onTap: onStoryTap,
-      ),
       MenuItemData(
         label: 'characters'.tr,
         icon: Icons.people_rounded,
