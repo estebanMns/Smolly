@@ -69,8 +69,30 @@ class _LoginState extends State<Login>{
                     const SizedBox(height: 40),
                     Column(
                       children: [
-                        const Icon(Icons.rocket_launch, size: 80, color: Colors.white),
-                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF9C27B0).withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFFE040FB).withValues(alpha: 0.5),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF9C27B0).withValues(alpha: 0.4),
+                                blurRadius: 15,
+                                spreadRadius: 1,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.pets_rounded,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                         Text(
                           'title_login'.tr,
                           style: const TextStyle(
@@ -87,19 +109,29 @@ class _LoginState extends State<Login>{
                         ),
                       ],
                     ),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 40),
                     // Card del formulario
                     Container(
                       padding: const EdgeInsets.all(24.0),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            const Color(0xFF9C27B0).withValues(alpha: 0.25),
+                            const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                          ],
+                        ),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                        border: Border.all(
+                          color: const Color(0xFFE040FB).withValues(alpha: 0.5),
+                          width: 1.5,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            spreadRadius: 5,
+                            color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
@@ -110,25 +142,14 @@ class _LoginState extends State<Login>{
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputStyle('email'.tr, Icons.email_outlined),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 20),
                           TextField(
                             controller: passwordController,
                             obscureText: true,
                             style: const TextStyle(color: Colors.white),
                             decoration: _inputStyle('password'.tr, Icons.lock_outline),
                           ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'forgot_password'.tr,
-                                style: TextStyle(color: Colors.white70, fontSize: 12),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 30),
                           SizedBox(
                             width: double.infinity,
                             height: 50,
