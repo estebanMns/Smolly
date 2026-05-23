@@ -61,6 +61,8 @@ class TimeShop extends StatelessWidget {
                     itemBuilder: (context, index) => TimeOptionCard(option: options[index]),
                   ),
                 ),
+                _buildInventorySummary(controller),
+                const SizedBox(height: 20),
               ],
             ),
           ),

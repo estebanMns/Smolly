@@ -185,10 +185,15 @@ class _ResultScreenState extends State<ResultScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 18, letterSpacing: 1),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 18, letterSpacing: 1),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
+        const SizedBox(width: 10),
         Text(
           value,
           style: TextStyle(
@@ -204,14 +209,10 @@ class _ResultScreenState extends State<ResultScreen> {
   Widget _buildReturnButton(BuildContext context, int levelId) {
     return ElevatedButton(
       onPressed: () {
-        // Regresamos al detalle del nivel
+        // Regresamos al mapa de niveles
         Navigator.pushReplacementNamed(
           context,
-          '/level-detail',
-          arguments: {
-            'levelId': levelId,
-            'levelName': '${'level'.tr.toUpperCase()} $levelId',
-          },
+          '/level-map',
         );
       },
       style: ElevatedButton.styleFrom(
@@ -224,12 +225,12 @@ class _ResultScreenState extends State<ResultScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-          const SizedBox(width: 10),
           Text(
-            'back_to_details'.tr,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            'continue'.tr.toUpperCase(),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, letterSpacing: 1),
           ),
+          const SizedBox(width: 10),
+          const Icon(Icons.arrow_forward_ios_rounded, size: 18),
         ],
       ),
     );
