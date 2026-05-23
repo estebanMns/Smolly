@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/local_storage_helper.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
 import '../../components/player_profile_controller.dart';
@@ -72,6 +72,21 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
     _audioPlayer = AudioPlayer();
     _playLobbySong();
+    _checkStoryIntro();
+  }
+
+  Future<void> _checkStoryIntro() async {
+    final bool seen = await LocalStorageHelper.hasSeenStory();
+    if (!seen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const StoryScreen()),
+          );
+        }
+      });
+    }
   }
 
   Future<void> _playLobbySong() async {
@@ -148,13 +163,7 @@ class NavigationService {
   }
 
   Future<void> navigateToLevelMap() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool seen = prefs.getBool('seen_intro_story') ?? false;
-    if (!seen) {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => const StoryScreen()));
-    } else {
-      await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
-    }
+    await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
   }
 
   Future<void> navigateToCharacters() async {

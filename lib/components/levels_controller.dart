@@ -29,9 +29,21 @@ class LevelsController extends GetxController {
   }
 
   LevelModel getLevel(int id) {
-    return levels.firstWhere(
+    final original = levels.firstWhere(
       (l) => l.id == id,
       orElse: () => _getFallbackLevel(id),
+    );
+    final hasStory = const [1, 4, 8, 12, 17, 20, 21].contains(id);
+    return LevelModel(
+      id: original.id,
+      levelName: original.levelName,
+      targets: original.targets,
+      timeLimit: original.timeLimit,
+      isHard: original.isHard,
+      itemsToCollect: original.itemsToCollect,
+      coinsReward: original.coinsReward,
+      unlocksStory: hasStory,
+      cameraNotice: original.cameraNotice,
     );
   }
 

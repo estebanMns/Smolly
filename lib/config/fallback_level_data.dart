@@ -45,6 +45,14 @@ class FallbackLevelData {
         TargetItem(targetObject: "chair", displayName: 'chair'.tr),
       ];
       limit = 45.0;
+    } else if (id == 21) {
+      name = 'Nivel extra 21';
+      targets = [
+        TargetItem(targetObject: "person", displayName: 'human'.tr),
+        TargetItem(targetObject: "tv", displayName: 'tv'.tr),
+        TargetItem(targetObject: "backpack", displayName: 'backpack'.tr),
+      ];
+      limit = 35.0;
     } else {
       name = '${'level'.tr} $id';
       targets = [

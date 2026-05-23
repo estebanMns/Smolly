@@ -196,7 +196,6 @@ class LevelDetailScreen extends StatelessWidget {
 
           const SizedBox(height: 30),
 
-          // START BUTTON - Tema mágico
           ElevatedButton(
             onPressed: () {
               if (detail.unlocksStory) {
