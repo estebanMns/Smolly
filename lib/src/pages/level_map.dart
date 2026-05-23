@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../components/player_profile_controller.dart';
 import '../../utils/avatar_helper.dart';
+import '../../utils/local_storage_helper.dart';
 import '../../config/app_assets.dart';
 import '../../config/app_routes.dart';
 import '../../stories/cap1.dart';
@@ -81,13 +82,18 @@ class _LevelmapState extends State<Levelmap> with TickerProviderStateMixin {
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _scrollToCurrentLevel();
       if (maxUnlocked == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const Cap1Screen()),
-        );
+        final seenCap1 = await LocalStorageHelper.hasSeenCap1();
+        if (!seenCap1 && mounted) {
+          await LocalStorageHelper.setSeenCap1(true);
+          if (!mounted) return;
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const Cap1Screen()),
+          );
+        }
       }
     });
   }

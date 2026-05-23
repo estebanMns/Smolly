@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../utils/local_storage_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'level_map.dart';
 
 class StoryScreen extends StatelessWidget {
@@ -125,7 +125,9 @@ class StoryScreen extends StatelessWidget {
                     // Botón "Comenzar aventura"
                     _PlayButton(
                       onTap: () async {
-                        await LocalStorageHelper.setSeenStory(true);
+                        // Marcar que el usuario ya vio la introducción
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('has_seen_intro', true);
                         if (context.mounted) {
                           Navigator.pushReplacement(
                             context,

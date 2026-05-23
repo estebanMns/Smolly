@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../../utils/local_storage_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
 import '../../components/player_profile_controller.dart';
@@ -159,10 +159,27 @@ class NavigationService {
   }
 
   Future<void> navigateToLevelMap() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const Levelmap()),
-    );
+    // Usamos SharedPreferences con la clave 'has_seen_intro'.
+    // Solo se muestra el StoryScreen la primera vez que el jugador
+    // presiona Jugar. Después de eso, va directo al mapa.
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenIntro = prefs.getBool('has_seen_intro') ?? false;
+
+    if (!context.mounted) return;
+
+    if (!hasSeenIntro) {
+      // Primera vez: mostrar historia introductoria
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const StoryScreen()),
+      );
+    } else {
+      // Ya la vio: ir directo al mapa
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const Levelmap()),
+      );
+    }
   }
 
   Future<void> navigateToCharacters() async {

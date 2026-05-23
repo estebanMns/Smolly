@@ -89,4 +89,28 @@ class LocalStorageHelper {
       print('Error saving seen_story file: $e');
     }
   }
+
+  static Future<bool> hasSeenCap1() async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/seen_cap1.txt');
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        return content.trim() == 'true';
+      }
+    } catch (e) {
+      print('Error reading seen_cap1 file: $e');
+    }
+    return false;
+  }
+
+  static Future<void> setSeenCap1(bool value) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/seen_cap1.txt');
+      await file.writeAsString(value.toString());
+    } catch (e) {
+      print('Error saving seen_cap1 file: $e');
+    }
+  }
 }

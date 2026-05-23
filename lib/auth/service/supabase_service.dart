@@ -187,7 +187,7 @@ class SupabaseService {
       List<Map<String, String>> targets;
       double limit;
       String name;
-      
+       
       if (i == 0) {
         name = 'molly_tutorial';
         targets = [{'targetObject': 'dog', 'displayName': 'molly_tutorial'}];
