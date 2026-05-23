@@ -63,7 +63,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
             ? rawAvatar 
             : 'assets/images/kovu.jpeg';
 
-        player.value = PlayerModel(
+        final updatedPlayer = PlayerModel(
           uid: profileData['id'] ?? 'u001',
           username: profileData['username'] ?? 'Usuario',
           avatarUrl: finalAvatar, 
@@ -80,14 +80,26 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
           boosters2m: profileData['boosters_2m'] ?? 0,
           maxUnlockedLevel: profileData['max_unlocked_level'] ?? localMaxUnlocked,
         );
+        player.value = updatedPlayer;
+        await LocalStorageHelper.savePlayer(updatedPlayer);
       } else {
-        print("Aviso: No se encontró perfil para este usuario. Usando datos por defecto.");
-        _setFallbackPlayerData(localMaxUnlocked);
+        print("Aviso: No se encontró perfil para este usuario. Intentando cargar datos locales.");
+        final localPlayer = await LocalStorageHelper.loadPlayer();
+        if (localPlayer != null) {
+          player.value = localPlayer;
+        } else {
+          _setFallbackPlayerData(localMaxUnlocked);
+        }
       }
     } catch (e) {
-      print("Error cargando perfil (posiblemente usuario nuevo): $e");
-      final int localMaxUnlocked = await LocalStorageHelper.getMaxUnlockedLevel();
-      _setFallbackPlayerData(localMaxUnlocked);
+      print("Error cargando perfil: $e. Intentando cargar datos locales.");
+      final localPlayer = await LocalStorageHelper.loadPlayer();
+      if (localPlayer != null) {
+        player.value = localPlayer;
+      } else {
+        final int localMaxUnlocked = await LocalStorageHelper.getMaxUnlockedLevel();
+        _setFallbackPlayerData(localMaxUnlocked);
+      }
     } finally {
       isLoading.value = false;
     }
@@ -111,6 +123,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       boosters2m: 0,
       maxUnlockedLevel: localMaxUnlocked,
     );
+    LocalStorageHelper.savePlayer(player.value!);
   }
 
   void _loadAvailableAvatars() async {
@@ -151,6 +164,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     );
 
     player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
     _supabaseService.updateGameStats(updatedPlayer);
     return true;
   }
@@ -161,6 +175,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       coins: player.value!.coins + amount,
     );
     player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
     _supabaseService.updateGameStats(updatedPlayer);
   }
 
@@ -183,6 +198,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       xpToNextLevel: currentXpToNext,
     );
     player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
     _supabaseService.updateGameStats(updatedPlayer);
   }
 
@@ -230,6 +246,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     );
 
     player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
     _supabaseService.updateGameStats(updatedPlayer);
     return true;
   }
@@ -241,16 +258,19 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
     if (type == '30s' && p.boosters30s > 0) {
       final updated = p.copyWith(boosters30s: p.boosters30s - 1);
       player.value = updated;
+      LocalStorageHelper.savePlayer(updated);
       _supabaseService.updateGameStats(updated);
       return true;
     } else if (type == '1m' && p.boosters1m > 0) {
       final updated = p.copyWith(boosters1m: p.boosters1m - 1);
       player.value = updated;
+      LocalStorageHelper.savePlayer(updated);
       _supabaseService.updateGameStats(updated);
       return true;
     } else if (type == '2m' && p.boosters2m > 0) {
       final updated = p.copyWith(boosters2m: p.boosters2m - 1);
       player.value = updated;
+      LocalStorageHelper.savePlayer(updated);
       _supabaseService.updateGameStats(updated);
       return true;
     }
@@ -269,6 +289,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
         avatarUrl: newUrl,
       );
       player.value = updatedPlayer;
+      LocalStorageHelper.savePlayer(updatedPlayer);
       
       if (Get.isBottomSheetOpen ?? false) Get.back(); 
       
@@ -292,6 +313,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
         username: newName,
       );
       player.value = updatedPlayer;
+      LocalStorageHelper.savePlayer(updatedPlayer);
 
       Get.snackbar('Éxito', '¡Nombre de usuario actualizado!',
         snackPosition: SnackPosition.BOTTOM,
@@ -406,6 +428,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
     // Actualizar estado local
     player.value = updatedPlayer;
+    await LocalStorageHelper.savePlayer(updatedPlayer);
 
     // Persistir en Supabase
     await _supabaseService.updateGameStats(updatedPlayer);
