@@ -52,8 +52,8 @@ class _LoginState extends State<Login>{
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.4),
-                  Colors.black.withValues(alpha: 0.7),
+                  const Color(0xFF13142B).withValues(alpha: 0.5),
+                  const Color(0xFF18132B).withValues(alpha: 0.85),
                 ],
               ),
             ),
@@ -72,15 +72,15 @@ class _LoginState extends State<Login>{
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF9C27B0).withValues(alpha: 0.2),
+                            color: const Color(0xFFFFA776).withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: const Color(0xFFE040FB).withValues(alpha: 0.5),
+                              color: const Color(0xFFFFA776).withValues(alpha: 0.5),
                               width: 1.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF9C27B0).withValues(alpha: 0.4),
+                                color: const Color(0xFFFFA776).withValues(alpha: 0.4),
                                 blurRadius: 15,
                                 spreadRadius: 1,
                               ),
@@ -89,7 +89,7 @@ class _LoginState extends State<Login>{
                           child: const Icon(
                             Icons.pets_rounded,
                             size: 60,
-                            color: Colors.white,
+                            color: Color(0xFFFFA776),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -100,6 +100,13 @@ class _LoginState extends State<Login>{
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                             letterSpacing: 2,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 10,
+                                color: Color(0xFFFFA776),
+                                offset: Offset(0, 0),
+                              ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -118,18 +125,18 @@ class _LoginState extends State<Login>{
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            const Color(0xFF9C27B0).withValues(alpha: 0.25),
-                            const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                            const Color(0xFF1A1C36).withValues(alpha: 0.8),
+                            const Color(0xFF281E3B).withValues(alpha: 0.75),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFFE040FB).withValues(alpha: 0.5),
+                          color: const Color(0xFF5C93FC).withValues(alpha: 0.55),
                           width: 1.5,
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+                            color: const Color(0xFF5C93FC).withValues(alpha: 0.3),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -156,15 +163,15 @@ class _LoginState extends State<Login>{
                             child: ElevatedButton(
                               onPressed: () => _handleLogin(context, emailController.text, passwordController.text),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF9C27B0),
-                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFFFFA776),
+                                foregroundColor: const Color(0xFF13142B),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 elevation: 8,
-                                shadowColor: const Color(0xFF9C27B0).withValues(alpha: 0.5),
+                                shadowColor: const Color(0xFFFFA776).withValues(alpha: 0.5),
                               ),
                               child: Text(
                                 'login_btn'.tr,
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                               ),
                             ),
                           ),
@@ -178,11 +185,10 @@ class _LoginState extends State<Login>{
                       children: [
                         Text(
                           'no_account'.tr,
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                          style: const TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navegación corregida a la clase 'Register'
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const Register()),
@@ -190,8 +196,8 @@ class _LoginState extends State<Login>{
                           },
                           child: Text(
                             'register_btn'.tr,
-                            style: TextStyle(
-                              color: Colors.purpleAccent,
+                            style: const TextStyle(
+                              color: Color(0xFFFFA776),
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -213,21 +219,21 @@ class _LoginState extends State<Login>{
   InputDecoration _inputStyle(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+      hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
       prefixIcon: Icon(icon, color: Colors.white.withValues(alpha: 0.8)),
       filled: true,
-      fillColor: Colors.white.withValues(alpha: 0.2),
+      fillColor: Colors.white.withValues(alpha: 0.15),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
+        borderSide: BorderSide(color: const Color(0xFF5C93FC).withValues(alpha: 0.3)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.4)),
+        borderSide: BorderSide(color: const Color(0xFF5C93FC).withValues(alpha: 0.3)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.purpleAccent, width: 2),
+        borderSide: const BorderSide(color: Color(0xFF5C93FC), width: 2),
       ),
     );
   }
@@ -248,11 +254,13 @@ class _LoginState extends State<Login>{
 
     try {
       await authService.signIn(email, password);
+      if (!context.mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const Lobby()),
       );
     } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${'error_prefix'.tr} ${e.toString()}'), backgroundColor: Colors.red),
       );
