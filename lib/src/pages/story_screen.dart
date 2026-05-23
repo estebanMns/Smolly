@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'lobby_screen.dart';
+import 'level_map.dart';
 
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key});
@@ -11,7 +11,7 @@ class StoryScreen extends StatelessWidget {
     if (context.mounted) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const Lobby()),
+        MaterialPageRoute(builder: (_) => const Levelmap()),
       );
     }
   }

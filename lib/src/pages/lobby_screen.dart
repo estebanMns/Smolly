@@ -72,22 +72,6 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
 
     _audioPlayer = AudioPlayer();
     _playLobbySong();
-    _checkStoryIntro();
-  }
-
-  Future<void> _checkStoryIntro() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool seen = prefs.getBool('seen_intro_story') ?? false;
-    if (!seen) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const StoryScreen()),
-          );
-        }
-      });
-    }
   }
 
   Future<void> _playLobbySong() async {
@@ -164,7 +148,13 @@ class NavigationService {
   }
 
   Future<void> navigateToLevelMap() async {
-    await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
+    final prefs = await SharedPreferences.getInstance();
+    final bool seen = prefs.getBool('seen_intro_story') ?? false;
+    if (!seen) {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => const StoryScreen()));
+    } else {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) => const Levelmap()));
+    }
   }
 
   Future<void> navigateToCharacters() async {
