@@ -50,12 +50,8 @@ class TimeShop extends StatelessWidget {
               children: [
                 _buildHeader(context),
                 const SizedBox(height: 10),
-                _buildTitle(),
-                const SizedBox(height: 8),
                 _buildSubtitle(),
-                const SizedBox(height: 20),
-                _buildInventorySummary(controller),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 Expanded(
                   child: ListView.separated(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -74,11 +70,9 @@ class TimeShop extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final controller = Get.find<PlayerProfileController>();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.all(20.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -100,63 +94,27 @@ class TimeShop extends StatelessWidget {
               ),
             ),
           ),
-          Obx(() => _buildCoinCounter(controller.player.value?.coins ?? 0)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCoinCounter(int amount) {
-    return Container(
-      height: 45,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(22.5),
-        border: Border.all(
-          color: Colors.amber.withValues(alpha: 0.5),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.amber.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.monetization_on_rounded, color: Colors.amber, size: 22),
-          const SizedBox(width: 8),
-          Text(
-            "$amount",
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          Expanded(
+            child: Center(
+              child: Text(
+                'more_time'.tr.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 2,
+                  shadows: [
+                    Shadow(
+                      blurRadius: 10,
+                      color: Color(0xFF7C4DFF),
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTitle() {
-    return Text(
-      'more_time'.tr.toUpperCase(),
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 30,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 3.0,
-        shadows: [
-          Shadow(
-            blurRadius: 15,
-            color: Color(0xFF7C4DFF),
-            offset: Offset(0, 0),
-          ),
+          const SizedBox(width: 45),
         ],
       ),
     );
