@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // REQUERIMIENTOS BACKEND (Controladores y Hojas de diálogo)
@@ -18,10 +17,12 @@ import 'achievements.dart';
 import 'story_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MAIN LOBBY SCREEN (ORQUESTADOR PRINCIPAL)
+// MAIN LOBBY SCREEN (Orquestador principal)
 // ─────────────────────────────────────────────────────────────────────────────
 import '../../components/levels_controller.dart';
 import '../../config/app_assets.dart';
+import '../../utils/audio_service.dart';
+import '../../utils/avatar_helper.dart';
 
 class Lobby extends StatefulWidget {
   const Lobby({super.key});
@@ -38,7 +39,6 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
   late final Animation<double> _glowAnimation;
 
   late final NavigationService _navigationService;
-  late final AudioPlayer _audioPlayer;
 
   @override
   void initState() {
@@ -70,29 +70,27 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
       CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
     );
 
-    _audioPlayer = AudioPlayer();
     _playLobbySong();
   }
 
   Future<void> _playLobbySong() async {
-    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.play(AssetSource(AppAssets.audioLobbySong));
+    await AudioService().play(AppAssets.audioLobbySong, loop: true);
   }
 
   Future<void> _navigateWithAudio(
     Future<void> Function() navigateAction,
   ) async {
     try {
-      await _audioPlayer.pause();
+      await AudioService().pause();
     } catch (e) {
-      debugPrint("AudioPlayer pause error: $e");
+      debugPrint("Audio pause error: $e");
     }
     await navigateAction();
     // Reanudar la música cuando se regrese al Lobby
     try {
-      await _audioPlayer.resume();
+      await AudioService().resume();
     } catch (e) {
-      debugPrint("AudioPlayer resume error: $e");
+      debugPrint("Audio resume error: $e");
     }
   }
 
@@ -101,42 +99,45 @@ class _LobbyState extends State<Lobby> with TickerProviderStateMixin {
     _floatController.dispose();
     _twinkleController.dispose();
     _glowController.dispose();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    AudioService().stop();
+    AudioService().dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          const GalacticBackground(),
-          StarField(controller: _twinkleController),
-          TopHudSection(
-            floatAnimation: _floatAnimation,
-            onAvatarTap: () =>
-                _navigateWithAudio(_navigationService.navigateToPlayerProfile),
-          ),
-          HeroSection(floatAnimation: _floatAnimation),
-          CenterMenuSection(
-            onCharacterTap: () =>
-                _navigateWithAudio(_navigationService.navigateToCharacters),
-            onShopTap: () =>
-                _navigateWithAudio(_navigationService.navigateToShop),
-            onAchievementsTap: () =>
-                _navigateWithAudio(_navigationService.navigateToAchievements),
-          ),
-          PlayButtonSection(
-            glowAnimation: _glowAnimation,
-            onTap: () =>
-                _navigateWithAudio(_navigationService.navigateToLevelMap),
-          ),
-          BottomNavigationSection(
-            onSettingsTap: () =>
-                _navigateWithAudio(_navigationService.navigateToSettings),
-          ),
-        ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            const GalacticBackground(),
+            StarField(controller: _twinkleController),
+            TopHudSection(
+              floatAnimation: _floatAnimation,
+              onAvatarTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToPlayerProfile),
+            ),
+            HeroSection(floatAnimation: _floatAnimation),
+            CenterMenuSection(
+              onCharacterTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToCharacters),
+              onShopTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToShop),
+              onAchievementsTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToAchievements),
+            ),
+            PlayButtonSection(
+              glowAnimation: _glowAnimation,
+              onTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToLevelMap),
+            ),
+            BottomNavigationSection(
+              onSettingsTap: () =>
+                  _navigateWithAudio(_navigationService.navigateToSettings),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -344,12 +345,14 @@ class AvatarDisplay extends StatelessWidget {
                 ),
               ],
             ),
-            child: CircleAvatar(
-              radius: 26,
-              backgroundImage: NetworkImage(
-                avatarUrl.startsWith('http')
-                    ? avatarUrl
-                    : AppAssets.fallbackAvatarUrl,
+            child: ClipOval(
+              child: Image(
+                image: getAvatarImageProvider(avatarUrl),
+                fit: BoxFit.cover,
+                width: 60,
+                height: 60,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.person, size: 30, color: Colors.white),
               ),
             ),
           ),
@@ -474,6 +477,7 @@ class HeroSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+    final controller = Get.find<PlayerProfileController>();
 
     return Positioned(
       top: screenSize.height * 0.12,
@@ -486,17 +490,20 @@ class HeroSection extends StatelessWidget {
           child: Column(
             children: [
               ClipOval(
-                child: Image.network(
-                  AppAssets.fallbackAvatarUrl,
-                  width: 130,
-                  height: 130,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.rocket_launch_rounded,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                ),
+                child: Obx(() {
+                  final avatarUrl = controller.player.value?.avatarUrl ?? '';
+                  return Image(
+                    image: getAvatarImageProvider(avatarUrl),
+                    width: 130,
+                    height: 130,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.rocket_launch_rounded,
+                      size: 80,
+                      color: Colors.white,
+                    ),
+                  );
+                }),
               ),
               const SizedBox(height: 10),
               Text(
@@ -861,19 +868,13 @@ class BottomNavigationSection extends StatelessWidget {
           right: 40,
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             BottomNavItem(
               icon: Icons.settings_rounded,
               label: 'settings_nav'.tr,
               color: const Color(0xFF62C0E0),
               onTap: onSettingsTap,
-            ),
-            BottomNavItem(
-              icon: Icons.help_outline_rounded,
-              label: 'help_nav'.tr,
-              color: const Color(0xFFE097CC),
-              onTap: () {},
             ),
           ],
         ),

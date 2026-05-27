@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../components/player_profile_controller.dart';
 
 class AchievementsScreen extends StatelessWidget {
   const AchievementsScreen({super.key});
@@ -6,6 +8,53 @@ class AchievementsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final controller = Get.find<PlayerProfileController>();
+
+    // Definir todos los logros con su ID
+    final List<Map<String, dynamic>> allAchievements = [
+      {
+        'id': 'primer-vuelo',
+        'title': 'Fragmento Recuperado',
+        'description': 'Consigue tu primer fragmento de Lunaris.',
+        'icon': Icons.rocket_launch,
+        'color': const Color(0xFFFF6B6B),
+      },
+      {
+        'id': 'cazador-estrellas',
+        'title': 'Contra el Tiempo',
+        'description': 'Completa un nivel con muy poco tiempo restante.',
+        'icon': Icons.star,
+        'color': const Color(0xFFFFD93D),
+      },
+      {
+        'id': 'viajero-temporal',
+        'title': 'Olfato Legendario',
+        'description': 'Encuentra todos los objetos de un nivel sin fallar.',
+        'icon': Icons.timer,
+        'color': const Color(0xFFFF8E53),
+      },
+      {
+        'id': 'maestro-molly',
+        'title': 'La Luz de Lunaris',
+        'description': 'Recupera múltiples fragmentos seguidos sin perder.',
+        'icon': Icons.pets,
+        'color': const Color(0xFF69F0AE),
+      },
+      {
+        'id': 'guerrero-galactico',
+        'title': 'Sombras del Eclipse',
+        'description': 'Sobrevive a un nivel donde Molly aumenta la dificultad.',
+        'icon': Icons.shield,
+        'color': const Color(0xFF7C4DFF),
+      },
+      {
+        'id': 'leyenda-viviente',
+        'title': 'El Destino de Iker',
+        'description': 'Desbloquea el final verdadero salvando a Iker.',
+        'icon': Icons.emoji_events,
+        'color': const Color(0xFFFF4081),
+      },
+    ];
 
     return Scaffold(
       body: Stack(
@@ -71,7 +120,11 @@ class AchievementsScreen extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // Tarjeta de Progreso
-                _buildProgressCard(screenWidth),
+                Obx(() => _buildProgressCard(
+                      screenWidth,
+                      controller.player.value?.unlockedAchievements.length ?? 0,
+                      allAchievements.length,
+                    )),
 
                 const SizedBox(height: 25),
 
@@ -79,59 +132,28 @@ class AchievementsScreen extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ListView(
-                      physics: const BouncingScrollPhysics(),
-                      children: [
-                        _buildAchievementCard(
-                          'Primer Vuelo',
-                          'Completa tu primera misión',
-                          Icons.rocket_launch,
-                          const Color(0xFFFF6B6B),
-                          true,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildAchievementCard(
-                          'Cazador de Estrellas',
-                          'Recolecta 100 estrellas',
-                          Icons.star,
-                          const Color(0xFFFFD93D),
-                          true,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildAchievementCard(
-                          'Viajero Temporal',
-                          'Viaja 10 veces en el tiempo',
-                          Icons.timer,
-                          const Color(0xFFFF8E53),
-                          false,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildAchievementCard(
-                          'Maestro Molly',
-                          'Alcanza el nivel máximo',
-                          Icons.pets,
-                          const Color(0xFF69F0AE),
-                          false,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildAchievementCard(
-                          'Guerrero Galáctico',
-                          'Derrota 50 enemigos',
-                          Icons.shield,
-                          const Color(0xFF7C4DFF),
-                          false,
-                        ),
-                        const SizedBox(height: 12),
-                        _buildAchievementCard(
-                          'Leyenda Viviente',
-                          'Desbloquea todos los logros',
-                          Icons.emoji_events,
-                          const Color(0xFFFF4081),
-                          false,
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                    child: Obx(() {
+                      final unlocked = controller.player.value?.unlockedAchievements ?? const {};
+                      return ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: allAchievements.length,
+                        itemBuilder: (context, index) {
+                          final achievement = allAchievements[index];
+                          return Column(
+                            children: [
+                              _buildAchievementCard(
+                                achievement['title'],
+                                achievement['description'],
+                                achievement['icon'],
+                                achievement['color'],
+                                unlocked.contains(achievement['id']),
+                              ),
+                              const SizedBox(height: 12),
+                            ],
+                          );
+                        },
+                      );
+                    }),
                   ),
                 ),
               ],
@@ -165,7 +187,8 @@ class AchievementsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgressCard(double screenWidth) {
+  Widget _buildProgressCard(double screenWidth, int unlockedCount, int totalCount) {
+    final progress = totalCount > 0 ? unlockedCount / totalCount : 0.0;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -219,7 +242,7 @@ class AchievementsScreen extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: LinearProgressIndicator(
-                  value: 0.33,
+                  value: progress,
                   backgroundColor: Colors.white.withValues(alpha: 0.2),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     Color(0xFFFFD93D),
@@ -246,9 +269,9 @@ class AchievementsScreen extends StatelessWidget {
                     width: 1,
                   ),
                 ),
-                child: const Text(
-                  "2 / 6 LOGROS",
-                  style: TextStyle(
+                child: Text(
+                  "$unlockedCount / $totalCount LOGROS",
+                  style: const TextStyle(
                     color: Color(0xFFFFD93D),
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

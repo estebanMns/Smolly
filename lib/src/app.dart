@@ -7,8 +7,10 @@ import 'pages/level_detail.dart';
 import 'pages/game_screen.dart';
 import 'pages/result_screen.dart';
 import 'pages/settings_screen.dart';
+import 'pages/login_screen.dart';
 import 'localization/app_translations.dart';
 import '../config/app_routes.dart';
+import '../auth/auth_gate.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
 
-      initialRoute: AppRoutes.home,
+      home: const AuthGate(),
 
       routes: {
         AppRoutes.home: (context) => const Home(),
@@ -37,11 +39,12 @@ class MyApp extends StatelessWidget {
         AppRoutes.gameScreen: (context) => const GameScreen(),
         AppRoutes.resultScreen: (context) => const ResultScreen(),
         AppRoutes.settingsScreen: (context) => const SettingsScreen(),
+        AppRoutes.login: (context) => const Login(),
       },
 
       // Esto ayuda por si hay errores de navegación
       onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (context) => const Home());
+        return MaterialPageRoute(builder: (context) => const AuthGate());
       },
     );
   }

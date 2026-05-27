@@ -196,10 +196,11 @@ class PlayerProfileScreen extends StatelessWidget {
       Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: AppColors.background.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.cyan.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
@@ -216,57 +217,70 @@ class PlayerProfileScreen extends StatelessWidget {
                 'CAMBIAR NOMBRE',
                 style: TextStyle(
                   color: AppColors.cyan,
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 3,
+                  letterSpacing: 2,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               TextField(
                 controller: textController,
                 autofocus: true,
-                style: const TextStyle(color: Colors.white, fontSize: 18),
+                style: const TextStyle(color: Colors.white, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Nuevo nombre...',
-                  hintStyle: const TextStyle(color: Colors.white38),
+                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 12),
                   filled: true,
                   fillColor: Colors.white.withValues(alpha: 0.05),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: Colors.white10),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: AppColors.cyan),
                   ),
                 ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('CANCELAR', style: TextStyle(color: Colors.white54)),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (textController.text.trim().isNotEmpty) {
-                        controller.updateUsername(textController.text.trim());
-                        Get.back();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.cyan,
-                      foregroundColor: AppColors.background,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  Flexible(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text(
+                        'CANCELAR',
+                        style: TextStyle(color: Colors.white54, fontSize: 12),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
-                    child: const Text('GUARDAR', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (textController.text.trim().isNotEmpty) {
+                          controller.updateUsername(textController.text.trim());
+                          Get.back();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.cyan,
+                        foregroundColor: AppColors.background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      ),
+                      child: const Text(
+                        'GUARDAR',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -282,10 +296,11 @@ class PlayerProfileScreen extends StatelessWidget {
       Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 20),
           decoration: BoxDecoration(
             color: AppColors.background.withValues(alpha: 0.95),
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.orangeAccent.withValues(alpha: 0.3)),
             boxShadow: [
               BoxShadow(
@@ -298,69 +313,82 @@ class PlayerProfileScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 50),
-              const SizedBox(height: 15),
+              const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 40),
+              const SizedBox(height: 12),
               const Text(
                 'REINICIAR PROGRESO',
                 style: TextStyle(
                   color: Colors.orangeAccent,
-                  fontSize: 18,
+                  fontSize: 14,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 3,
+                  letterSpacing: 2,
                 ),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 12),
               const Text(
                 '¿Estás seguro de que deseas reiniciar todo tu progreso, monedas y potenciadores? Esta acción no se puede deshacer.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white70, fontSize: 14),
+                style: TextStyle(color: Colors.white70, fontSize: 12),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: const Text('CANCELAR', style: TextStyle(color: Colors.white54)),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () async {
-                      Get.back(); // Cierra el modal de confirmación
-                      // Mostrar indicador de carga
-                      Get.dialog(
-                        const Center(child: CircularProgressIndicator(color: AppColors.cyan)),
-                        barrierDismissible: false,
-                      );
-                      final success = await controller.resetGameProgress();
-                      Get.back(); // Cierra el indicador de carga
-                      if (success) {
-                        Get.snackbar(
-                          'Éxito',
-                          'El progreso del juego se ha reiniciado por completo.',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.green.withValues(alpha: 0.8),
-                          colorText: Colors.white,
-                        );
-                      } else {
-                        Get.snackbar(
-                          'Error',
-                          'No se pudo reiniciar el progreso. Inténtalo de nuevo.',
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.red.withValues(alpha: 0.8),
-                          colorText: Colors.white,
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orangeAccent,
-                      foregroundColor: AppColors.background,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  Flexible(
+                    child: TextButton(
+                      onPressed: () => Get.back(),
+                      child: const Text(
+                        'CANCELAR',
+                        style: TextStyle(color: Colors.white54, fontSize: 12),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                     ),
-                    child: const Text('REINICIAR', style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Get.back(); // Cierra el modal de confirmación
+                        // Mostrar indicador de carga
+                        Get.dialog(
+                          const Center(child: CircularProgressIndicator(color: AppColors.cyan)),
+                          barrierDismissible: false,
+                        );
+                        final success = await controller.resetGameProgress();
+                        Get.back(); // Cierra el indicador de carga
+                        if (success) {
+                          Get.snackbar(
+                            'Éxito',
+                            'El progreso del juego se ha reiniciado por completo.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green.withValues(alpha: 0.8),
+                            colorText: Colors.white,
+                          );
+                        } else {
+                          Get.snackbar(
+                            'Error',
+                            'No se pudo reiniciar el progreso. Inténtalo de nuevo.',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red.withValues(alpha: 0.8),
+                            colorText: Colors.white,
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent,
+                        foregroundColor: AppColors.background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      ),
+                      child: const Text(
+                        'REINICIAR',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
