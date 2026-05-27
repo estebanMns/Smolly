@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:juego_movil/components/yolo/game_scan_controller.dart';
 import 'package:juego_movil/components/yolo/smart_yolo_camera.dart';
 import 'package:juego_movil/utils/item_translations.dart';
@@ -11,6 +10,7 @@ import 'package:juego_movil/models/level_model.dart';
 import 'package:juego_movil/components/levels_controller.dart';
 import 'package:juego_movil/components/player_profile_controller.dart';
 import 'package:juego_movil/config/app_routes.dart';
+import 'package:juego_movil/utils/audio_service.dart';
 
 // ============================================================
 // PANTALLA DE JUEGO PRINCIPAL CON YOLO INTELIGENTE
@@ -23,7 +23,6 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
-  late final AudioPlayer _audioPlayer;
   late final GameScanController _scanController;
   late final LevelModel _config;
   late final int _currentLevelId;
@@ -45,7 +44,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _audioPlayer = AudioPlayer();
   }
 
   @override
@@ -53,10 +51,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.detached ||
         state == AppLifecycleState.inactive) {
-      _audioPlayer.pause();
+      AudioService().pause();
     } else if (state == AppLifecycleState.resumed) {
       if (!_isPaused) {
-        _audioPlayer.resume();
+        AudioService().resume();
       }
     }
   }
@@ -158,9 +156,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     setState(() {
       _isPaused = !_isPaused;
       if (_isPaused) {
-        _audioPlayer.pause();
+        AudioService().pause();
       } else {
-        _audioPlayer.resume();
+        AudioService().resume();
       }
     });
   }
@@ -274,8 +272,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _playLevelMusic() async {
-    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.play(AssetSource('audio/Niveles.mp3'));
+    await AudioService().play('audio/Niveles.mp3', loop: true);
   }
 
   // --- LÓGICA DE USO DE POTENCIADORES ---
@@ -323,30 +320,38 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
       if (p == null) return const SizedBox.shrink();
 
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _buildBoosterItem(
-              icon: Icons.bolt,
-              label: "+30s",
-              count: p.boosters30s,
-              color: Colors.orangeAccent,
-              onTap: () => _useBooster('30s'),
+            Flexible(
+              child: _buildBoosterItem(
+                icon: Icons.bolt,
+                label: "+30s",
+                count: p.boosters30s,
+                color: Colors.orangeAccent,
+                onTap: () => _useBooster('30s'),
+              ),
             ),
-            _buildBoosterItem(
-              icon: Icons.speed,
-              label: "+1m",
-              count: p.boosters1m,
-              color: Colors.cyanAccent,
-              onTap: () => _useBooster('1m'),
+            const SizedBox(width: 8),
+            Flexible(
+              child: _buildBoosterItem(
+                icon: Icons.speed,
+                label: "+1m",
+                count: p.boosters1m,
+                color: Colors.cyanAccent,
+                onTap: () => _useBooster('1m'),
+              ),
             ),
-            _buildBoosterItem(
-              icon: Icons.hourglass_full,
-              label: "+2m",
-              count: p.boosters2m,
-              color: Colors.greenAccent,
-              onTap: () => _useBooster('2m'),
+            const SizedBox(width: 8),
+            Flexible(
+              child: _buildBoosterItem(
+                icon: Icons.hourglass_full,
+                label: "+2m",
+                count: p.boosters2m,
+                color: Colors.greenAccent,
+                onTap: () => _useBooster('2m'),
+              ),
             ),
           ],
         ),
@@ -365,39 +370,40 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           color: hasBooster ? Colors.white.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: hasBooster ? color.withValues(alpha: 0.5) : Colors.white24,
             width: 1.5,
           ),
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: hasBooster ? color : Colors.grey, size: 18),
-            const SizedBox(width: 6),
+            Icon(icon, color: hasBooster ? color : Colors.grey, size: 16),
+            const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
                 color: hasBooster ? Colors.white : Colors.grey,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: 12,
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(
                 color: hasBooster ? color.withValues(alpha: 0.3) : Colors.white10,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 "x$count",
                 style: TextStyle(
                   color: hasBooster ? Colors.white : Colors.grey,
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -418,84 +424,92 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel();
-    _audioPlayer.stop();
-    _audioPlayer.dispose();
+    AudioService().stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // 1. FONDO ASSET DE LOS NIVELES FIJO (DISEÑO FIGMA)
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/fondoniveles.jpg'),
-                fit: BoxFit.cover,
+    return PopScope(
+      canPop: false, // No permitir que se salga de la pantalla
+      onPopInvoked: (didPop) {
+        // Interceptar el botón de retroceso del sistema
+        if (!didPop && !_isPaused) {
+          _togglePause();
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            // 1. FONDO ASSET DE LOS NIVELES FIJO (DISEÑO FIGMA)
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/fondoniveles.jpg'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
 
-          // 2. CONTENIDO DEL JUEGO
-          SafeArea(
-            child: _isLoadingLabels
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.cyanAccent),
-                  )
-                : Column(
-                    children: [
-                      _buildTopBar(_config),
+            // 2. CONTENIDO DEL JUEGO
+            SafeArea(
+              child: _isLoadingLabels
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.cyanAccent),
+                    )
+                  : Column(
+                      children: [
+                        _buildTopBar(_config),
 
-                      // ÁREA DE CÁMARA (CUADRO GRIS CON BORDES REDONDEADOS DE 20)
-                      Expanded(
-                        flex: 6,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                _buildDetectionCamera(_scanController),
-                                _buildStatusOverlay(_scanController, _config),
-                                if (_isPaused)
-                                  Container(
-                                    color: Colors.black.withValues(alpha: 0.6),
-                                    child: const Center(
-                                      child: Text(
-                                        "JUEGO PAUSADO",
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
+                        // ÁREA DE CÁMARA (CUADRO GRIS CON BORDES REDONDEADOS DE 20)
+                        Expanded(
+                          flex: 6,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  _buildDetectionCamera(_scanController),
+                                  _buildStatusOverlay(_scanController, _config),
+                                  if (_isPaused)
+                                    Container(
+                                      color: Colors.black.withValues(alpha: 0.6),
+                                      child: const Center(
+                                        child: Text(
+                                          "JUEGO PAUSADO",
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
 
-                      // PANEL DE CONTROL DE POTENCIADORES DE TIEMPO
-                      _buildBoosterPanel(),
+                        // PANEL DE CONTROL DE POTENCIADORES DE TIEMPO
+                        _buildBoosterPanel(),
 
-                      // BOTONES INFERIORES ESTILO FIGMA
-                      Expanded(
-                        flex: 2,
-                        child: _buildBottomControls(_scanController, context),
-                      ),
-                    ],
-                  ),
-          ),
-        ],
+                        // BOTONES INFERIORES ESTILO FIGMA
+                        Expanded(
+                          flex: 2,
+                          child: _buildBottomControls(_scanController, context),
+                        ),
+                      ],
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

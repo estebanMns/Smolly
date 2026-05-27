@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:get/get.dart';
+import '../../components/settings_controller.dart';
+import '../../utils/audio_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   // Se agregó el parámetro key para corregir 'use_key_in_widget_constructors'
@@ -11,7 +13,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool _soundEnabled = true;
+  final SettingsController _settingsController = Get.find<SettingsController>();
   String _selectedLanguage = Get.locale?.languageCode == 'en' ? 'Inglés' : 'Español';
   bool _cameraAccess = false;
 
@@ -64,17 +66,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     physics: const BouncingScrollPhysics(),
                     children: [
-                      _buildSettingItem(
+                      Obx(() => _buildSettingItem(
                         icon: Icons.volume_up_rounded,
                         title: 'sound'.tr,
                         color: const Color(0xFF69F0AE),
                         trailing: Switch(
-                          value: _soundEnabled,
+                          value: _settingsController.isSoundOn.value,
                           activeThumbColor: const Color(0xFF69F0AE),
                           activeTrackColor: const Color(0xFF69F0AE).withValues(alpha: 0.5),
-                          onChanged: (val) => setState(() => _soundEnabled = val),
+                          onChanged: (val) async {
+                            _settingsController.toggleSound();
+                            if (!val) {
+                              await AudioService().stop();
+                            }
+                          },
                         ),
-                      ),
+                      )),
                       _buildSettingItem(
                         icon: Icons.language_rounded,
                         title: 'language'.tr,
@@ -119,14 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onPressed: _checkCameraPermission,
                         ),
                       ),
-                      _buildSettingItem(
-                        icon: Icons.help_outline_rounded,
-                        title: 'helps'.tr,
-                        color: const Color(0xFFFFD93D),
-                        onTap: () {
-                          // Acción para ayudas
-                        },
-                      ),
+
                       _buildSettingItem(
                         icon: Icons.person_pin_rounded,
                         title: 'account'.tr,
@@ -181,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'settings_title'.tr,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                   shadows: [

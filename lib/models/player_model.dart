@@ -18,6 +18,7 @@ class PlayerModel {
   final int boosters1m;
   final int boosters2m;
   final int maxUnlockedLevel;
+  final Set<String> unlockedAchievements;
 
   const PlayerModel({
     required this.uid,
@@ -35,6 +36,7 @@ class PlayerModel {
     this.boosters1m = 0,
     this.boosters2m = 0,
     this.maxUnlockedLevel = 1,
+    this.unlockedAchievements = const {},
   });
 
   PlayerModel copyWith({
@@ -53,6 +55,7 @@ class PlayerModel {
     int? boosters1m,
     int? boosters2m,
     int? maxUnlockedLevel,
+    Set<String>? unlockedAchievements,
   }) {
     return PlayerModel(
       uid: uid ?? this.uid,
@@ -70,6 +73,7 @@ class PlayerModel {
       boosters1m: boosters1m ?? this.boosters1m,
       boosters2m: boosters2m ?? this.boosters2m,
       maxUnlockedLevel: maxUnlockedLevel ?? this.maxUnlockedLevel,
+      unlockedAchievements: unlockedAchievements ?? this.unlockedAchievements,
     );
   }
 
@@ -89,6 +93,9 @@ class PlayerModel {
         boosters1m: json['boosters1m'] as int? ?? 0,
         boosters2m: json['boosters2m'] as int? ?? 0,
         maxUnlockedLevel: json['maxUnlockedLevel'] as int? ?? 1,
+        unlockedAchievements: json['unlockedAchievements'] != null
+            ? Set<String>.from(json['unlockedAchievements'] as List<dynamic>)
+            : const {},
       );
 
   Map<String, dynamic> toJson() => {
@@ -107,6 +114,7 @@ class PlayerModel {
         'boosters1m': boosters1m,
         'boosters2m': boosters2m,
         'maxUnlockedLevel': maxUnlockedLevel,
+        'unlockedAchievements': unlockedAchievements.toList(),
       };
 
   // --- MÉTODOS ORIENTADOS A OBJETOS (LOGICA DE DOMINIO) ---

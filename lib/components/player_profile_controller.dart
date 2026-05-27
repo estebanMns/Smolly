@@ -162,6 +162,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       boosters1m: 0,
       boosters2m: 0,
       maxUnlockedLevel: localMaxUnlocked,
+      unlockedAchievements: const {},
     );
     LocalStorageHelper.savePlayer(player.value!);
   }
@@ -389,6 +390,12 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       }
     }
 
+    Set<String> newAchievements = Set.from(p.unlockedAchievements);
+    if (isVictory && !newAchievements.contains('primer-vuelo')) {
+      newAchievements.add('primer-vuelo');
+    }
+    // TODO: Unlock other achievements here based on coins, levels, etc.
+
     final updatedPlayer = p.applyGameResult(
       score: score,
       coinsEarned: coinsEarned,
@@ -398,6 +405,8 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       extra30s: extra30s,
       extra1m: extra1m,
       extra2m: extra2m,
+    ).copyWith(
+      unlockedAchievements: newAchievements,
     );
 
     // Actualizar estado local
@@ -406,6 +415,17 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
 
     // Persistir en Supabase
     await _supabaseService.updateGameStats(updatedPlayer);
+
+    // Show snackbar if new achievement unlocked
+    if (newAchievements.length > p.unlockedAchievements.length) {
+      Get.snackbar(
+        '¡Logro desbloqueado!',
+        '¡Fragmento Recuperado!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.withValues(alpha: 0.8),
+        colorText: Colors.white,
+      );
+    }
 
     return earnedBooster;
   }
@@ -429,6 +449,7 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
         boosters1m: 0,
         boosters2m: 0,
         maxUnlockedLevel: 1,
+        unlockedAchievements: const {},
       );
 
       await LocalStorageHelper.savePlayer(resetPlayer);
@@ -441,6 +462,30 @@ class PlayerProfileController extends GetxController with GetSingleTickerProvide
       print("Error resetting game progress: $e");
       return false;
     }
+  }
+
+  void unlockAchievement(String achievementId) {
+    if (player.value == null) return;
+    if (player.value!.unlockedAchievements.contains(achievementId)) return;
+
+    final newAchievements = Set<String>.from(player.value!.unlockedAchievements);
+    newAchievements.add(achievementId);
+
+    final updatedPlayer = player.value!.copyWith(
+      unlockedAchievements: newAchievements,
+    );
+
+    player.value = updatedPlayer;
+    LocalStorageHelper.savePlayer(updatedPlayer);
+    _supabaseService.updateGameStats(updatedPlayer);
+
+    Get.snackbar(
+      '¡Logro desbloqueado!',
+      'Has desbloqueado un nuevo logro.',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green.withValues(alpha: 0.8),
+      colorText: Colors.white,
+    );
   }
 
   double get xpProgress => (player.value?.xp ?? 0) / (player.value?.xpToNextLevel ?? 1);

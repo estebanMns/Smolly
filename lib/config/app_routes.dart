@@ -6,4 +6,5 @@ class AppRoutes {
   static const String gameScreen = '/game-screen';
   static const String resultScreen = '/result_screen';
   static const String settingsScreen = '/settings_screen';
+  static const String login = '/login';
 }
