@@ -1,4 +1,4 @@
-zimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../components/player_profile_controller.dart';
 import '../../utils/avatar_helper.dart';
